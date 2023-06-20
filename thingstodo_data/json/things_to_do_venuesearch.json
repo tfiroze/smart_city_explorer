@@ -1,0 +1,9 @@
+{
+      "_links": {
+            "venue_search_progress": "https://besttime.app/api/v1/venues/progress?job_id=65422a6d-1e17-4810-874f-8f7744e29ba0&collection_id=col_59b0866210444884b63638ffba8e4ab9&format=raw"
+      },
+      "collection_id": "col_59b0866210444884b63638ffba8e4ab9",
+      "job_id": "65422a6d-1e17-4810-874f-8f7744e29ba0",
+      "message": "Venue search request is running in the background. The 'venue_search_progress result' endpoint will return the background progress and the found venue details when finished. The found venues are pushed into the 'New Foot Traffic Forecast' endpoint in the background (2 API credits per forecast). The final result also includes a link to view the results in the 'radar tool' or 'venue filter' endpoint.",
+      "status": "OK"
+}

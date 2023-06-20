@@ -3,10 +3,12 @@ import json
 
 url = "https://besttime.app/api/v1/forecasts"
 
-with open("thingstodo_venue_details.json", "r") as file:
+with open("thingstodo.json", "r") as file:
     data = json.load(file)
 
-api_key_private = "pri_9bb9e768871f4c1394938563420f5d62"
+api_key_private = "pri_63646948d949435098d9a58a14ff7c8c"
+
+results = []  # List to store the forecast results
 
 for venue in data["venues"]:
     venue_id = venue["venue_id"]
@@ -16,9 +18,12 @@ for venue in data["venues"]:
     }
 
     response = requests.post(url, params=params)
+    forecast_data = response.json()
 
-    with open("forecast_results.json", "a") as save_file:
-        json.dump(response.json(), save_file, indent=6)
-        save_file.write("\n")
+    results.append(forecast_data)  # Add the forecast data to the results list
+
+# Save the results to the JSON file
+with open("forecast_results.json", "w") as save_file:
+    json.dump(results, save_file, indent=4)
 
 print("Data saved successfully.")
