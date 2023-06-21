@@ -11,8 +11,8 @@ import {
 	TextField,
 } from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
-import IRegisterRequest from "../../../models/IRegisterRequest";
-import { smartApi } from "../../../utils/apiCalls";
+import IRegisterRequest from "../../models/IRegisterRequest";
+import { smartApi } from "../../utils/apiCalls";
 
 interface IProps {
 	open: boolean;
@@ -138,7 +138,6 @@ export const Register: React.FC<IProps> = ({
 					/>
 				</Box>
 				{errorMessage != null && <Alert severity="error">{errorMessage}</Alert>}
-
 			</DialogContent>
 			<DialogActions>
 				<Button variant="outlined" onClick={handleRegisterDialogOpen}>
