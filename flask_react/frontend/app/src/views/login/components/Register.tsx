@@ -138,7 +138,6 @@ export const Register: React.FC<IProps> = ({
 					/>
 				</Box>
 				{errorMessage != null && <Alert severity="error">{errorMessage}</Alert>}
-
 			</DialogContent>
 			<DialogActions>
 				<Button variant="outlined" onClick={handleRegisterDialogOpen}>

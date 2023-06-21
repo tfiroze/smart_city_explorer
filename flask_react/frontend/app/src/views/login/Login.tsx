@@ -10,17 +10,18 @@ import {
 	Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState, useContext } from "react";
 import { Register } from "./components/Register";
 import { isMobile } from "react-device-detect";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import background from "../../resources/images/login-background.jpg";
 import ILoginRequest from "../../models/ILoginRequest";
 import { smartApi } from "../../utils/apiCalls";
+import { AuthContext } from "../../utils/ApplicationContext";
 
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const authContext = useContext(AuthContext);
 	const [loginRequest, setLoginRequest] = useState<ILoginRequest>({
 		email: "",
 		password: "",
@@ -32,15 +33,13 @@ export const Login = () => {
 			[event.target.name]: event.target.value,
 		});
 
-    const handleSubmit = () =>{
-			let results = smartApi.login(loginRequest,true);
-			if(results.valid){
-				//valid register
-			}else{
-				setErrorMessage("Login failed, either password or email was incorrect.")
-			}
-    }
-
+	const handleSubmit = () => {
+		let results = smartApi.login(loginRequest, false);
+		if (results.valid) {
+			authContext.authenticate({name:"Thea'q",userUid:"12780921-1213-1321331-12"});
+		} else {
+		}
+	};
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
 	return (
@@ -129,6 +128,7 @@ export const Login = () => {
 										fullWidth
 										size="large"
 										style={{ marginBottom: "15px" }}
+										onClick={handleSubmit}
 									>
 										Login
 									</Button>
