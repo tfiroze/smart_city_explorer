@@ -10,7 +10,7 @@ import {
 	Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { ChangeEvent, useState, useContext } from "react";
+import { ChangeEvent, useState, useContext, useEffect } from "react";
 import { Register } from "../components/login/Register";
 import { isMobile } from "react-device-detect";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
@@ -26,6 +26,54 @@ export const Login = () => {
 		email: "",
 		password: "",
 	});
+	const [format, setformat]=useState({
+		email: false,
+		password: false
+	})
+
+
+	const formValidator=()=>{
+		if (validateEmail(loginRequest.email) && validatePassword(loginRequest.password)){
+			handleSubmit()
+		}
+
+	}
+
+	const validateEmail = (email: string) => {
+		if (email === "" || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+		  setformat((prevFormat) => ({
+			...prevFormat,
+			email: true
+		  }));
+		  console.log('Wrong email');
+		  return false
+		} else {
+		  setformat((prevFormat) => ({
+			...prevFormat,
+			email: false
+		  }));
+		  console.log('Valid email');
+		  return true
+		}
+	  };
+	  
+	  const validatePassword = (password: string) => {
+		if (password === "") {
+		  setformat((prevFormat) => ({
+			...prevFormat,
+			password: true
+		  }));
+		  console.log('Wrong password');
+		  return false
+		} else {
+		  setformat((prevFormat) => ({
+			...prevFormat,
+			password: false
+		  }));
+		  console.log('Valid password');
+		  return true
+		}
+	  };
 
 	const handleInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
 		setLoginRequest({
@@ -34,11 +82,15 @@ export const Login = () => {
 		});
 
 	const handleSubmit = () => {
-		let results = smartApi.login(loginRequest, false);
-		if (results.valid) {
-			authContext.authenticate({name:"Thea'q",userUid:"12780921-1213-1321331-12"});
-		} else {
+		
+		if (true){
+			let results = smartApi.login(loginRequest, false);
+			if (results.valid) {
+				authContext.authenticate({name:"Thea'q",userUid:"12780921-1213-1321331-12"});
+			} else {
+			}
 		}
+		
 	};
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
@@ -94,6 +146,8 @@ export const Login = () => {
 								name="email"
 								value={loginRequest.email}
 								onChange={handleInputOnChange}
+								error={format.email}
+								helperText={format.email ? "Looks like your Email decided to take a vacation! Please enter a valid one.":""}
 							/>
 						</Box>
 						<Box my={2}>
@@ -113,6 +167,9 @@ export const Login = () => {
 								type="password"
 								name="password"
 								value={loginRequest.password}
+								error={format.password}
+								onChange={handleInputOnChange}
+								helperText={format.password?"Oops! Your password needs a vacation from errors. Please enter a valid one.":""}
 							/>
 						</Box>
 						<FormControlLabel
@@ -128,7 +185,7 @@ export const Login = () => {
 										fullWidth
 										size="large"
 										style={{ marginBottom: "15px" }}
-										onClick={handleSubmit}
+										onClick={formValidator}
 									>
 										Login
 									</Button>
