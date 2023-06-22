@@ -3,4 +3,5 @@ export default interface IRegisterRequest {
     surname:string;
     email:string;
     password:string;
+    confirmPassword: string;
 }
