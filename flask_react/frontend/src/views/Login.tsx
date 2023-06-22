@@ -45,14 +45,12 @@ export const Login = () => {
 			...prevFormat,
 			email: true
 		  }));
-		  console.log('Wrong email');
 		  return false
 		} else {
 		  setformat((prevFormat) => ({
 			...prevFormat,
 			email: false
 		  }));
-		  console.log('Valid email');
 		  return true
 		}
 	  };
@@ -63,14 +61,12 @@ export const Login = () => {
 			...prevFormat,
 			password: true
 		  }));
-		  console.log('Wrong password');
 		  return false
 		} else {
 		  setformat((prevFormat) => ({
 			...prevFormat,
 			password: false
 		  }));
-		  console.log('Valid password');
 		  return true
 		}
 	  };
@@ -83,14 +79,11 @@ export const Login = () => {
 
 	const handleSubmit = () => {
 		
-		if (true){
 			let results = smartApi.login(loginRequest, false);
 			if (results.valid) {
 				authContext.authenticate({name:"Thea'q",userUid:"12780921-1213-1321331-12"});
 			} else {
 			}
-		}
-		
 	};
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
