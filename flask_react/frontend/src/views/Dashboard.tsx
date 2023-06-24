@@ -5,14 +5,14 @@ import { CreateItinerary } from "../components/dashboard/CreateItinerary";
 import { useState } from "react";
 
 export const Dashboard = () => {
-const [open, setOpen] = useState(false)
+	const [open, setOpen] = useState(false);
 
-const setCreateDialogOpen = () => setOpen(!open)
+	const setCreateDialogOpen = () => setOpen(!open);
 
 	return (
 		<div>
 			<Header />
-			<CreateItinerary open={open}/>
+			<CreateItinerary open={open} onClose={setCreateDialogOpen}/>
 			<Grid container spacing={2} padding={1}>
 				<Grid item md={10}>
 					<ItineraryList />
@@ -21,7 +21,12 @@ const setCreateDialogOpen = () => setOpen(!open)
 					<Grid container spacing={2} padding={1}>
 						<Grid item md={12}>
 							<Paper style={{ padding: "5px" }}>
-								<Button onClick={setCreateDialogOpen } variant="contained" color="secondary" fullWidth>
+								<Button
+									onClick={setCreateDialogOpen}
+									variant="contained"
+									color="secondary"
+									fullWidth
+								>
 									CREATE
 								</Button>
 							</Paper>

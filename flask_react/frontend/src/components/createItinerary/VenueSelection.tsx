@@ -11,13 +11,17 @@ import {
 	FormControlLabel,
 } from "@mui/material";
 import dataSetA from "../../temp/thingstodo_data/json/thingstodo.json";
-import { useState } from "react";
+import { useRef, useState } from "react"; 
 import { UseTaxi } from "./UseTaxi";
 
+
 export const VenueSelection = () => {
+
 	const [expanded, setExpanded] = useState<string>("none");
 	const [items, setItems] = useState<string[]>([]);
 	const [useTaxi, setUseTaxi] = useState(false);
+
+
 
 	const handleChange = (panel: string) => () => {
 		setExpanded(panel);
@@ -31,8 +35,10 @@ export const VenueSelection = () => {
 		setItems([...data]);
 	};
 
+
 	React.useEffect(() => {
 		getData();
+	
 	}, []);
 
 	const ChangeUseTaxi = () => setUseTaxi(!useTaxi);
@@ -84,6 +90,7 @@ export const VenueSelection = () => {
         labelPlacement="start"
 			/>
 			{useTaxi && <UseTaxi />}
+		
 		</div>
 	);
 };

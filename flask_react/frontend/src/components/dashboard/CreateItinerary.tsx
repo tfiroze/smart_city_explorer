@@ -19,15 +19,16 @@ import TabList from '@material-ui/lab/TabList';
 import TabPanel from '@material-ui/lab/TabPanel';
 import { VenueSelection } from "../createItinerary/VenueSelection";
 
+
 interface IProps {
 	open: boolean;
-  // onClose: () => void;
+   onClose: () => void;
 }
 const steps = ['Select Venue', 'Invite Friends','Leave a Note','Confirmation'];
 
 
 
-export const CreateItinerary: React.FC<IProps> = ({ open }) => {
+export const CreateItinerary: React.FC<IProps> = ({ open,onClose }) => {
   const [currentStep, setCurrentStep] = useState(0)
 
   const renderStep = () =>{
@@ -37,7 +38,7 @@ export const CreateItinerary: React.FC<IProps> = ({ open }) => {
   }
 
 	return (
-		<Dialog open={open} >
+		<Dialog open={open} onBackdropClick={onClose} fullScreen>
 			<DialogTitle>
 				<Grid
 					container
@@ -50,7 +51,7 @@ export const CreateItinerary: React.FC<IProps> = ({ open }) => {
 					</Grid>
 					{/* TODO - look at close */}
 					<Grid item md={1}>
-						<IconButton aria-label="close" color="primary">
+						<IconButton aria-label="close" color="primary" onClick={onClose}>
 							<CloseIcon />
 						</IconButton>
 					</Grid>
