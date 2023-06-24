@@ -1,12 +1,18 @@
-import React, { useContext, useEffect, useState } from "react";
 import { Header } from "../components/dashboard/Header";
 import { Button, Grid, Paper } from "@mui/material";
 import { ItineraryList } from "../components/dashboard/ItineraryList";
+import { CreateItinerary } from "../components/dashboard/CreateItinerary";
+import { useState } from "react";
 
 export const Dashboard = () => {
+const [open, setOpen] = useState(false)
+
+const setCreateDialogOpen = () => setOpen(!open)
+
 	return (
 		<div>
 			<Header />
+			<CreateItinerary open={open}/>
 			<Grid container spacing={2} padding={1}>
 				<Grid item md={10}>
 					<ItineraryList />
@@ -15,7 +21,7 @@ export const Dashboard = () => {
 					<Grid container spacing={2} padding={1}>
 						<Grid item md={12}>
 							<Paper style={{ padding: "5px" }}>
-								<Button variant="contained" fullWidth>
+								<Button onClick={setCreateDialogOpen } variant="contained" color="secondary" fullWidth>
 									CREATE
 								</Button>
 							</Paper>

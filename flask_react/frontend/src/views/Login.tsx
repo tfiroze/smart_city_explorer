@@ -33,6 +33,7 @@ export const Login = () => {
 
 
 	const formValidator=()=>{
+		handleSubmit()
 		if (validateEmail(loginRequest.email) && validatePassword(loginRequest.password)){
 			handleSubmit()
 		}
@@ -81,7 +82,7 @@ export const Login = () => {
 		
 			let results = smartApi.login(loginRequest, false);
 			if (results.valid) {
-				authContext.authenticate({name:"Thea'q",userUid:"12780921-1213-1321331-12"});
+				authContext.authenticate({name:"Thea",userUid:"12780921-1213-1321331-12"});
 			} else {
 			}
 	};

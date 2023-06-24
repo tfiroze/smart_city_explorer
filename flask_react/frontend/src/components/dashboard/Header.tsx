@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext, ThemeContext } from "../../utils/ApplicationContext";
 import Paper from "@mui/material/Paper";
 import {
@@ -11,11 +11,8 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import NightsStayIcon from "@mui/icons-material/NightsStay";
-import FaceIcon from "@mui/icons-material/Face";
 import LogoutIcon from "@mui/icons-material/Logout";
-import HomeIcon from "@mui/icons-material/Home";
 import SettingsIcon from "@mui/icons-material/Settings";
-import SearchIcon from "@mui/icons-material/Search";
 
 export const Header = () => {
     const authContext = useContext(AuthContext);

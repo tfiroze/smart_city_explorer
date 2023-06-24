@@ -4,7 +4,22 @@ import { blue, green } from '@mui/material/colors';
 export default createTheme({
   palette: {
     mode: 'dark',
-    primary: blue,
-    secondary: green,
+    primary: {
+      main:'#242D3E'
+    },
+    secondary: {
+      main:'#36827f'
+    },
+  },
+  components:{
+    MuiPaper:{
+     styleOverrides:{
+       root:{
+         backgroundColor:'#535C7C',
+         padding:'5px'
+       }
+     } 
+    }
   }
 });
+

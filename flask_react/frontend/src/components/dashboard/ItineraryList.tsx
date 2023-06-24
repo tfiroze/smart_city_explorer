@@ -2,7 +2,7 @@ import React from "react";
 import { Itinerary } from "./Itinerary";
 
 export const ItineraryList = () => {
-  const data = new Array(100).fill(1).map( (_, i) => i+1 )
+  const data = new Array(5).fill(1).map( (_, i) => i+1 )
 
   return (
 		<div style={{overflowY:'scroll',maxHeight:'90vh'}}>
