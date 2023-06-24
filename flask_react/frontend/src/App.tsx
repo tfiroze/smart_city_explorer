@@ -11,6 +11,7 @@ import {
 import darkTheme from "./utils/Themes/darkTheme";
 import lightTheme from "./utils/Themes/lightTheme";
 import { useState } from "react";
+import { Startup } from "./views/Startup";
 
 function App() {
 	const [theme, setTheme] = useState<"light" | "dark">("light");
@@ -58,7 +59,7 @@ function App() {
 							{authed ? (
 								<Route path="*" Component={Dashboard} />
 							) : (
-								<Route path="*" Component={Login} />
+								<Route path="*" Component={Startup} />
 							)}
 						</Routes>
 					</BrowserRouter>

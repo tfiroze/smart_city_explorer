@@ -18,6 +18,7 @@ import background from "../resources/images/login-background.jpg";
 import ILoginRequest from "../models/ILoginRequest";
 import { smartApi } from "../utils/apiCalls";
 import { AuthContext } from "../utils/ApplicationContext";
+import { CButton } from "../components/common/button";
 
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
@@ -93,7 +94,7 @@ export const Login = () => {
 				open={registerOpen}
 				handleRegisterDialogOpen={handleRegisterDialogOpen}
 			/>
-			{!isMobile && (
+			{/* {!isMobile && (
 				<Grid item xs={0} sm={12} md={12} lg={12}>
 					<svg>
 						<text x="50%" y="50%" dy=".35em" text-anchor="middle">
@@ -101,17 +102,31 @@ export const Login = () => {
 						</text>
 					</svg>
 				</Grid>
-			)}
+			)} */}
 
 			<Paper
 				style={{
 					paddingLeft: "20px",
 					marginLeft: "15%",
 					marginRight: "15%",
+					height:"100vh"
 				}}
+				elevation={0}
 			>
 				<Grid container>
-					<Grid item xs={12} sm={12} md={7} lg={7} style={{ padding: "10px" }}>
+
+					<Grid
+						item
+						style={{
+							backgroundImage: `URL(${background})`,
+							backgroundSize: "100% 100%",
+						}}
+						sm={0}
+						xs={0}
+						md={5}
+						lg={5}
+					></Grid>
+										<Grid item xs={12} sm={12} md={7} lg={7} style={{ padding: "10px" }}>
 						<Typography
 							variant="h4"
 							align="center"
@@ -172,16 +187,10 @@ export const Login = () => {
 						<Box mt={3}>
 							<Grid container spacing={2}>
 								<Grid item xs={12} sm={6}>
-									<Button
-										variant="contained"
-										color="primary"
-										fullWidth
-										size="large"
-										style={{ marginBottom: "15px" }}
+								<CButton
+										title="LOGIN"
 										onClick={formValidator}
-									>
-										Login
-									</Button>
+									/>
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<Button
@@ -194,17 +203,6 @@ export const Login = () => {
 							</Grid>
 						</Box>
 					</Grid>
-					<Grid
-						item
-						style={{
-							backgroundImage: `URL(${background})`,
-							backgroundSize: "100% 100%",
-						}}
-						sm={0}
-						xs={0}
-						md={5}
-						lg={5}
-					></Grid>
 				</Grid>
 			</Paper>
 		</>
