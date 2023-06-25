@@ -38,3 +38,6 @@ svg text {
 	background: transparent; /* make scrollbar transparent */
 	}
 
+	.startLocationContainer{
+		height: 500px;
+	}

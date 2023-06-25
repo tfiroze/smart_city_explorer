@@ -24,7 +24,7 @@ interface IProps {
 	open: boolean;
    onClose: () => void;
 }
-const steps = ['Select Venue', 'Invite Friends','Leave a Note','Confirmation'];
+const steps = ['Select Venue','Confirm Venu', 'Invite Friends','Leave a Note','Final Confirmation'];
 
 
 

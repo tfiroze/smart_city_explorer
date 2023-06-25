@@ -12,12 +12,18 @@ import darkTheme from "./utils/Themes/darkTheme";
 import lightTheme from "./utils/Themes/lightTheme";
 import { useState } from "react";
 import { Startup } from "./views/Startup";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 
 function App() {
+	const { isLoaded } = useLoadScript({
+		googleMapsApiKey: "AIzaSyBDUEkaYex_MSMMPfoAAE_xYcFeKjzQigE",
+		libraries: ["places"],
+	});
+	
 	const [theme, setTheme] = useState<"light" | "dark">("light");
 	const [authed, setAuthed] = useState(false);
 	const [userInfo, setuserInfo] = useState<IUserInfo | null>({
-		name: "TheaQ",
+		name: "Thea",
 		userUid: "18w79-d322d-1221-2238u89",
 	});
 
