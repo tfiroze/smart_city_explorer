@@ -8,7 +8,7 @@ export default createTheme({
       main:'#242D3E'
     },
     secondary: {
-      main:'#36827f'
+      main:'#115b4c'
     },
   },
   components:{

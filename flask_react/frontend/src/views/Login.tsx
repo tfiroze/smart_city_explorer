@@ -23,15 +23,36 @@ import { CButton } from "../components/common/button";
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
 	const authContext = useContext(AuthContext);
+	const [autoLogin, setAutoLogin] = useState(false)
 	const [loginRequest, setLoginRequest] = useState<ILoginRequest>({
 		email: "",
 		password: "",
 	});
+
+	useEffect(() => {
+		let name = "AuthToken=";
+		let ca = document.cookie.split(';');
+		for(let i = 0; i < ca.length; i++) {
+		  let c = ca[i];
+		  while (c.charAt(0) == ' ') {
+			c = c.substring(1);
+		  }
+		  if (c.indexOf(name) == 0) {
+			let token = c.substring(name.length, c.length);
+			let results = smartApi.autoLogin(token)
+			if (results.valid) {
+				authContext.authenticate({name:"Thea",userUid:"12780921-1213-1321331-12"});
+			}
+		  }
+		}
+	}, [])
+	
+
+
 	const [format, setformat]=useState({
 		email: false,
 		password: false
 	})
-
 
 	const formValidator=()=>{
 		handleSubmit()
@@ -80,13 +101,22 @@ export const Login = () => {
 		});
 
 	const handleSubmit = () => {
-		
 			let results = smartApi.login(loginRequest, false);
 			if (results.valid) {
+				if(autoLogin){
+					const d = new Date();
+					d.setTime(d.getTime() + (360 * 24 * 60 * 60 * 1000));
+					let expires = "expires="+d.toUTCString();
+					document.cookie = "AuthToken=" + results.token + ";" + expires + ";path=/";
+				}
 				authContext.authenticate({name:"Thea",userUid:"12780921-1213-1321331-12"});
 			} else {
 			}
 	};
+
+	const handleAutoLoginChange = () =>{
+		setAutoLogin(!autoLogin)
+	}
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
 	return (
@@ -95,16 +125,6 @@ export const Login = () => {
 				open={registerOpen}
 				handleRegisterDialogOpen={handleRegisterDialogOpen}
 			/>
-			{/* {!isMobile && (
-				<Grid item xs={0} sm={12} md={12} lg={12}>
-					<svg>
-						<text x="50%" y="50%" dy=".35em" text-anchor="middle">
-							Smart City Explorer
-						</text>
-					</svg>
-				</Grid>
-			)} */}
-
 			<Paper
 				style={{
 					paddingLeft: "20px",
@@ -182,7 +202,7 @@ export const Login = () => {
 							/>
 						</Box>
 						<FormControlLabel
-							control={<Checkbox defaultChecked />}
+							control={<Checkbox checked={autoLogin} onChange={handleAutoLoginChange} defaultChecked />}
 							label="Remember Me?"
 						/>
 						<Box mt={3}>
