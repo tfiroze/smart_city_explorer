@@ -42,7 +42,7 @@ const Content = styled.a`
     left: calc(0.7em * 1.2);
     right: calc(0.7em * 1.2);
     height: 3px;
-    background: #f26522;
+    background: #1c8e77;
     transition: transform 0.8s cubic-bezier(1, 0, 0.37, 1) 0.2s,
       right 0.2s cubic-bezier(0.04, 0.48, 0, 1) 0.6s,
       left 0.4s cubic-bezier(0.04, 0.48, 0, 1) 0.6s;
@@ -51,7 +51,7 @@ const Content = styled.a`
 
   .line {
     position: absolute;
-    background: #f26522;
+    background: #1c8e77;
   }
 
   .line.-right,

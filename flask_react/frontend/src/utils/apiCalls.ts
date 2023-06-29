@@ -25,12 +25,13 @@ class SmartCityApi {
 		mockFail: Boolean = false
 	): ILoginResults {
 		if (mockFail) {
-			return { valid: false };
+			return { valid: false, };
 		}
 
 		return {
 			valid: true,
 			firstName: "Thea",
+			token:"fdeqefdwqfdwfd",
 			dashboardData: [
 				{
 					date: new Date(),
@@ -38,11 +39,30 @@ class SmartCityApi {
 					forecastedWeather: "Rainy",
 					tags: ["Sushi", "Pizza", "Water"],
 					venueId: "ce913c45-8ee5-454e-8369-ea38f9009b4b",
-					venueName: "Oishi Bay",
+					venueName:"temp"
 				},
 			],
 		};
 	};
+
+	autoLogin = function(token:string) : ILoginResults{
+	
+		return {
+			valid: true,
+			firstName: "Thea",
+			token:"fdeqefdwqfdwfd",
+			dashboardData: [
+				{
+					date: new Date(),
+					status: "pending",
+					forecastedWeather: "Rainy",
+					tags: ["Sushi", "Pizza", "Water"],
+					venueId: "ce913c45-8ee5-454e-8369-ea38f9009b4b",
+					venueName:"temp"
+				},
+			],
+		};
+	}
 }
 
 let smartApi = new SmartCityApi();

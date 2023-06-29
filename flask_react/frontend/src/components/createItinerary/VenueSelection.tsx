@@ -15,7 +15,6 @@ import { useRef, useState } from "react";
 import { UseTaxi } from "./UseTaxi";
 
 
-
 export const VenueSelection = () => {
 
 	const [expanded, setExpanded] = useState<string>("none");

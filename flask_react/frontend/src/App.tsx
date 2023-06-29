@@ -25,7 +25,7 @@ function App() {
 	const [authed, setAuthed] = useState(false);
 	const [userInfo, setuserInfo] = useState<IUserInfo | null>({
 		name: "Thea",
-		userUid: "18w79-d322d-1221-2238u89",
+		userUid: "18w79-d322d-1221-2238u89"
 	});
 
 	const onThemeChange = () => {
@@ -58,6 +58,7 @@ function App() {
 					authenticated: authed,
 					authenticate: authenticate,
 					userInfo: userInfo,
+					token:null
 				}}
 			>
 				<ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
