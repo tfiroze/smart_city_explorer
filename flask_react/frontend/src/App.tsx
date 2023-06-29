@@ -13,13 +13,14 @@ import lightTheme from "./utils/Themes/lightTheme";
 import { useState } from "react";
 import { Startup } from "./views/Startup";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import { Questionnaire } from "./views/Questionnaire";
 
 function App() {
 	const { isLoaded } = useLoadScript({
 		googleMapsApiKey: "AIzaSyBDUEkaYex_MSMMPfoAAE_xYcFeKjzQigE",
 		libraries: ["places"],
 	});
-	
+
 	const [theme, setTheme] = useState<"light" | "dark">("light");
 	const [authed, setAuthed] = useState(false);
 	const [userInfo, setuserInfo] = useState<IUserInfo | null>({
@@ -28,11 +29,11 @@ function App() {
 	});
 
 	const onThemeChange = () => {
-		if(theme==="light"){
-			setTheme( "dark" );
+		if (theme === "light") {
+			setTheme("dark");
 			document.body.style.backgroundColor = "#26262c";
 
-		}else{
+		} else {
 			setTheme("light");
 			document.body.style.backgroundColor = "#DAE0E6";
 		}
@@ -41,10 +42,10 @@ function App() {
 	const authenticate = (userInfo: IUserInfo) => {
 		setAuthed(authed ? false : true);
 		setuserInfo(userInfo);
-		if(theme==="dark"){
+		if (theme === "dark") {
 			document.body.style.backgroundColor = "#26262c";
 
-		}else{
+		} else {
 			document.body.style.backgroundColor = "#DAE0E6";
 		}
 		document.body.style.backgroundImage = `URL()`;
@@ -65,7 +66,12 @@ function App() {
 							{authed ? (
 								<Route path="*" Component={Dashboard} />
 							) : (
-								<Route path="*" Component={Startup} />
+								<>
+									{/* <Route path="*" Component={Startup} /> */}
+									<Route path="*" Component={Questionnaire} />
+								</>
+
+
 							)}
 						</Routes>
 					</BrowserRouter>
