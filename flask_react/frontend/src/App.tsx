@@ -8,14 +8,16 @@ import {
 } from "./utils/ApplicationContext";
 import {
 	AuthContext,
-	IUserInfo
+	IUserInfo,
+	AuthProvider
 } from "./utils/AuthContext"
 import darkTheme from "./utils/Themes/darkTheme";
 import lightTheme from "./utils/Themes/lightTheme";
-import { useState } from "react";
+import { ChangeEvent, useState, useContext, useEffect } from "react";
 import { Startup } from "./views/Startup";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 import { Questionnaire } from "./views/Questionnaire";
+import { smartApi } from "./utils/apiCalls";
 
 function App() {
 	const { isLoaded } = useLoadScript({
@@ -31,6 +33,7 @@ function App() {
 		userUid: "",
 		email: ""
 	});
+	const authContext = useContext(AuthContext);
 
 	const onThemeChange = () => {
 		if (theme === "light") {
@@ -55,28 +58,43 @@ function App() {
 		document.body.style.backgroundImage = `URL()`;
 	};
 
+	useEffect(() => {
+		let name = "AuthToken=";
+		let ca = document.cookie.split(';');
+		for (let i = 0; i < ca.length; i++) {
+			let c = ca[i];
+			while (c.charAt(0) == ' ') {
+				c = c.substring(1);
+			}
+			if (c.indexOf(name) == 0) {
+				let token = c.substring(name.length, c.length);
+				let results = smartApi.autoLogin(token)
+				if (results.valid) {
+					authContext.authenticate({
+						first_name: "string",
+						last_name: "string",
+						userUid: "string",
+						email: "string",
+					});
+				}
+			}
+		}
+	}, [])
+
 	return (
 		<ThemeContext.Provider value={{ onChange: onThemeChange, theme: theme }}>
-			<AuthContext.Provider
-				value={{
-					authenticated: authed,
-					authenticate: authenticate,
-					userInfo: userInfo,
-					token: null
-				}}
-			>
+			<AuthProvider>
 				<ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
 					<BrowserRouter>
 						<Routes>
-							{authed ? (
+							{(authed||true) ? (
 								<>
 									<Route path="*" Component={Dashboard} />
-									<Route path="*" Component={Questionnaire} />
+									{/* <Route path="*" Component={Questionnaire} /> */}
 								</>
 							) : (
 								<>
 									<Route path="*" Component={Startup} />
-
 								</>
 
 
@@ -84,7 +102,7 @@ function App() {
 						</Routes>
 					</BrowserRouter>
 				</ThemeProvider>
-			</AuthContext.Provider>
+			</AuthProvider>
 		</ThemeContext.Provider>
 	);
 }

@@ -1,8 +1,11 @@
 import { Header } from "../components/dashboard/Header";
-import { Button, Grid, Paper } from "@mui/material";
+import { Button, Grid, Paper, Typography } from "@mui/material";
 import { ItineraryList } from "../components/dashboard/ItineraryList";
 import { CreateItinerary } from "../components/dashboard/CreateItinerary";
 import { useState } from "react";
+import { TaxiMap } from "../components/createItinerary/TaxiMap";
+import { useNavigate } from 'react-router-dom';
+
 
 export const Dashboard = () => {
 	const [open, setOpen] = useState(false);
@@ -12,36 +15,73 @@ export const Dashboard = () => {
 	return (
 		<div>
 			<Header />
-			<CreateItinerary open={open} onClose={setCreateDialogOpen}/>
 			<Grid container spacing={2} padding={1}>
 				<Grid item md={10}>
-					<ItineraryList />
+					{/* <ItineraryList /> */}
+					<Typography
+						variant="h5"
+						align="center"
+						color="textSecondary"
+						gutterBottom
+					>
+						Upcoming Trips...
+					</Typography>
+					<Typography
+						variant="subtitle1"
+						align="center"
+						color="textSecondary"
+						gutterBottom
+						style={{ margin: "20px 0" }}
+					>
+						You haven’t created anything yet.
+					</Typography>
+					<Button
+						onClick={setCreateDialogOpen}
+						variant="contained"
+						color="secondary"
+						fullWidth
+					>
+						CREATE
+					</Button>
 				</Grid>
-				<Grid item md={2}>
-					<Grid container spacing={2} padding={1}>
-						<Grid item md={12}>
-							<Paper style={{ padding: "5px" }}>
-								<Button
-									onClick={setCreateDialogOpen}
-									variant="contained"
-									color="secondary"
-									fullWidth
-								>
-									CREATE
-								</Button>
-							</Paper>
-						</Grid>
-					</Grid>
-					<Grid item md={12}>
-						<Paper style={{ padding: "5px" }}>
-							<img
-								src="https://media.suthlbr.com/images/tabs/300/9532-1-1584655877.jpg"
-								width="100%"
-								height="100%"
-							/>
-						</Paper>
-					</Grid>
+			</Grid>
+			<Grid container spacing={2} padding={1}>
+				<Grid item md={10}>
+					{/* <ItineraryList /> */}
+					<Typography
+						variant="h5"
+						align="center"
+						color="textSecondary"
+						gutterBottom
+					>
+						Past Trips
+					</Typography>
+					<Typography
+						variant="subtitle1"
+						align="center"
+						color="textSecondary"
+						gutterBottom
+						style={{ margin: "20px 0" }}
+					>
+						No Past Trips Found!
+					</Typography>
 				</Grid>
+			</Grid>
+
+				<Grid container spacing={2} padding={1}>
+				<Grid item md={10}>
+					{/* <ItineraryList /> */}
+					<Typography
+						variant="h5"
+						align="center"
+						color="textSecondary"
+						gutterBottom
+					>
+						Manhattan Heat Map
+					</Typography>
+					<TaxiMap selectedPlace={null}/>
+				</Grid>
+
 			</Grid>
 		</div>
 	);
