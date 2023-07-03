@@ -29,31 +29,6 @@ export const Login = () => {
 		password: "",
 	});
 
-	// useEffect(() => {
-	// 	let name = "AuthToken=";
-	// 	let ca = document.cookie.split(';');
-	// 	for(let i = 0; i < ca.length; i++) {
-	// 	  let c = ca[i];
-	// 	  while (c.charAt(0) == ' ') {
-	// 		c = c.substring(1);
-	// 	  }
-	// 	  if (c.indexOf(name) == 0) {
-	// 		let token = c.substring(name.length, c.length);
-	// 		let results = smartApi.autoLogin(token)
-	// 		if (results.valid) {
-	// 			authContext.authenticate({
-	// 				first_name:"string",
-	// 				last_name:"string",
-	// 				userUid:"string",
-	// 				email:"string",
-	// 			});
-	// 		}
-	// 	  }
-	// 	}
-	// }, [])
-	
-
-
 	const [format, setformat]=useState({
 		email: false,
 		password: false
