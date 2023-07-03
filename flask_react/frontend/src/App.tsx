@@ -4,10 +4,12 @@ import { Login } from "./views/Login";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Dashboard } from "./views/Dashboard";
 import {
-	AuthContext,
-	IUserInfo,
 	ThemeContext,
 } from "./utils/ApplicationContext";
+import {
+	AuthContext,
+	IUserInfo
+} from "./utils/AuthContext"
 import darkTheme from "./utils/Themes/darkTheme";
 import lightTheme from "./utils/Themes/lightTheme";
 import { useState } from "react";
@@ -24,8 +26,10 @@ function App() {
 	const [theme, setTheme] = useState<"light" | "dark">("light");
 	const [authed, setAuthed] = useState(false);
 	const [userInfo, setuserInfo] = useState<IUserInfo | null>({
-		name: "Thea",
-		userUid: "18w79-d322d-1221-2238u89"
+		first_name: "",
+		last_name: "",
+		userUid: "",
+		email: ""
 	});
 
 	const onThemeChange = () => {
@@ -58,18 +62,21 @@ function App() {
 					authenticated: authed,
 					authenticate: authenticate,
 					userInfo: userInfo,
-					token:null
+					token: null
 				}}
 			>
 				<ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
 					<BrowserRouter>
 						<Routes>
 							{authed ? (
-								<Route path="*" Component={Dashboard} />
+								<>
+									<Route path="*" Component={Dashboard} />
+									<Route path="*" Component={Questionnaire} />
+								</>
 							) : (
 								<>
-									{/* <Route path="*" Component={Startup} /> */}
-									<Route path="*" Component={Questionnaire} />
+									<Route path="*" Component={Startup} />
+
 								</>
 
 

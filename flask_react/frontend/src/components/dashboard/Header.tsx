@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
-import { AuthContext, ThemeContext } from "../../utils/ApplicationContext";
+import {ThemeContext } from "../../utils/ApplicationContext";
+import {AuthContext} from "../../utils/AuthContext"
 import Paper from "@mui/material/Paper";
 import {
 	Avatar,
@@ -67,7 +68,7 @@ export const Header = () => {
         <Grid container alignItems="center">
             <Grid xs={10}>
                 <Typography variant="h5">
-                    Welcome {authContext.userInfo?.name}!
+                    Welcome {authContext.userInfo?.first_name}!
                 </Typography>
             </Grid>
             <Grid xs={2}>

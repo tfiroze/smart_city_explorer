@@ -17,7 +17,7 @@ import LockOpenIcon from "@mui/icons-material/LockOpen";
 import background from "../resources/images/login-background.jpg";
 import ILoginRequest from "../models/ILoginRequest";
 import { smartApi } from "../utils/apiCalls";
-import { AuthContext } from "../utils/ApplicationContext";
+import { AuthContext } from "../utils/AuthContext";
 import { CButton } from "../components/common/button";
 
 export const Login = () => {
@@ -29,23 +29,28 @@ export const Login = () => {
 		password: "",
 	});
 
-	useEffect(() => {
-		let name = "AuthToken=";
-		let ca = document.cookie.split(';');
-		for(let i = 0; i < ca.length; i++) {
-		  let c = ca[i];
-		  while (c.charAt(0) == ' ') {
-			c = c.substring(1);
-		  }
-		  if (c.indexOf(name) == 0) {
-			let token = c.substring(name.length, c.length);
-			let results = smartApi.autoLogin(token)
-			if (results.valid) {
-				authContext.authenticate({name:"Thea",userUid:"12780921-1213-1321331-12"});
-			}
-		  }
-		}
-	}, [])
+	// useEffect(() => {
+	// 	let name = "AuthToken=";
+	// 	let ca = document.cookie.split(';');
+	// 	for(let i = 0; i < ca.length; i++) {
+	// 	  let c = ca[i];
+	// 	  while (c.charAt(0) == ' ') {
+	// 		c = c.substring(1);
+	// 	  }
+	// 	  if (c.indexOf(name) == 0) {
+	// 		let token = c.substring(name.length, c.length);
+	// 		let results = smartApi.autoLogin(token)
+	// 		if (results.valid) {
+	// 			authContext.authenticate({
+	// 				first_name:"string",
+	// 				last_name:"string",
+	// 				userUid:"string",
+	// 				email:"string",
+	// 			});
+	// 		}
+	// 	  }
+	// 	}
+	// }, [])
 	
 
 
@@ -109,7 +114,12 @@ export const Login = () => {
 					let expires = "expires="+d.toUTCString();
 					document.cookie = "AuthToken=" + results.token + ";" + expires + ";path=/";
 				}
-				authContext.authenticate({name:"Thea",userUid:"12780921-1213-1321331-12"});
+				authContext.authenticate({
+					first_name:"string",
+					last_name:"string",
+					userUid:"string",
+					email:"string",
+				});
 			} else {
 			}
 	};
