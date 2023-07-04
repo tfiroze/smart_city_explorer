@@ -2,15 +2,18 @@ import { Header } from "../components/dashboard/Header";
 import { Button, Grid, Paper, Typography } from "@mui/material";
 import { ItineraryList } from "../components/dashboard/ItineraryList";
 import { CreateItinerary } from "../components/dashboard/CreateItinerary";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { TaxiMap } from "../components/createItinerary/TaxiMap";
 import { useNavigate } from 'react-router-dom';
-
+import { AuthContext } from "../utils/AuthContext";
 
 export const Dashboard = () => {
 	const [open, setOpen] = useState(false);
 
 	const setCreateDialogOpen = () => setOpen(!open);
+	const authContext = useContext(AuthContext);
+	console.log(authContext, 'dashboard');
+	
 
 	return (
 		<div>

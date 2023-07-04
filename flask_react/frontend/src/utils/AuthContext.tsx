@@ -2,15 +2,15 @@ import React, { createContext, useState } from "react";
 
 
 export interface IUserInfo {
-  first_name: string;
-  last_name: string;
-  userUid: string;
-  email: string;
+  first_name: string|null;
+  last_name: string|null;
+  userUid: string|null;
+  email: string|null;
 }
 
-interface IAuthenticationInfo {
+export interface IAuthenticationInfo {
   authenticated: boolean;
-  authenticate: (info: IUserInfo) => void;
+  authenticate: (cond:boolean, info?: IUserInfo) => void;
   userInfo?: IUserInfo | null;
   token?: string | null;
 }
@@ -23,28 +23,5 @@ export const AuthContext = createContext<IAuthenticationInfo>({
   token: null
 });
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const [authInfo, setAuthInfo] = useState<IAuthenticationInfo>({
-      authenticated: false,
-      userInfo: null,
-      token: null,
-      authenticate: (info) => {
-        setAuthInfo((prevAuthInfo) => ({
-          ...prevAuthInfo,
-          authenticated: true,
-          userInfo: info,
-        }));
-      }
-    });
-  
-    const authContextValue: IAuthenticationInfo = {
-      ...authInfo,
-    };
-  
-    return (
-      <AuthContext.Provider value={authContextValue}>
-        {children}
-      </AuthContext.Provider>
-    );
-  };
+
   

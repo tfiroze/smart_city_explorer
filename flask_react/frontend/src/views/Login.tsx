@@ -19,6 +19,7 @@ import ILoginRequest from "../models/ILoginRequest";
 import { smartApi } from "../utils/apiCalls";
 import { AuthContext } from "../utils/AuthContext";
 import { CButton } from "../components/common/button";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
@@ -29,18 +30,19 @@ export const Login = () => {
 		password: "",
 	});
 
+	const navigate = useNavigate();
 
-	
 
 
-	const [format, setformat]=useState({
+
+	const [format, setformat] = useState({
 		email: false,
 		password: false
 	})
 
-	const formValidator=()=>{
+	const formValidator = () => {
 		handleSubmit()
-		if (validateEmail(loginRequest.email) && validatePassword(loginRequest.password)){
+		if (validateEmail(loginRequest.email) && validatePassword(loginRequest.password)) {
 			handleSubmit()
 		}
 
@@ -48,35 +50,35 @@ export const Login = () => {
 
 	const validateEmail = (email: string) => {
 		if (email === "" || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
-		  setformat((prevFormat) => ({
-			...prevFormat,
-			email: true
-		  }));
-		  return false
+			setformat((prevFormat) => ({
+				...prevFormat,
+				email: true
+			}));
+			return false
 		} else {
-		  setformat((prevFormat) => ({
-			...prevFormat,
-			email: false
-		  }));
-		  return true
+			setformat((prevFormat) => ({
+				...prevFormat,
+				email: false
+			}));
+			return true
 		}
-	  };
-	  
-	  const validatePassword = (password: string) => {
+	};
+
+	const validatePassword = (password: string) => {
 		if (password === "") {
-		  setformat((prevFormat) => ({
-			...prevFormat,
-			password: true
-		  }));
-		  return false
+			setformat((prevFormat) => ({
+				...prevFormat,
+				password: true
+			}));
+			return false
 		} else {
-		  setformat((prevFormat) => ({
-			...prevFormat,
-			password: false
-		  }));
-		  return true
+			setformat((prevFormat) => ({
+				...prevFormat,
+				password: false
+			}));
+			return true
 		}
-	  };
+	};
 
 	const handleInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
 		setLoginRequest({
@@ -85,25 +87,34 @@ export const Login = () => {
 		});
 
 	const handleSubmit = () => {
-			let results = smartApi.login(loginRequest, false);
-			if (results.valid) {
-				if(autoLogin){
-					const d = new Date();
-					d.setTime(d.getTime() + (360 * 24 * 60 * 60 * 1000));
-					let expires = "expires="+d.toUTCString();
-					document.cookie = "AuthToken=" + results.token + ";" + expires + ";path=/";
-				}
-				authContext.authenticate({
-					first_name:"string",
-					last_name:"string",
-					userUid:"string",
-					email:"string",
-				});
-			} else {
-			}
-	};
+		let results = smartApi.login(loginRequest, false);
+		if (results.valid) {
+			const d = new Date();
+			d.setTime(d.getTime() + (360 * 24 * 60 * 60 * 1000));
+			let expires = d.toUTCString();
+			setCookie('accessToken', results.token, expires);
+			setCookie('refreshToken', results.refreshToken, expires);
+			console.log('logged In');
 
-	const handleAutoLoginChange = () =>{
+			authContext.authenticate(true, {
+				first_name: "string",
+				last_name: "string",
+				userUid: "string",
+				email: "string",
+			});
+			localStorage.setItem('userUid', 'string');
+			localStorage.setItem('email', 'string');
+			localStorage.setItem('first_name', 'string');
+			localStorage.setItem('last_name', 'string');
+		} else {
+		}
+		navigate('/dashboard')
+	};
+	function setCookie(name: string, value: string | null | undefined, expires: string) {
+		document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+	}
+
+	const handleAutoLoginChange = () => {
 		setAutoLogin(!autoLogin)
 	}
 
@@ -119,7 +130,7 @@ export const Login = () => {
 					paddingLeft: "20px",
 					marginLeft: "15%",
 					marginRight: "15%",
-					height:"100vh"
+					height: "100vh"
 				}}
 				elevation={0}
 			>
@@ -136,7 +147,7 @@ export const Login = () => {
 						md={5}
 						lg={5}
 					></Grid>
-										<Grid item xs={12} sm={12} md={7} lg={7} style={{ padding: "10px" }}>
+					<Grid item xs={12} sm={12} md={7} lg={7} style={{ padding: "10px" }}>
 						<Typography
 							variant="h4"
 							align="center"
@@ -165,7 +176,7 @@ export const Login = () => {
 								value={loginRequest.email}
 								onChange={handleInputOnChange}
 								error={format.email}
-								helperText={format.email ? "Looks like your Email decided to take a vacation! Please enter a valid one.":""}
+								helperText={format.email ? "Looks like your Email decided to take a vacation! Please enter a valid one." : ""}
 							/>
 						</Box>
 						<Box my={2}>
@@ -187,7 +198,7 @@ export const Login = () => {
 								value={loginRequest.password}
 								error={format.password}
 								onChange={handleInputOnChange}
-								helperText={format.password?"Oops! Your password needs a vacation from errors. Please enter a valid one.":""}
+								helperText={format.password ? "Oops! Your password needs a vacation from errors. Please enter a valid one." : ""}
 							/>
 						</Box>
 						<FormControlLabel
@@ -197,7 +208,7 @@ export const Login = () => {
 						<Box mt={3}>
 							<Grid container spacing={2}>
 								<Grid item xs={12} sm={6}>
-								<CButton
+									<CButton
 										title="LOGIN"
 										onClick={formValidator}
 									/>

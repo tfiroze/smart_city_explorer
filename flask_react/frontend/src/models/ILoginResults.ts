@@ -5,4 +5,5 @@ export default interface ILoginResults{
   dashboardData?:IPlannedTrip[]
   firstName?:string;
   token?:string|null;
+  refreshToken?:string|null;
 }

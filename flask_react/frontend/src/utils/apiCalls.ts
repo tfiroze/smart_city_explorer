@@ -31,7 +31,8 @@ class SmartCityApi {
 		return {
 			valid: true,
 			firstName: "Thea",
-			token:"fdeqefdwqfdwfd",
+			token:"8d40ff0c-6b52-42a8-a25d-6d3d5a6c4ab9",
+			refreshToken:'ce913c45-8ee5-454e-8369-ea38f9009b4b',
 			dashboardData: [
 				{
 					date: new Date(),
