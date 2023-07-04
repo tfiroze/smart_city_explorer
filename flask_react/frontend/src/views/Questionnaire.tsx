@@ -51,13 +51,18 @@ const QuestionnaireButton = styled(Button)(({ theme }) => ({
 	marginTop: theme.spacing(3),
 }));
 
-export const Questionnaire = () => {
+interface IProps{
+	handleNextStep:()=>void
+}
+
+export const Questionnaire:React.FC<IProps> = ({handleNextStep}) => {
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [starsSelected, setStarsSelected] = useState(0.0);
 	const [subCategory, setSubCategory] = useState<string[]>([]);
 	const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<
 		string[]
 	>([]);
+
 
 	const handleStarsSelectionChange = (event: React.ChangeEvent<any>) => {
 		setStarsSelected(event.target.value);
@@ -191,7 +196,7 @@ export const Questionnaire = () => {
 								<QuestionnaireButton
 									variant="contained"
 									color="primary"
-									onClick={filterVenuesByTags}
+									onClick={()=>handleNextStep()}
 								>
 									Generate Itinerary
 								</QuestionnaireButton>

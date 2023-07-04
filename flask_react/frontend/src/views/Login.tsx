@@ -20,6 +20,7 @@ import { smartApi } from "../utils/apiCalls";
 import { AuthContext } from "../utils/AuthContext";
 import { CButton } from "../components/common/button";
 
+
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
 	const authContext = useContext(AuthContext);

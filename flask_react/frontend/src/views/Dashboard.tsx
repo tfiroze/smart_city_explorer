@@ -35,7 +35,7 @@ export const Dashboard = () => {
 					<Grid item md={12}>
 						<Paper style={{ padding: "5px" }}>
 							<img
-								src="https://media.suthlbr.com/images/tabs/300/9532-1-1584655877.jpg"
+								src=""
 								width="100%"
 								height="100%"
 							/>

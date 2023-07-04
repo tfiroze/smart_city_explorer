@@ -52,7 +52,7 @@ function App() {
 				if (results.valid) {
 					authenticate({
 						email: "",
-						first_name: "",
+						first_name: "Thea tha cute",
 						last_name: "",
 						userUid: "",
 					});
@@ -88,7 +88,6 @@ function App() {
 							{authed ? (
 								<>
 									<Route path="*" Component={Dashboard} />
-									<Route path="*" Component={Questionnaire} />
 								</>
 							) : (
 								<>
