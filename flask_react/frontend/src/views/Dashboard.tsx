@@ -1,91 +1,76 @@
+import React, { useState } from "react";
 import { Header } from "../components/dashboard/Header";
-import { Button, Grid, Paper, Typography } from "@mui/material";
-import { ItineraryList } from "../components/dashboard/ItineraryList";
-import { CreateItinerary } from "../components/dashboard/CreateItinerary";
-import { useState, useContext } from "react";
+import { Button, Grid, Paper, Typography, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { TaxiMap } from "../components/createItinerary/TaxiMap";
-import { useNavigate } from 'react-router-dom';
-import { AuthContext } from "../utils/AuthContext";
 
 export const Dashboard = () => {
-	const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
 
-	const setCreateDialogOpen = () => setOpen(!open);
-	const authContext = useContext(AuthContext);
-	console.log(authContext, 'dashboard');
-	
+  const handleCreateItinerary = () => {
+    navigate("/questionnaire");
+  };
 
-	return (
-		<div>
-			<Header />
-			<Grid container spacing={2} padding={1}>
-				<Grid item md={10}>
-					{/* <ItineraryList /> */}
-					<Typography
-						variant="h5"
-						align="center"
-						color="textSecondary"
-						gutterBottom
-					>
-						Upcoming Trips...
-					</Typography>
-					<Typography
-						variant="subtitle1"
-						align="center"
-						color="textSecondary"
-						gutterBottom
-						style={{ margin: "20px 0" }}
-					>
-						You haven’t created anything yet.
-					</Typography>
-					<Button
-						onClick={setCreateDialogOpen}
-						variant="contained"
-						color="secondary"
-						fullWidth
-					>
-						CREATE
-					</Button>
-				</Grid>
-			</Grid>
-			<Grid container spacing={2} padding={1}>
-				<Grid item md={10}>
-					{/* <ItineraryList /> */}
-					<Typography
-						variant="h5"
-						align="center"
-						color="textSecondary"
-						gutterBottom
-					>
-						Past Trips
-					</Typography>
-					<Typography
-						variant="subtitle1"
-						align="center"
-						color="textSecondary"
-						gutterBottom
-						style={{ margin: "20px 0" }}
-					>
-						No Past Trips Found!
-					</Typography>
-				</Grid>
-			</Grid>
-
-				<Grid container spacing={2} padding={1}>
-				<Grid item md={10}>
-					{/* <ItineraryList /> */}
-					<Typography
-						variant="h5"
-						align="center"
-						color="textSecondary"
-						gutterBottom
-					>
-						Manhattan Heat Map
-					</Typography>
-					<TaxiMap selectedPlace={null}/>
-				</Grid>
-
-			</Grid>
-		</div>
-	);
+  return (
+    <div>
+      <Header />
+      <Box mt={4} />
+      <Grid container spacing={2} justifyContent="center">
+        <Grid item xs={12} md={6}>
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="h5" align="center" gutterBottom>
+              Upcoming Trips...
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              align="center"
+              color="textSecondary"
+              sx={{ mb: 4 }}
+            >
+              You haven’t created anything yet.
+            </Typography>
+            <Box display="flex" justifyContent="center">
+              <Button
+                onClick={handleCreateItinerary}
+                variant="contained"
+                color="secondary"
+              >
+                CREATE
+              </Button>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Box mt={4} />
+      <Grid container spacing={2} justifyContent="center">
+        <Grid item xs={12} md={6}>
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="h5" align="center" gutterBottom>
+              Past Trips
+            </Typography>
+            <Typography
+              variant="subtitle1"
+              align="center"
+              color="textSecondary"
+              sx={{ mb: 4 }}
+            >
+              No Past Trips Found!
+            </Typography>
+          </Paper>
+        </Grid>
+      </Grid>
+      <Box mt={4} />
+      <Grid container spacing={2} justifyContent="center">
+        <Grid item xs={12} md={6}>
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="h5" align="center" gutterBottom>
+              Manhattan Heat Map
+            </Typography>
+            <TaxiMap selectedPlace={null} />
+          </Paper>
+        </Grid>
+      </Grid>
+    </div>
+  );
 };

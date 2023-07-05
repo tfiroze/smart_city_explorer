@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthContext, IAuthenticationInfo } from "./AuthContext";
-import { BrowserRouter, Routes, useNavigate } from "react-router-dom";
+import { Routes, useNavigate } from "react-router-dom";
 import { Router } from "./Router";
 
 export const AuthStack = () => {
@@ -75,10 +75,7 @@ export const AuthStack = () => {
 
   return (
     <AuthContext.Provider value={authContextValue}>
-      <BrowserRouter>
-        <Router auth={authContextValue.authenticated} />
-      </BrowserRouter>
+      <Router auth={authContextValue.authenticated} />
     </AuthContext.Provider>
   );
 };
-

@@ -14,7 +14,7 @@ export const TaxiMap: React.FC<IProps> = ({ selectedPlace }) => {
       center={center}
       mapContainerClassName="startLocationContainer"
     >
-      {selectedPlace && <Marker position={{ lat: -73.9068973, lng: -73.9068973 }} />}
+      {selectedPlace && <Marker position={{ lat: 40.7758125, lng: -73.9748125 }} />}
     </GoogleMap>
   );
 };

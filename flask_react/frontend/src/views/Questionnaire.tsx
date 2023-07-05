@@ -18,10 +18,24 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 
 const venueTypes = [
-  { id: 1, tag: "Tourist Attraction", venueType: "tourist_attraction" },
-  { id: 2, tag: "Historical Landmark", venueType: "historical_landmark" },
-  { id: 3, tag: "Scenic Spot", venueType: "scenic_spot" },
-  // Add more venue types here
+	{
+		id: 1,
+		tag: "Tourist Attraction",
+		venueType: "tourist_attraction",
+		venueTypes: ["Brooklyn Bridge", "Empire State Building"],
+	},
+	{
+		id: 2,
+		tag: "Historical Landmark",
+		venueType: "historical_landmark",
+		venueTypes: ["Empire State Building", "Central Park"],
+	},
+	{
+		id: 3,
+		tag: "Scenic Spot",
+		venueType: "scenic_spot",
+		venueTypes: ["Cherry Hill", "Strawberry field"],
+	},
 ];
 
 const QuestionnairePaper = styled(Paper)(({ theme }) => ({
