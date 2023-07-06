@@ -1,0 +1,44 @@
+body{
+  padding: 0px;
+  margin: 0;
+  background-color: aliceblue;
+  overflow-Y: hidden;
+  /* background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%); */
+  /* background-image: url('./resources/images/'); */
+  background-size: 100% 100%;
+  background-color: white;
+}
+
+svg {
+	font-family: "Russo One", sans-serif;
+	width: 100%; height: 100%;
+}
+svg text {
+	animation: stroke 5s reverse alternate;
+	stroke-width: 2;
+  color: red;
+	font-size: 57px;
+  fill: rgb(63, 81, 181);
+}
+@keyframes stroke {
+	0%   {
+		fill: rgba(72,138,204,0); stroke: rgba(54,95,160,1);
+		stroke-dashoffset: 25%; stroke-dasharray: 0 50%; stroke-width: 2;
+	}
+	70%  {fill: rgba(72,138,204,0); stroke: rgba(54,95,160,1); }
+	80%  {fill: rgba(72,138,204,0); stroke: rgba(54,95,160,1); stroke-width: 3; }
+	100% {
+		fill: rgba(72,138,204,1); stroke: rgba(54,95,160,0);
+		stroke-dashoffset: -25%; stroke-dasharray: 50% 0; stroke-width: 0;
+	}
+}
+
+
+::-webkit-scrollbar {
+	width: 0px;
+	background: transparent; /* make scrollbar transparent */
+	}
+
+	.startLocationContainer{
+		height: 500px;
+	}

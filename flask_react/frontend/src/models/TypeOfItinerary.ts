@@ -1,0 +1,5 @@
+export enum ItineraryType{    
+    restaurant,
+    
+
+}
