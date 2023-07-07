@@ -32,9 +32,6 @@ export const Login = () => {
 
 	const navigate = useNavigate();
 
-
-
-
 	const [format, setformat] = useState({
 		email: false,
 		password: false

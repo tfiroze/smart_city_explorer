@@ -35,7 +35,7 @@ export const Header = () => {
   };
 
   return (
-    <div>
+    <div style={{marginBottom:'20px'}}>
       <Menu
         anchorEl={anchorEl}
         open={open}

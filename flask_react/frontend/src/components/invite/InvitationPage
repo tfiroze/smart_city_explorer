@@ -1,0 +1,88 @@
+// import React, { useEffect } from 'react';
+// import { Box, Button } from '@material-ui/core';
+// import { makeStyles } from '@material-ui/core/styles';
+// import moment from 'moment';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { useHistory, useParams } from 'react-router-dom';
+// import { fetchTrip, updateTrip } from '../../store/trips';
+
+// const useStyles = makeStyles((theme) => ({
+//   invitationPage: {
+//     marginTop: '300px',
+//     display: 'flex',
+//     flexDirection: 'column',
+//     textAlign: 'center',
+//     gap: '20px',
+//   },
+//   invitationButtons: {
+//     display: 'flex',
+//     flexDirection: 'row',
+//     justifyContent: 'center',
+//     gap: '30px',
+//     marginTop: '20px',
+//     '& > *': {
+//       cursor: 'pointer',
+//       padding: '12px 21px',
+//       fontSize: '20px',
+//       borderRadius: '74px',
+//       border: '0px',
+//     },
+//   },
+//   accept: {
+//     backgroundColor: theme.palette.success.main,
+//     color: theme.palette.common.white,
+//   },
+// }));
+
+// function InvitationPage() {
+//   const classes = useStyles();
+//   const dispatch = useDispatch();
+//   const history = useHistory();
+//   const { tripId } = useParams();
+//   const currentUser = useSelector((state) => state.session.user);
+//   const trip = useSelector((state) =>
+//     state.trips.trip ? state.trips.trip : {}
+//   );
+
+//   const removeUser = () => {
+//     const index = trip.invitedUsers.findIndex((user) => user._id === currentUser._id);
+//     if (index !== -1) {
+//       trip.invitedUsers.splice(index, 1);
+//     }
+//   };
+
+//   const handleAccept = () => {
+//     removeUser();
+//     dispatch(updateTrip({ ...trip, members: [...trip.members, currentUser] }));
+//     history.replace(`/trips/${tripId}`);
+//   };
+
+//   const handleDecline = () => {
+//     removeUser();
+//     dispatch(updateTrip({ ...trip }));
+//     history.replace(`/profile`);
+//   };
+
+//   useEffect(() => {
+//     dispatch(fetchTrip(tripId));
+//   }, [dispatch, tripId]);
+
+//   return (
+//     <Box className={classes.invitationPage}>
+//       <Box>You're Invited to A Trip</Box>
+//       <Box>{trip.name}</Box>
+//       <Box>From {moment(trip.startDate).utc().format('MM-DD-YYYY')}</Box>
+//       <Box>To {moment(trip.endDate).utc().format('MM-DD-YYYY')}</Box>
+//       <Box className={classes.invitationButtons}>
+//         <Button className={classes.accept} onClick={handleAccept}>
+//           Accept
+//         </Button>
+//         <Button onClick={handleDecline}>
+//           Decline
+//         </Button>
+//       </Box>
+//     </Box>
+//   );
+// }
+
+// export default InvitationPage;

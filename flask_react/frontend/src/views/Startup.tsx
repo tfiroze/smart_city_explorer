@@ -17,7 +17,7 @@ export const Startup = () => {
       }}
     >
       <Grid container style={{ position: "relative" }}>
-        <Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
+        <Grid item xs={12} sm={12} md={12} lg={12}>
           <div
             style={{
               backgroundImage: `url(${background})`,
@@ -31,11 +31,11 @@ export const Startup = () => {
         <Paper
           style={{
             position: "absolute",
-            top: "10%",
+            top: "25%",
             left: "0%",
             width: "40%",
-            padding: "20px",
-            backgroundColor: "rgba(255, 255, 255, 0.8)",
+            // padding: "20px",
+            // backgroundColor: "rgba(255, 255, 255, 0.8)",
           }}
           elevation={0}
         >
