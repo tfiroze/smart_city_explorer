@@ -13,6 +13,7 @@ import {
 import React, { ChangeEvent, useState, useEffect } from "react";
 import IRegisterRequest from "../../models/IRegisterRequest";
 import { smartApi } from "../../utils/apiCalls";
+import { CButton } from "../common/button";
 
 interface IProps {
 	open: boolean;
@@ -157,7 +158,7 @@ export const Register: React.FC<IProps> = ({
 		<Dialog
 			open={open}
 			onClose={handleRegisterDialogOpen}
-			maxWidth="xl"
+			maxWidth="sm"
 			fullWidth
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
@@ -255,17 +256,20 @@ export const Register: React.FC<IProps> = ({
 				{errorMessage != null && <Alert severity="error">{errorMessage}</Alert>}
 			</DialogContent>
 			<DialogActions>
-				<Button variant="outlined" onClick={handleRegisterDialogOpen}>
-					CANCEL
-				</Button>
-				<Button
-					variant="contained"
-					color="primary"
+				<CButton 
+					title="Cancle"
+					style={{
+						border:'1px solid #1ED760', color: '#1ED760', background:'white'
+					}}
+					 onClick={handleRegisterDialogOpen}/>
+					
+				<CButton
+					title="REGISTER"
 					onClick={formValidator}
-					autoFocus
-				>
-					REGISTER
-				</Button>
+					style={{
+						background:'#1ED760', color: 'white'
+					}}
+				/>
 			</DialogActions>
 		</Dialog>
 	);
