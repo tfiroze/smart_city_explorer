@@ -19,18 +19,20 @@ export const Dashboard = () => {
 	const handleCreateItinerary = () => setopenQuestionaire(!openQuestionaire);
 
 	return (
-		<>
-			<Header />
-			{openQuestionaire && (
-				<>
-	
-					<CreateItinerary handleCreateItinerary={handleCreateItinerary}/>
-				</>
-			)}
-			{!openQuestionaire && (
-				<>
-					<Grid container spacing={2} justifyContent="center">
-						<Grid item xs={12} md={6}>
+		<Grid container >
+			<Grid item xs={12} md={12}>
+				<Header />
+			</Grid>
+			<Grid item xs={12} md={12} style={{margin:'15px'}}>
+				{openQuestionaire && (
+					<>
+						<CreateItinerary handleCreateItinerary={handleCreateItinerary} />
+					</>
+				)}
+
+				{!openQuestionaire && (
+					<Grid container  spacing={2} >
+						<Grid item xs={12} md={6} >
 							<Paper variant="outlined" sx={{ p: 2 }}>
 								<Typography variant="h5" align="center" gutterBottom>
 									Upcoming Trips...
@@ -54,9 +56,7 @@ export const Dashboard = () => {
 								</Box>
 							</Paper>
 						</Grid>
-					</Grid>
-					<Box mt={4} />
-					<Grid container spacing={2} justifyContent="center">
+						<Box mt={4} />
 						<Grid item xs={12} md={6}>
 							<Paper variant="outlined" sx={{ p: 2 }}>
 								<Typography variant="h5" align="center" gutterBottom>
@@ -73,19 +73,8 @@ export const Dashboard = () => {
 							</Paper>
 						</Grid>
 					</Grid>
-					<Box mt={4} />
-					<Grid container spacing={2} justifyContent="center">
-						<Grid item xs={12} md={6}>
-							<Paper variant="outlined" sx={{ p: 2 }}>
-								<Typography variant="h5" align="center" gutterBottom>
-									Manhattan Heat Map
-								</Typography>
-								<TaxiMap selectedPlace={null} />
-							</Paper>
-						</Grid>
-					</Grid>
-				</>
-			)}
-		</>
+				)}
+			</Grid>
+		</Grid>
 	);
 };

@@ -6,7 +6,7 @@ export default createTheme({
     mode: 'light',
     primary: teal,
     secondary: {
-      main: "#176B87"
+      main: '#00796b'
     }
   },  components: {
     MuiPaper: {
