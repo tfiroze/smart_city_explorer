@@ -29,7 +29,7 @@ interface IProps {
 }
 const steps = ['Select Venue','Confirm Venue', 'Invite Friends','Leave a Note','Final Confirmation'];
 
-export const d: React.FC<IProps> = ({ open, onClose }) => {
+export const CreateItinerary: React.FC<IProps> = ({ open, onClose }) => {
 	const [dialogOpen, setDialogOpen] = React.useState(false);
 
 	const handleClickOpen = () => {

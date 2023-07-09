@@ -21,7 +21,7 @@ import {
 } from "@mui/lab";
 import { styled } from "@mui/system";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import { VenueSelectionControlls } from "./VenueSelectionControlls";
+import { VenueSelectionControls } from "./VenueSelectionControls";
 
 interface Itinerary{
   timeFrom:string;
@@ -267,7 +267,7 @@ export const VenueSelection = () => {
 				</Timeline>
 			</Grid>
 			<Grid item xs={12} md={4} spacing={2}>
-      <VenueSelectionControlls />
+      <VenueSelectionControls />
 			</Grid>
 		</Grid>
 	);
