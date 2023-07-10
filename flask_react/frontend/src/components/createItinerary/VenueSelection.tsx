@@ -179,6 +179,37 @@ const slideInAnimation = keyframes`
   }
 `;
 
+const DividerWrapper = styled("div")`
+  height: 2px;
+  position: relative;
+  background-color: #008080;
+  overflow: hidden;
+  margin: 12px 0;
+`;
+const StyledDivider = styled(Divider)`
+  background-color: #008080;
+  margin: 24px 0;
+  height: 2px;
+  animation: ${keyframes`
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  `} 0.5s ease-in-out;
+`;
+const AnimatedDivider = styled("div")`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+  transform: translateX(-100%);
+  animation: ${slideInAnimation} 0.5s ease-in-out forwards;
+`;
+
 const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
   color: #008080;
   vertical-align: middle;
@@ -240,7 +271,7 @@ const StyledTimeLabel = styled(Typography)`
   color: #008080;
   margin-right: 4px;
   font-weight: 600;
-  min-width: 48px;
+//   min-width: 48px;
   display: flex;
   align-items: center;
 `;
@@ -290,26 +321,24 @@ export const VenueSelection = () => {
   };
 
   return (
-    <Grid container>
+    <Grid container justifyContent="center">
       <Grid item xs={12} md={8} style={{ maxHeight: "70vh", overflowY: "scroll" }}>
         <Timeline position="alternate-reverse">
           {itinerary.map((item, index) => (
             <TimelineItem key={index}>
               <TimelineOppositeContent>
-                <StyledTimeWrapper>
-                  <StyledTimeLabel variant="subtitle2" color="textSecondary">
-                    From
-                  </StyledTimeLabel>
-                  <StyledTime variant="subtitle2">
-                    {item.timeFrom}
-                  </StyledTime>
-                  <ArrowForwardIcon sx={{ color: "#008080" }} />
-                  <StyledTimeLabel variant="subtitle2" color="textSecondary">
-                    To
-                  </StyledTimeLabel>
-                  <StyledTime variant="subtitle2">{item.timeTo}</StyledTime>
-                </StyledTimeWrapper>
-              </TimelineOppositeContent>
+  <StyledTimeWrapper>
+    <StyledTimeLabel variant="subtitle2" color="textSecondary">
+      From
+    </StyledTimeLabel>
+    <StyledTime variant="subtitle2">{item.timeFrom}</StyledTime>
+    <ArrowForwardIcon sx={{ color: "#008080" }} />
+    <StyledTimeLabel variant="subtitle2" color="textSecondary">
+      To
+    </StyledTimeLabel>
+    <StyledTime variant="subtitle2">{item.timeTo}</StyledTime>
+  </StyledTimeWrapper>
+</TimelineOppositeContent>
               <TimelineSeparator>
                 <TimelineDot color="primary" variant="outlined">
                   {index === 0 ? (
@@ -329,7 +358,7 @@ export const VenueSelection = () => {
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                   }}
                 >
-                  <CardContent>
+                  <CardContent >
                     <Typography variant="h6" component="div" gutterBottom>
                       {item.title}
                     </Typography>
@@ -345,7 +374,7 @@ export const VenueSelection = () => {
                       borderTopRightRadius: "4px",
                     }}
                   />
-                  <CardContent>
+                  <CardContent sx={{ textAlign: "justify" }}>
                     <Typography variant="body2" color="textSecondary">
                       {item.description}
                     </Typography>
@@ -358,7 +387,7 @@ export const VenueSelection = () => {
                       </Grid>
                       <Grid item>
                         <Typography variant="subtitle2" component="span">
-                          Invited:{" "}
+                          <strong>Invited:{" "}</strong>
                         </Typography>
                         <Typography variant="body2" component="span">
                           {item.invited}
@@ -371,7 +400,7 @@ export const VenueSelection = () => {
                       </Grid>
                       <Grid item>
                         <Typography variant="subtitle2" component="span">
-                          Budget:{" "}
+                          <strong> Budget:{" "} </strong>
                         </Typography>
                         <Typography variant="body2" component="span">
                           {item.budget}
@@ -385,6 +414,8 @@ export const VenueSelection = () => {
                     </Button>
                   </CenteredCardActions>
                 </Card>
+				<StyledDivider />
+				{/* {index !== itinerary.length - 1 && <Divider />} */}
               </TimelineContent>
             </TimelineItem>
           ))}
