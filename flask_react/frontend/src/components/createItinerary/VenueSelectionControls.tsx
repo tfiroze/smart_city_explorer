@@ -7,6 +7,7 @@ import { AddCircleOutline as AddIcon, ArrowForward as ArrowIcon, CreditScore as 
 import { DesktopTimePicker } from '@mui/x-date-pickers/DesktopTimePicker';
 import dayjs from 'dayjs';
 
+// dummy data 
 const data = [
 	{
 		timeFrom: "08:00",
@@ -143,7 +144,7 @@ export const VenueSelectionControls = () => {
   const [note, setNote] = useState('');
   const [selectedTitle, setSelectedTitle] = useState<string | null>(null);
   // const [budgetRange, setBudgetRange] = useState<number[]>([0, 100]);
-  const [minBudget, setMinBudget] = useState<number | ''>('');
+  const [minBudget, setMinBudget] = useState<number | ''>(''); // errrm, so miskien range gebaseer op kostes van venue. Meh
   const [maxBudget, setMaxBudget] = useState<number | ''>('');
 
   const changeDrawerOpen = () => {
@@ -220,10 +221,10 @@ export const VenueSelectionControls = () => {
             <Grid container spacing={2} justifyContent="flex-start" alignItems="center">
               <Grid item>
                 <TextField
-                  label="Start Time"
+                  label="Start Time" // die is nie reg nie :(
                   value={startTime ? dayjs(startTime).format('HH:mm') : ''}
                   variant="outlined"
-                  disabled
+                  // disabled hoekom die ###w3wdyjfhvhj wil timepicker nie wys nie! ffs
                 />
               </Grid>
               <Grid item>
@@ -234,7 +235,7 @@ export const VenueSelectionControls = () => {
                   label="End Time"
                   value={endTime ? dayjs(endTime).format('HH:mm') : ''}
                   variant="outlined"
-                  disabled
+                  // disabled
                 />
               </Grid>
               <Grid item xs={12}>
@@ -244,7 +245,19 @@ export const VenueSelectionControls = () => {
               </Grid>
               <Grid item>
                 <TextField
-                  label="Min Budget"
+                  label="Min Budget" //dit suck, wou link aan budget range en edit wtf
+                  // add slider ...
+                  // so iets maybe alert of some crap
+                  // function calculateRemainingBudget(totalExpenses, initialBudget) {
+                  //   return initialBudget - totalExpenses;
+                  // }
+                  
+                  // function MyComponent({ totalExpenses, initialBudget }) {
+                  //   const remainingBudget = calculateRemainingBudget(totalExpenses, initialBudget);
+                  
+                  //   if (remainingBudget < 100) {
+                  //     alert("You are close to exceeding your budget!");
+                  //   }
                   value={minBudget}
                   onChange={handleMinBudgetChange}
                   variant="outlined"
@@ -302,7 +315,7 @@ export const VenueSelectionControls = () => {
             />
           </Grid>
           
-          <Grid item xs={12}>
+          <Grid item xs={12}> 
             <Button type="submit" variant="contained">
               Add Item
             </Button>
@@ -328,4 +341,4 @@ export const VenueSelectionControls = () => {
       </Paper>
     </>
   );
-};
+}; // layout suck, nie responsive nie en ek is 'n dumbass
