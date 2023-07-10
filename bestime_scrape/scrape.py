@@ -5,7 +5,7 @@ def make_api_call(venue_id):
     url = "https://besttime.app/api/v1/forecasts"
 
     params = {
-        'api_key_private': 'pri_6c1d4e452d0c4ddf9549c622ec99804c',
+        'api_key_private': 'pri_d6e59a044de349eeb929f0b460fc3370',
         'venue_id': venue_id,
     }
 
@@ -24,14 +24,14 @@ def process_files(input_files):
             response = make_api_call(venue_id)
             responses.append(response)
 
-        output_file = input_file.replace('.json', '_response2.json')
+        output_file = input_file.replace('.json', '_response4.json')
 
         with open("bestime_scrape/" + output_file, 'w') as f:
             json.dump(responses, f)
 
 
 
-input_files = ['thingstodo_venueid.json', 'restaurant_venueid.json', 'shopping_venueid.json']  # Replace with the list of input JSON files
+input_files = ['shopping_venueid.json']  # Replace with the list of input JSON files
 
 process_files(input_files)
 print("Scraping completed!")
