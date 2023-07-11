@@ -31,7 +31,7 @@ def process_files(input_files):
 
 
 
-input_files = ['shopping_venueid.json']  # Replace with the list of input JSON files
+input_files = ['shopping_venueid.json','thingstodo_venueid.json','restaurant_venueid.json']  # Replace with the list of input JSON files
 
 process_files(input_files)
 print("Scraping completed!")

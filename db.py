@@ -25,8 +25,9 @@ with SSHTunnelForwarder(
         db=mysql_db,
         port=tunnel.local_bind_port
     )
+
     # Read JSON data from file
-    with open('bestime_scrape/Scrape 3/shopping_venueid_response3.json', 'r') as json_file:
+    with open('bestime_scrape/Scrape 4/restaurant_venueid_response4.json', 'r') as json_file:
         venues_data = json.load(json_file)
 
         # Iterate through each venue in the JSON data
@@ -46,32 +47,34 @@ with SSHTunnelForwarder(
             venue_type = venue_info.get("venue_type")
             venue_name = venue_info.get("venue_name")
 
-            time = datetime(2023, 7, 3, 5, 0)
+            time = datetime(2023, 7, 10, 5, 0)
             analysis_info = venue_data.get("analysis")
-            for daydata in analysis_info:
-                day_int = daydata["day_info"]["day_int"]
-                day_raw = daydata["day_raw"]
 
-                for i in range(0, len(day_raw)):
-                    time = time + timedelta(hours=1)
-                    print(time, day_raw[i])
-                    # Insert data into the table
-                    cursor = conn.cursor()  # Updated from mysql_conn to conn
-                    insert_query = "INSERT INTO venue_dynamic_data (venue_id, venue_address, venue_type, venue_name, time, busyness) VALUES (%s, %s, %s, %s, %s, %s)"
-                    insert_values = (venue_id, venue_address, venue_type, venue_name, time, day_raw[i])  # Add the rest of the values here
-                    try:
-                        cursor.execute(insert_query, insert_values)
-                        conn.commit()  # Updated from mysql_conn to conn
-                    except pymysql.err.IntegrityError as e:  # Catch the IntegrityError
-                        if e.args[0] == 1062:  # If error code is 1062 (Duplicate entry)
-                            print("Duplicate entry found. Skipping this record.")
-                            continue
-                        else:
-                            raise
+            # Use context management for cursor
+            with conn.cursor() as cursor:
+                for daydata in analysis_info:
+                    day_int = daydata["day_info"]["day_int"]
+                    day_raw = daydata["day_raw"]
 
-            print(f"Data for venue_id {venue_id} inserted successfully!")
+                    for i in range(0, len(day_raw)):
+                        time = time + timedelta(hours=1)
+                        print(time, day_raw[i])
 
-            cursor .close()
+                        # Insert data into the table
+                        insert_query = "INSERT INTO venue_dynamic_data (venue_id, venue_address, venue_type, venue_name, time, busyness) VALUES (%s, %s, %s, %s, %s, %s)"
+                        insert_values = (venue_id, venue_address, venue_type, venue_name, time, day_raw[i])  # Add the rest of the values here
+                        try:
+                            cursor.execute(insert_query, insert_values)
+                        except pymysql.err.IntegrityError as e:  # Catch the IntegrityError
+                            if e.args[0] == 1062:  # If error code is 1062 (Duplicate entry)
+                                print("Duplicate entry found. Skipping this record.")
+                                continue
+                            else:
+                                raise
+
+                # Commit after all insertions are done
+                conn.commit()
+                print(f"Data for venue_id {venue_id} inserted successfully!")
 
     # Close the MySQL connection
     conn.close()
