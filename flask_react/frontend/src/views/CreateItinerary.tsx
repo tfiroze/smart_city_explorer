@@ -15,7 +15,7 @@ import { Questionnaire } from "../components/createItinerary/Questionnaire";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { styled } from "@mui/system";
 
-const steps = ["Trip Information", "Edit Itinerary", "Confirm"];
+const steps = ["Trip Information", "Edit Itinerary","Confirm"];
 
 const CancelButton = styled(Button)`
   @media (max-width: 600px) {

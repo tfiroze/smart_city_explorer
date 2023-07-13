@@ -10,7 +10,6 @@ import {
   Fade,
 } from "@mui/material";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import { TaxiMap } from "../components/createItinerary/TaxiMap";
 import { CreateItinerary } from "./CreateItinerary";
 import { AddCircleOutline as AddIcon } from "@mui/icons-material";
 import { History as HistoryIcon } from "@mui/icons-material";

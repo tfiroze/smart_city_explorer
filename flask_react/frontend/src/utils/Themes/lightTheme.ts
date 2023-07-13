@@ -16,5 +16,12 @@ export default createTheme({
         },
       },
     },
-  },
+    MuiSpeedDialAction: {
+			styleOverrides: {
+				staticTooltipLabel: {
+					width: 150,
+				},
+			},
+		},
+	},
 });
