@@ -15,31 +15,83 @@ import React, { useState, ChangeEvent } from "react";
 import { TimeAndBudgetSelection } from "./NewItemSteps/TimeAndBudgetSelection";
 import { SelectVenue } from "./NewItemSteps/SelectVenue";
 import { InviteFriends } from "./NewItemSteps/InviteFriends";
+import { ConfirmNewItem } from "./NewItemSteps/ConfirmNewItem";
+import IItinerary from "../../models/IItinerary";
+const steps = ["Time Selection", "Venue Selection", "Invites", "Confirm"];
 
 interface IProps {
 	open: boolean;
 	changeOpenState: () => void;
+	addItem:(item:IItinerary) =>void;
 }
-const steps = ["Time Selection", "Venue Selection", "Invites", "Confirm"];
 
 export const VenueSelectionControls: React.FC<IProps> = ({
 	open,
 	changeOpenState,
+	addItem
 }) => {
+	const [itinerary, setItinerary] = useState<IItinerary>({
+		budget: 0,
+		description: "",
+		imgLink: "",
+		invited: 0,
+		timeFrom: "",
+		timeTo: "",
+		title: "",
+		venueId: "",
+		conflictsWithPrevouse: false,
+		invitedParticipant: []
+	});
+
 	const [currentStep, setCurrentStep] = useState(0);
 
 	const hanldeMoveNext = () => {
 		setCurrentStep(currentStep + 1);
 	};
 
+	const hanldeUpdate = (data: IItinerary) => {
+		setItinerary(data);
+	};
+
+	const handleConfirm = () => {
+		addItem(itinerary)
+	}
+
 	const renderStep = () => {
 		switch (currentStep) {
 			case 0:
-				return <TimeAndBudgetSelection moveNext={hanldeMoveNext} />;
+				return (
+					<TimeAndBudgetSelection
+						moveNext={hanldeMoveNext}
+						newItemDetails={itinerary}
+						updateNewItem={hanldeUpdate}
+					/>
+				);
 			case 1:
-				return <SelectVenue moveNext={hanldeMoveNext} />;
+				return (
+					<SelectVenue
+						moveNext={hanldeMoveNext}
+						newItemDetails={itinerary}
+						updateNewItem={hanldeUpdate}
+					/>
+				);
 			case 2:
-					return <InviteFriends moveNext={hanldeMoveNext} />;
+				return (
+					<InviteFriends
+						moveNext={hanldeMoveNext}
+						newItemDetails={itinerary}
+						updateNewItem={hanldeUpdate}
+					/>
+				);
+			case 3:
+				return (
+					<ConfirmNewItem
+					onConfirm={handleConfirm}
+						moveNext={hanldeMoveNext}
+						newItemDetails={itinerary}
+						updateNewItem={hanldeUpdate}
+					/>
+				);
 			default:
 				return null;
 		}

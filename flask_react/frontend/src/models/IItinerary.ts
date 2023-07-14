@@ -8,4 +8,5 @@ export default interface Itinerary {
 	budget: number;
 	invited: number;
 	conflictsWithPrevouse?: boolean;
+	invitedParticipant?:string[];
 }

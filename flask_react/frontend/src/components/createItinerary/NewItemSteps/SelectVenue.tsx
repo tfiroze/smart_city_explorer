@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import venueData from "../../../temp/dummy_data/venueData.json";
 import { Autocomplete, Box, Button, Chip, Grid, TextField } from "@mui/material";
-import Itinerary from "../../../models/IItinerary";
+import IItinerary from "../../../models/IItinerary";
 
 interface IProps {
 	moveNext: () => void;
+	newItemDetails:IItinerary;
+	updateNewItem: (item:IItinerary) => void;
 }
 
 enum busynesLevel {
@@ -24,15 +26,18 @@ const getColor = (level: busynesLevel) => {
 	}
 };
 
-export const SelectVenue: React.FC<IProps> = ({ moveNext }) => {
+export const SelectVenue: React.FC<IProps> = ({ moveNext,newItemDetails,updateNewItem }) => {
 	const [selectedItem, setSelectedItem] = useState<string | null>();
-	const [selectedCords, setSelectedCords] = useState<{lng:number,lat:number}>({ lat: 40.7758125, lng: -73.9748125 });
-	const [cordsSetted, setCordsSetted] = useState(false);
 	
-	const setCords = (data:{lng:number,lat:number})=> {
-		setSelectedCords(data)
-		setCordsSetted(true)
+	const setVenue = (data:IItinerary)=> {
+		let temp = newItemDetails;
+		temp.imgLink = data.imgLink;
+		temp.title = data.title;
+		temp.description = data.description;
+		temp.venueId = data.venueId;
 	}
+	
+
 	let selectData = [
 		...[
 			{
@@ -61,7 +66,7 @@ export const SelectVenue: React.FC<IProps> = ({ moveNext }) => {
 				options={selectData}
 				autoHighlight
 				//@ts-ignore
-				onChange={(e,v)=>{setCords({lng:v?.lon,lat:v?.lat})}}
+				onChange={(e,v)=>{setVenue(v)}}
 				getOptionLabel={(option) => option.title}
 				getOptionDisabled={(option) => option.venueId === "HEADINGS"}
 				renderOption={(props, option) => (

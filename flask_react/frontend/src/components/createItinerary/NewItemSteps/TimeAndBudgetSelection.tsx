@@ -4,56 +4,78 @@ import {
 	AddCircleOutline as AddIcon,
 	ArrowForward as ArrowIcon,
 } from "@mui/icons-material";
-import { DesktopDatePicker, DesktopTimePicker } from "@mui/x-date-pickers";
+import {
+	DesktopDatePicker,
+	DesktopTimePicker,
+	TimePicker,
+} from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
+import IItinerary from "../../../models/IItinerary";
+import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 
 interface IProps {
 	moveNext: () => void;
+	newItemDetails: IItinerary;
+	updateNewItem: (item: IItinerary) => void;
 }
 
-export const TimeAndBudgetSelection: React.FC<IProps> = ({ moveNext }) => {
+export const TimeAndBudgetSelection: React.FC<IProps> = ({
+	moveNext,
+	newItemDetails,
+	updateNewItem,
+}) => {
 	const currentTime = new Date();
-	const [date, setDate] = useState<Date | null>(currentTime);
+	const [startTime, setStartTime] = React.useState<any>(dayjs(currentTime));
+	const [endTime, setEndTime] = React.useState<any>(dayjs(currentTime));
+	
+	const onChangeStartTime = (time: any) => {
+		setStartTime(time);
+		console.log(1);
+		setStartTime(time);
+		console.log(2);
+
+		let temp = newItemDetails;
+		console.log(3);
+
+		temp.timeFrom = dayjs(time).format("HH:mm");
+		console.log(4);
+
+		updateNewItem(temp);
+		console.log(5);
+	};
+
+	const onChangeEndTime = (time:any) => {
+		setEndTime(time);
+		let temp = newItemDetails;
+		temp.timeTo = dayjs(time).format("HH:mm");
+		updateNewItem(temp);
+	};
 
 	return (
 		<Paper elevation={3} sx={{ p: 2 }}>
-			<LocalizationProvider dateAdapter={AdapterDayjs}>
-				<Grid container spacing={2}>
-					<Grid item xs={12}>
-						<TextField
-							label="Date"
-							type="date"
-							value={date ? dayjs(date).format("YYYY-MM-DD") : ""}
-							onChange={(e) => setDate(dayjs(e.target.value).toDate())}
-							variant="outlined"
-							fullWidth
-							InputLabelProps={{ shrink: true }}
-						/>
-					</Grid>
-					<Grid item xs={6}>
-						<DesktopTimePicker
-							label="Start Time"
-							defaultValue={dayjs()}
-							// value={startTime}
-							// onChange={setStartTime}
-						/>
-					</Grid>
-					<Grid item xs={6} container alignItems="flex-end" justifyContent="flex-start">
-						<ArrowIcon sx={{ mt: 1 }} />
-						<Grid item xs={5}>
-							<DesktopTimePicker
-								defaultValue={dayjs()}
-								label="End Time"
-								// value={endTime}
-								// onChange={setEndTime}
-							/>
-						</Grid>
-					</Grid>
-				</Grid>
-			</LocalizationProvider>
-			<Button variant="contained" onClick={moveNext} color="secondary" sx={{ mt: 2 }}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DemoContainer components={['TimePicker', 'TimePicker']}>
+
+        <TimePicker
+          label="Start Time"
+          value={startTime}
+          onChange={(newValue) => onChangeStartTime(newValue)}
+        />
+		       <TimePicker
+          label="End Time"
+          value={endTime}
+          onChange={(newValue) => onChangeEndTime(newValue)}
+        />
+      </DemoContainer>
+    </LocalizationProvider>
+			<Button
+				variant="contained"
+				onClick={moveNext}
+				color="secondary"
+				sx={{ mt: 2 }}
+			>
 				Next
 			</Button>
 		</Paper>

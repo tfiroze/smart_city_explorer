@@ -1,5 +1,6 @@
 import {
 	Avatar,
+	Button,
 	Chip,
 	Grid,
 	IconButton,
@@ -8,12 +9,15 @@ import {
 } from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+import IItinerary from "../../../models/IItinerary";
 
 interface IProps {
 	moveNext: () => void;
+	newItemDetails:IItinerary;
+	updateNewItem: (item:IItinerary) => void;
 }
 
-export const InviteFriends: React.FC<IProps> = ({ moveNext }) => {
+export const InviteFriends: React.FC<IProps> = ({ moveNext, newItemDetails, updateNewItem }) => {
 	const [invited, setInvited] = useState<string[]>([]);
 	const [user, setUser] = useState<string>("");
 
@@ -34,6 +38,13 @@ export const InviteFriends: React.FC<IProps> = ({ moveNext }) => {
 		setUser("");
 	};
 
+	const moveNextAndAdd = () => {
+		let temp = newItemDetails;
+		temp.invitedParticipant = invited
+		updateNewItem(temp)
+		moveNext();
+	}
+
 	return (
 		<div>
 			<TextField
@@ -42,6 +53,7 @@ export const InviteFriends: React.FC<IProps> = ({ moveNext }) => {
 				onChange={(value) => setUser(value.target.value)}
 				label="Invited User"
 				variant="outlined"
+				style={{marginBottom:'10px'}}
 				InputProps={{
 					endAdornment: (
 						<IconButton aria-label="delete" onClick={addUser} size="small">
@@ -51,20 +63,22 @@ export const InviteFriends: React.FC<IProps> = ({ moveNext }) => {
 				}}
 			/>
 			<Grid container>
-				<Grid item xs={12}>
+				<Grid item xs={12} style={{maxWidth: '700px'}}>
 					{invited.map((item, index) => {
 						return (
 							<Chip
+								style={{margin:'5px'}}
 								avatar={<Avatar alt={item} />}
 								label={item}
 								key={index}
 								variant="outlined"
 								onDelete={() => deleteInvitedUser(item)}
 							/>
-						);
+						); //
 					})}
 				</Grid>
 			</Grid>
+			<Button variant='contained' style={{marginTop:'5px'}} onClick={moveNextAndAdd}>Next</Button>
 		</div>
 	);
 };

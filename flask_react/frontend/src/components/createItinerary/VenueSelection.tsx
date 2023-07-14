@@ -33,12 +33,11 @@ import PeopleIcon from "@mui/icons-material/People";
 import MoneyIcon from "@mui/icons-material/Money";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { VenueSelectionControls } from "./VenueSelectionControls";
-import AccessAlarmsSharpIcon from '@mui/icons-material/AccessAlarmsSharp';
-import AddSharpIcon from '@mui/icons-material/AddSharp';
-import CreateSharpIcon from '@mui/icons-material/CreateSharp';
-import venueData from '../../temp/dummy_data/venueData.json';
+import AccessAlarmsSharpIcon from "@mui/icons-material/AccessAlarmsSharp";
+import AddSharpIcon from "@mui/icons-material/AddSharp";
+import CreateSharpIcon from "@mui/icons-material/CreateSharp";
+import venueData from "../../temp/dummy_data/venueData.json";
 import Itinerary from "../../models/IItinerary";
-
 
 const slideInAnimation = keyframes`
   0% {
@@ -154,15 +153,18 @@ export const VenueSelection = () => {
 	const [controlsOpen, setControlsOpen] = React.useState(false);
 
 	useEffect(() => {
-		let response = [...venueData as  Itinerary[]]; // API response
-
-		response = sortData(response);
+		let response = [...(venueData as Itinerary[])]; 
+		response = sortData(response.slice(0, 3));
 		response = identifyConflicts(response);
 		setItinerary(response);
 	}, []);
 
 	const addItinerary = (data: Itinerary) => {
 		let items = [...itinerary, data];
+		if(controlsOpen===true) {
+			handleControlsToggle();
+		}
+		setItinerary([...items])
 	};
 
 	const identifyConflicts = (data: Itinerary[]) => {
@@ -172,30 +174,27 @@ export const VenueSelection = () => {
 	};
 
 	const sortData = (data: Itinerary[]) =>
-  data.sort((itemA, itemB) => {
-    const timeA = convertTimeToMinutes(itemA.timeFrom);
-    const timeB = convertTimeToMinutes(itemB.timeFrom);
-    return timeA - timeB;
-  });
+		data.sort((itemA, itemB) => {
+			const timeA = convertTimeToMinutes(itemA.timeFrom);
+			const timeB = convertTimeToMinutes(itemB.timeFrom);
+			return timeA - timeB;
+		});
 
+	const convertTimeToMinutes = (time: string) => {
+		const [hours, minutes] = time.split(":");
+		let totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
 
-  const convertTimeToMinutes = (time: string) => {
-	const [hours, minutes] = time.split(":");
-	let totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
-	
-	// Check if the time is past midnight (e.g., 23:00 to 00:00)
-	if (totalMinutes < 360) {
-	  totalMinutes += 1440; // Add 24 hours (1440 minutes)
-	}
-	
-	return totalMinutes;
-  };
-  
+		// Check if the time is past midnight (e.g., 23:00 to 00:00)
+		if (totalMinutes < 360) {
+			totalMinutes += 1440; // Add 24 hours (1440 minutes)
+		}
 
-  const handleControlsToggle = () => {
-	setControlsOpen((prevOpen) => !prevOpen);
-  };
-  
+		return totalMinutes;
+	};
+
+	const handleControlsToggle = () => {
+		setControlsOpen((prevOpen) => !prevOpen);
+	};
 
 	return (
 		<Grid container justifyContent="center">
@@ -278,7 +277,7 @@ export const VenueSelection = () => {
 											</Grid>
 											<Grid item>
 												<Typography variant="subtitle2" component="span">
-													<strong> Budget: </strong>
+													<strong> Busyness: </strong>
 												</Typography>
 												<Typography variant="body2" component="span">
 													{item.budget}
@@ -317,7 +316,11 @@ export const VenueSelection = () => {
 					tooltipTitle="Batch Edit Time"
 				/>
 			</SpeedDial>
-			<VenueSelectionControls changeOpenState={handleControlsToggle} open={controlsOpen} />
+			<VenueSelectionControls
+			addItem={addItinerary}
+				changeOpenState={handleControlsToggle}
+				open={controlsOpen}
+			/>
 		</Grid>
 	);
 };
