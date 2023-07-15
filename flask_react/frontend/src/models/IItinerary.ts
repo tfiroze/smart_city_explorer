@@ -1,12 +1,11 @@
-export default interface Itinerary {
-	timeFrom: string;
-	timeTo: string;
-	imgLink: string;
-	title: string;
-	description: string;
-	venueId: string | number; //based on backend but ye....( ͡° ʖ̯ ͡°)
-	budget: number;
-	invited: number;
-	conflictsWithPrevouse?: boolean;
-	invitedParticipant?:string[];
+import IVenueItem from "./IVenueItem";
+
+export default interface IItinerary {
+	plan:IVenueItem[]
+	name:string;
+	comments:string;
+	budget:number;
+	startTime:string;
+	endTime:string;
+	date:string;
 }

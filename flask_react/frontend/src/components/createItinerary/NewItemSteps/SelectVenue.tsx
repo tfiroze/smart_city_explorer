@@ -1,40 +1,28 @@
 import React, { useState } from "react";
 import venueData from "../../../temp/dummy_data/venueData.json";
 import { Autocomplete, Box, Button, Chip, Grid, TextField } from "@mui/material";
-import IItinerary from "../../../models/IItinerary";
+import { busynesLevel, getColor } from "../../../models/busynesLevel";
+import IVenueItem from "../../../models/IVenueItem";
 
 interface IProps {
 	moveNext: () => void;
-	newItemDetails:IItinerary;
-	updateNewItem: (item:IItinerary) => void;
+	newItemDetails:IVenueItem;
+	updateNewItem: (item:IVenueItem) => void;
 }
 
-enum busynesLevel {
-	low = "low",
-	moderate = "moderate",
-	high = "high",
-}
-
-const getColor = (level: busynesLevel) => {
-	switch (level) {
-		case busynesLevel.low:
-			return "success";
-		case busynesLevel.moderate:
-			return "warning";
-		case busynesLevel.high:
-			return "error";
-	}
-};
 
 export const SelectVenue: React.FC<IProps> = ({ moveNext,newItemDetails,updateNewItem }) => {
 	const [selectedItem, setSelectedItem] = useState<string | null>();
 	
-	const setVenue = (data:IItinerary)=> {
+	const setVenue = (data:IVenueItem)=> {
 		let temp = newItemDetails;
 		temp.imgLink = data.imgLink;
 		temp.title = data.title;
 		temp.description = data.description;
 		temp.venueId = data.venueId;
+		temp.weatherCode =data.weatherCode
+		temp.busyness =data.busyness
+		updateNewItem(temp)
 	}
 	
 

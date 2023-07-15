@@ -13,11 +13,13 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import { CreateItinerary } from "./CreateItinerary";
 import { AddCircleOutline as AddIcon } from "@mui/icons-material";
 import { History as HistoryIcon } from "@mui/icons-material";
+import IItinerary from "../models/IItinerary";
 
 export const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [openQuestionnaire, setopenQuestionnaire] = useState(false);
+  const [itineraryItems, setItineraryItems] = useState<IItinerary[]>([]);
   const handleCreateItinerary = () => setopenQuestionnaire(!openQuestionnaire);
 
   return (
@@ -35,14 +37,14 @@ export const Dashboard = () => {
 				{!openQuestionnaire && (
 					<Grid container  spacing={2} >
 						<Grid item xs={12} md={6} >
-							<Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="h5" align="center" gutterBottom>
+							<Paper variant="outlined" sx={{ p: 2, elevation: 5 }}>
+                <Typography variant="h5" align="center" gutterBottom color="text.primary">
                   Upcoming Trips...
                 </Typography>
                 <Typography
                   variant="subtitle1"
                   align="center"
-                  color="textSecondary"
+                  color="text.secondary"
                   sx={{ mb: 4 }}
                 >
                   You haven’t created anything yet.
@@ -61,14 +63,14 @@ export const Dashboard = () => {
             </Grid>
             <Box mt={4} />
             <Grid item xs={12} md={6}>
-              <Paper variant="outlined" sx={{ p: 2 }}>
-                <Typography variant="h5" align="center" gutterBottom>
+              <Paper variant="outlined" sx={{ p: 2, elevation: 5 }}>
+                <Typography variant="h5" align="center" gutterBottom color="text.primary">
                   Past Trips
                 </Typography>
                 <Typography
                   variant="subtitle1"
                   align="center"
-                  color="textSecondary"
+                  color="text.secondary"
                   sx={{ mb: 4 }}
                 >
                   No Past Trips Found!

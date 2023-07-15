@@ -12,16 +12,16 @@ import {
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs, { Dayjs } from "dayjs";
-import IItinerary from "../../../models/IItinerary";
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
+import IVenueItem from "../../../models/IVenueItem";
 
 interface IProps {
 	moveNext: () => void;
-	newItemDetails: IItinerary;
-	updateNewItem: (item: IItinerary) => void;
+	newItemDetails: IVenueItem;
+	updateNewItem: (item: IVenueItem) => void;
 }
 
-export const TimeAndBudgetSelection: React.FC<IProps> = ({
+export const TimeSelection: React.FC<IProps> = ({
 	moveNext,
 	newItemDetails,
 	updateNewItem,

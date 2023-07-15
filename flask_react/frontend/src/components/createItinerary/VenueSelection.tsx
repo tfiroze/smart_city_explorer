@@ -37,7 +37,8 @@ import AccessAlarmsSharpIcon from "@mui/icons-material/AccessAlarmsSharp";
 import AddSharpIcon from "@mui/icons-material/AddSharp";
 import CreateSharpIcon from "@mui/icons-material/CreateSharp";
 import venueData from "../../temp/dummy_data/venueData.json";
-import Itinerary from "../../models/IItinerary";
+import { ViewVenueItem } from "./ViewVenueItem";
+import IVenueItem from "../../models/IVenueItem";
 
 const slideInAnimation = keyframes`
   0% {
@@ -91,8 +92,10 @@ const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
 
 const StyledLocationOnIcon = styled(LocationOnIcon)`
 	color: #008080;
-	margin-right: 4px;
+	margin-right: 2px;
 	animation: ${slideInAnimation} 0.5s ease-in-out;
+	position: relative;
+	top: 2px;
 `;
 
 const StyledPeopleIcon = styled(PeopleIcon)`
@@ -148,37 +151,47 @@ const StyledTime = styled(Typography)`
 	// color: #008080;
 `;
 
-export const VenueSelection = () => {
-	const [itinerary, setItinerary] = React.useState<Itinerary[]>([]);
+interface IProps {
+	moveNext: (data: IVenueItem[]) => void;
+}
+
+export const VenueSelection:React.FC<IProps> = ({moveNext}) => {
+	const [itinerary, setItinerary] = React.useState<IVenueItem[]>([]);
 	const [controlsOpen, setControlsOpen] = React.useState(false);
+	const [viewVenue, setViewVenue] = React.useState(false);
+	const [viewVenueItem, setViewVenueItem] = React.useState<IVenueItem | null>(
+		null
+	);
 
 	useEffect(() => {
-		let response = [...(venueData as Itinerary[])]; 
+		let response = [...(venueData as IVenueItem[])];
 		response = sortData(response.slice(0, 3));
 		response = identifyConflicts(response);
 		setItinerary(response);
 	}, []);
 
-	const addItinerary = (data: Itinerary) => {
+	const addItinerary = (data: IVenueItem) => {
 		let items = [...itinerary, data];
-		if(controlsOpen===true) {
+		if (controlsOpen === true) {
 			handleControlsToggle();
 		}
-		setItinerary([...items])
+		setItinerary([...items]);
 	};
 
-	const identifyConflicts = (data: Itinerary[]) => {
+	const identifyConflicts = (data: IVenueItem[]) => {
 		for (let x = 0; x < data.length; x++) {}
 
 		return data;
 	};
 
-	const sortData = (data: Itinerary[]) =>
+	const sortData = (data: IVenueItem[]) =>
 		data.sort((itemA, itemB) => {
 			const timeA = convertTimeToMinutes(itemA.timeFrom);
 			const timeB = convertTimeToMinutes(itemB.timeFrom);
 			return timeA - timeB;
 		});
+
+	const closeViewItem = () => setViewVenue(false);
 
 	const convertTimeToMinutes = (time: string) => {
 		const [hours, minutes] = time.split(":");
@@ -198,12 +211,22 @@ export const VenueSelection = () => {
 
 	return (
 		<Grid container justifyContent="center">
+			{viewVenueItem !== null && (
+				<ViewVenueItem
+					close={closeViewItem}
+					item={viewVenueItem!}
+					open={viewVenue}
+				/>
+			)}
 			<Grid
 				item
 				xs={12}
 				md={8}
 				style={{ maxHeight: "70vh", overflowY: "scroll" }}
 			>
+				<Grid item xs={12} display='flex' justifyContent='center'>
+					<Button onClick={()=>moveNext(itinerary)} variant='contained'>Finish</Button>
+				</Grid>
 				<Timeline position="alternate-reverse">
 					{itinerary.map((item, index) => (
 						<TimelineItem key={index}>
@@ -222,7 +245,8 @@ export const VenueSelection = () => {
 							</TimelineOppositeContent>
 							<TimelineSeparator>
 								<TimelineDot color="primary" variant="outlined">
-									{index === 0 ? <LocationOnIcon /> : <StyledLocationOnIcon />}
+									{/* {index === 0 ? <LocationOnIcon /> : <StyledLocationOnIcon />} */}
+									<StyledLocationOnIcon />
 								</TimelineDot>
 								{index !== itinerary.length - 1 && <TimelineConnector />}
 							</TimelineSeparator>
@@ -280,13 +304,20 @@ export const VenueSelection = () => {
 													<strong> Busyness: </strong>
 												</Typography>
 												<Typography variant="body2" component="span">
-													{item.budget}
+													{item.busyness}
 												</Typography>
 											</Grid>
 										</Grid>
 									</CardContent>
 									<CenteredCardActions>
-										<Button size="small" variant="outlined">
+										<Button
+											size="small"
+											variant="outlined"
+											onClick={() => {
+												setViewVenueItem(item);
+												setViewVenue(true);
+											}}
+										>
 											View
 										</Button>
 									</CenteredCardActions>
@@ -317,7 +348,7 @@ export const VenueSelection = () => {
 				/>
 			</SpeedDial>
 			<VenueSelectionControls
-			addItem={addItinerary}
+				addItem={addItinerary}
 				changeOpenState={handleControlsToggle}
 				open={controlsOpen}
 			/>

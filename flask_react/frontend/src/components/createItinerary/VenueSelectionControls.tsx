@@ -12,17 +12,18 @@ import {
 	Stepper,
 } from "@mui/material";
 import React, { useState, ChangeEvent } from "react";
-import { TimeAndBudgetSelection } from "./NewItemSteps/TimeAndBudgetSelection";
 import { SelectVenue } from "./NewItemSteps/SelectVenue";
 import { InviteFriends } from "./NewItemSteps/InviteFriends";
 import { ConfirmNewItem } from "./NewItemSteps/ConfirmNewItem";
-import IItinerary from "../../models/IItinerary";
+import IVenueItem from "../../models/IVenueItem";
+import {TimeSelection} from'./NewItemSteps/TimeSelection';
+
 const steps = ["Time Selection", "Venue Selection", "Invites", "Confirm"];
 
 interface IProps {
 	open: boolean;
 	changeOpenState: () => void;
-	addItem:(item:IItinerary) =>void;
+	addItem:(item:IVenueItem) =>void;
 }
 
 export const VenueSelectionControls: React.FC<IProps> = ({
@@ -30,7 +31,7 @@ export const VenueSelectionControls: React.FC<IProps> = ({
 	changeOpenState,
 	addItem
 }) => {
-	const [itinerary, setItinerary] = useState<IItinerary>({
+	const [itinerary, setItinerary] = useState<IVenueItem>({
 		budget: 0,
 		description: "",
 		imgLink: "",
@@ -49,7 +50,7 @@ export const VenueSelectionControls: React.FC<IProps> = ({
 		setCurrentStep(currentStep + 1);
 	};
 
-	const hanldeUpdate = (data: IItinerary) => {
+	const hanldeUpdate = (data: IVenueItem) => {
 		setItinerary(data);
 	};
 
@@ -61,7 +62,7 @@ export const VenueSelectionControls: React.FC<IProps> = ({
 		switch (currentStep) {
 			case 0:
 				return (
-					<TimeAndBudgetSelection
+					<TimeSelection
 						moveNext={hanldeMoveNext}
 						newItemDetails={itinerary}
 						updateNewItem={hanldeUpdate}

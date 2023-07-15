@@ -12,7 +12,13 @@
 		"busyness": "moderate",
 		"rating": 7,
 		"lat": 40.758,
-		"lon": -73.9855
+		"lon": -73.9855,
+		"invitedParticipant": [
+			"jack@gmail.com",
+			"jane.doe@ucdconnect.com",
+			"jill@mweb.com",
+			"fred@pewpew.com"
+		]
 	},
 	{
 		"timeFrom": "13:45",

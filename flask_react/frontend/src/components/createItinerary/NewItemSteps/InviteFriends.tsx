@@ -9,12 +9,12 @@ import {
 } from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
-import IItinerary from "../../../models/IItinerary";
+import IVenueItem from "../../../models/IVenueItem";
 
 interface IProps {
 	moveNext: () => void;
-	newItemDetails:IItinerary;
-	updateNewItem: (item:IItinerary) => void;
+	newItemDetails:IVenueItem;
+	updateNewItem: (item:IVenueItem) => void;
 }
 
 export const InviteFriends: React.FC<IProps> = ({ moveNext, newItemDetails, updateNewItem }) => {
@@ -74,7 +74,7 @@ export const InviteFriends: React.FC<IProps> = ({ moveNext, newItemDetails, upda
 								variant="outlined"
 								onDelete={() => deleteInvitedUser(item)}
 							/>
-						); //
+						); 
 					})}
 				</Grid>
 			</Grid>
