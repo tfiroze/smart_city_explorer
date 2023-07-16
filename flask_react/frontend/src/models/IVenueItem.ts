@@ -1,3 +1,5 @@
+import { busynessLevel } from './busynessLevel';
+
 export default interface IVenueItem {
 	timeFrom: string;
 	timeTo: string;
@@ -9,6 +11,9 @@ export default interface IVenueItem {
 	invited: number;
 	conflictsWithPrevouse?: boolean;
 	invitedParticipant?:string[];
-	busyness?:string;
+	// busyness?:string;
+	busyness?: busynessLevel;
 	weatherCode?:number;
+	lat?: number;   
+    lon?: number;   
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import AvatarGroup from "@mui/material/AvatarGroup";
 import IVenueItem from "../../models/IVenueItem";
 import {
@@ -16,57 +16,62 @@ import {
 	Stack,
 	Box,
 } from "@mui/material";
-import { getColor, busynesLevel } from "../../models/busynesLevel";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import EventIcon from "@mui/icons-material/Event";
-import makeStyles from "@mui/styles/makeStyles";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
+import { busynessLevel, getColor, getBusynessDescription } from "../../models/busynessLevel";
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import EventIcon from '@mui/icons-material/Event';
+import makeStyles from '@mui/styles/makeStyles';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
+import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon'; 
+
 
 const useStyles = makeStyles({
 	dialogTitle: {
-		backgroundColor: "#008080",
-		color: "#fff",
-		textAlign: "center",
+	  backgroundColor: "#008080",
+	  color: "#fff",
+	  textAlign: 'center',
 	},
 	closeButton: {
-		color: "#fff",
+	  color: "#fff",
 	},
 	mapContainer: {
-		height: "200px",
-		width: "100%",
-		borderRadius: "4px",
-		overflow: "hidden",
-		boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-		transition: "box-shadow 0.3s ease-in-out",
-		"&:hover": {
-			boxShadow: "0 2px 16px rgba(0, 0, 0, 0.1)",
-		},
+	  height: "200px",
+	  width: "100%",
+	  borderRadius: "4px",
+	  overflow: "hidden",
+	  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+	  transition: 'box-shadow 0.3s ease-in-out',
+	  '&:hover': {
+		boxShadow: '0 2px 16px rgba(0, 0, 0, 0.1)',
+	  }
 	},
 	chip: {
-		// fontSize: "1.2em",
-		animation: "$bounce 2s infinite",
+	  animation: '$bounce 2s infinite',
 	},
 	weatherIcon: {
 		width: "35px",
 		height: "40px",
 		marginLeft: "2px",
-		animation: "spin 2s linear infinite",
+		animation: 'spin 2s linear infinite'
 	},
-	"@keyframes spin": {
-		"0%": { transform: "rotate(0deg)" },
-		"100%": { transform: "rotate(360deg)" },
+	introvertIcon: {
+	  marginLeft: '10px',
+	  color: '#6c757d', // grey color
 	},
-	"@keyframes bounce": {
-		"0%, 100%": {
-			transform: "scale(1)",
-			opacity: 1,
-		},
-		"50%": {
-			transform: "scale(1.05)",
-			opacity: 0.5,
-		},
+	'@keyframes spin': {
+	  '0%': { transform: 'rotate(0deg)' },
+	  '100%': { transform: 'rotate(360deg)' },
 	},
+	'@keyframes bounce': {
+	  '0%, 100%': {
+		transform: 'scale(1)',
+		opacity: 1,
+	  },
+	  '50%': {
+		transform: 'scale(1.05)',
+		opacity: 0.5,
+	  }
+	}
 });
 
 interface IProps {
@@ -74,6 +79,7 @@ interface IProps {
 	open: boolean;
 	close: () => void;
 }
+
 
 export const ViewVenueItem: React.FC<IProps> = ({ item, open, close }) => {
 	const classes = useStyles();
@@ -108,29 +114,33 @@ export const ViewVenueItem: React.FC<IProps> = ({ item, open, close }) => {
 						<Typography variant="body2">{item.description}</Typography>
 					</Grid>
 					<Grid item xs={6}>
-						<Stack direction="row" spacing={1} alignItems="center">
-							<Chip
-								className={classes.chip}
-								label={item.busyness}
-								variant="outlined"
-								color={getColor(item.busyness as busynesLevel)}
-							/>
-							<img
-								className={classes.weatherIcon}
-								loading="lazy"
-								src={`https://www.meteosource.com/static/img/ico/weather/${item.weatherCode!.toString()}.svg`}
-								alt=""
-							/>
-						</Stack>
+					<Stack direction="row" spacing={1} alignItems="center">
+					<Chip
+					className={classes.chip}
+					label={getBusynessDescription(item.busyness || busynessLevel.low)}
+					variant="outlined"
+					color={getColor(item.busyness)}
+					/>
+
+						{item.busyness === busynessLevel.low && <InsertEmoticonIcon className={classes.introvertIcon} />}
+						<img
+						className={classes.weatherIcon}
+						loading="lazy"
+						src={`https://www.meteosource.com/static/img/ico/weather/${item.weatherCode!.toString()}.svg`}
+						alt=""
+						/>
+					</Stack>
 					</Grid>
 					<Grid item xs={12}>
 						<Stack direction="row" spacing={1} alignItems="center">
 							<EventIcon color="primary" />
 							<Typography variant="body2">{item.timeFrom}</Typography>
+							<Typography variant="body2"> - </Typography>
 							<AccessTimeIcon color="primary" />
 							<Typography variant="body2">{item.timeTo}</Typography>
 						</Stack>
 					</Grid>
+
 					<Grid item xs={12}>
 						<AvatarGroup max={3}>
 							{item.invitedParticipant != undefined &&
@@ -152,8 +162,8 @@ export const ViewVenueItem: React.FC<IProps> = ({ item, open, close }) => {
 									zoom={13}
 									mapContainerStyle={{ height: "100%", width: "100%" }}
 								>
-									<Marker position={{ lat: 40.7061, lng: -73.9969 }} /> //
-									Brooklyn Bridge coordinates
+									{item.lat && item.lon && <Marker position={{ lat: item.lat, lng: item.lon }} />}
+
 								</GoogleMap>
 							</LoadScript>
 						</div>

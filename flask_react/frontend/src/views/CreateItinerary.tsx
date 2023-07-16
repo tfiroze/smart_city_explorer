@@ -10,7 +10,7 @@ import {
   Typography,
   Divider,
 } from "@mui/material";
-import { VenueSelection } from "../components/createItinerary/VenueSelection";
+import VenueSelection from "../components/createItinerary/VenueSelection";
 import { Questionnaire } from "../components/createItinerary/Questionnaire";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 import { styled } from "@mui/system";
@@ -34,33 +34,43 @@ const SmallCancelButton = styled(CancelButton)`
 
 interface IProps {
   handleCreateItinerary: () => void;
+  addItem: (item: IItinerary) => void;
 }
 
-export const CreateItinerary: React.FC<IProps> = ({ handleCreateItinerary }) => {
+export const CreateItinerary: React.FC<IProps> = ({ handleCreateItinerary, addItem }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [venueItems, setVenueItems] = useState<IVenueItem[]>([]);
-  
-  const finelize =(data:IVenueItem[]) =>{
+  const [itinerary, setItinerary] = useState<IItinerary>({
+    budget: 0,
+    comments: "",
+    date: "",
+    endTime: "",
+    startTime: "",
+    name: "",
+    plan: []
+  });
+
+  const finelize = (data: IVenueItem[]) => {
     setVenueItems(data)
     setCurrentStep(currentStep + 1)
-    
+    setItinerary({ ...itinerary, plan: data })
   }
 
-  const moveNextStep = () => setCurrentStep(currentStep + 1);
-
-  const completed = (data:IItinerary) => {
-
+  const moveNextStep = (data: IItinerary) => {
+    setItinerary(data)
+    setCurrentStep(currentStep + 1);
   }
+
 
   const renderStep = () => {
     switch (currentStep) {
       case 0:
         return <Questionnaire showVenues={moveNextStep} />;
       case 1:
-        return <VenueSelection moveNext={finelize}/>;
-        case 2:
-        return <ConfirmItineraryItems completed={completed} data={venueItems}/>;
+        return <VenueSelection moveNext={finelize} />;
+      case 2:
+        return <ConfirmItineraryItems completed={addItem} data={itinerary} />;
       default:
         return null;
     }

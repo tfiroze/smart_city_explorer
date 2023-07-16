@@ -10,7 +10,7 @@ import {
   InputLabel,
   Rating,
 } from "@mui/material";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { DesktopDatePicker, DesktopTimePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -19,6 +19,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import CreditScoreIcon from "@mui/icons-material/CreditScore";
 import StarIcon from "@mui/icons-material/Star";
+import IItinerary from "../../models/IItinerary";
 
 const venueTypes = [
   {
@@ -51,15 +52,39 @@ const QuestionnaireButton = styled(Button)(({ theme }) => ({
 }));
 
 interface IProps {
-  showVenues: () => void;
+  showVenues: (data: IItinerary) => void;
 }
 
 export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [starsSelected, setStarsSelected] = useState<number>(0.0);
   const [subCategory, setSubCategory] = useState<string[]>([]);
-  const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<string[]>([]);
+  const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<
+    string[]
+  >([]);
   const [hovering, setHovering] = useState(false);
+  const [budget, setBudget] = useState(0);
+  const [date, setDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+
+  const changeTime = (time: Dayjs | null, type: "start" | "end" | "date") => {
+    let date = "";
+    switch (type) {
+      case "date":
+        date = `${time?.year()} ${time?.month()} ${time?.day()}`;
+        setDate(date);
+        break;
+      case "start":
+        date = `${time?.hour()} ${time?.minute()}`;
+        setStartTime(date);
+        break;
+      case "end":
+        date = `${time?.hour()} ${time?.minute()}`;
+        setEndTime(date);
+        break;
+    }
+  };
 
   const handleStarsSelectionChange = (event: React.ChangeEvent<any>) => {
     setStarsSelected(event.target.value);
@@ -91,7 +116,10 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
     setSelectedTags(value);
   };
 
-  const handleSubTagChange = (event: React.ChangeEvent<{}>, value: string[]) => {
+  const handleSubTagChange = (
+    event: React.ChangeEvent<{}>,
+    value: string[]
+  ) => {
     setSelectedSubCategoryTags(value);
   };
 
@@ -114,17 +142,26 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
                 <DemoItem label="Select Date">
-                  <DesktopDatePicker defaultValue={dayjs()} />
+                  <DesktopDatePicker
+                    onChange={(value) => changeTime(value, "date")}
+                    defaultValue={dayjs()}
+                  />
                 </DemoItem>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <DemoItem label="Start Time">
-                  <DesktopTimePicker defaultValue={dayjs()} />
+                  <DesktopTimePicker
+                    defaultValue={dayjs()}
+                    onChange={(value) => changeTime(value, "start")}
+                  />
                 </DemoItem>
               </Grid>
               <Grid item xs={12} sm={6}>
                 <DemoItem label="End Time">
-                  <DesktopTimePicker defaultValue={dayjs()} />
+                  <DesktopTimePicker
+                    defaultValue={dayjs()}
+                    onChange={(value) => changeTime(value, "end")}
+                  />
                 </DemoItem>
               </Grid>
               <Grid item xs={12}>
@@ -168,6 +205,9 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
               <Grid item xs={6}>
                 <DemoItem label="Budget">
                   <TextField
+                    onChange={(value) => {
+                      setBudget(parseInt(value.target.value));
+                    }}
                     id="outlined-basic"
                     style={{ textAlign: "right" }}
                     type="number"
@@ -196,10 +236,17 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                   <QuestionnaireButton
                     variant="contained"
                     color="primary"
-                    onClick={showVenues}
-                    // onMouseEnter={() => setHovering(true)}
-                    // onMouseLeave={() => setHovering(false)}
-                    // startIcon={hovering && <img src={mapIcon} alt="map" style={{width: '24px', height: '22px', paddingBottom: '3px'}} />}
+                    onClick={() =>
+                      showVenues({
+                        budget: budget,
+                        comments: "",
+                        date: date,
+                        endTime: endTime,
+                        startTime: startTime,
+                        name: "",
+                        plan: [],
+                      })
+                    }
                   >
                     Generate Itinerary
                   </QuestionnaireButton>

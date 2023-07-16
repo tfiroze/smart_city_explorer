@@ -16,14 +16,14 @@ import { SelectVenue } from "./NewItemSteps/SelectVenue";
 import { InviteFriends } from "./NewItemSteps/InviteFriends";
 import { ConfirmNewItem } from "./NewItemSteps/ConfirmNewItem";
 import IVenueItem from "../../models/IVenueItem";
-import {TimeSelection} from'./NewItemSteps/TimeSelection';
+import { TimeSelection } from './NewItemSteps/TimeSelection';
 
 const steps = ["Time Selection", "Venue Selection", "Invites", "Confirm"];
 
 interface IProps {
 	open: boolean;
 	changeOpenState: () => void;
-	addItem:(item:IVenueItem) =>void;
+	addItem: (item: IVenueItem) => void;
 }
 
 export const VenueSelectionControls: React.FC<IProps> = ({
@@ -87,7 +87,7 @@ export const VenueSelectionControls: React.FC<IProps> = ({
 			case 3:
 				return (
 					<ConfirmNewItem
-					onConfirm={handleConfirm}
+						onConfirm={handleConfirm}
 						moveNext={hanldeMoveNext}
 						newItemDetails={itinerary}
 						updateNewItem={hanldeUpdate}

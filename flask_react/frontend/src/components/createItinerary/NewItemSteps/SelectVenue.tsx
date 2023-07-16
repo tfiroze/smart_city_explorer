@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import venueData from "../../../temp/dummy_data/venueData.json";
 import { Autocomplete, Box, Button, Chip, Grid, TextField } from "@mui/material";
-import { busynesLevel, getColor } from "../../../models/busynesLevel";
+import { busynessLevel, getColor } from "../../../models/busynessLevel";
 import IVenueItem from "../../../models/IVenueItem";
 
 interface IProps {
@@ -118,7 +118,7 @@ export const SelectVenue: React.FC<IProps> = ({ moveNext,newItemDetails,updateNe
 										<Chip
 											label={option.busyness}
 											variant="outlined"
-											color={getColor(option.busyness as busynesLevel)}
+											color={getColor(option.busyness as busynessLevel)}
 											style={{ width: "100%" }}
 										/>
 									</Grid>

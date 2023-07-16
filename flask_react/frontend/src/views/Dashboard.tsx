@@ -21,26 +21,39 @@ export const Dashboard = () => {
   const [openQuestionnaire, setopenQuestionnaire] = useState(false);
   const [itineraryItems, setItineraryItems] = useState<IItinerary[]>([]);
   const handleCreateItinerary = () => setopenQuestionnaire(!openQuestionnaire);
+  console.log(itineraryItems)
+  const addItem = (item: IItinerary) => {
+    setItineraryItems([...itineraryItems, item]);
+    handleCreateItinerary();
+  };
 
   return (
     <Grid container>
       <Grid item xs={12} md={12}>
         <Header />
       </Grid>
-      <Grid item xs={12} md={12} style={{margin:'15px'}}>
-				{openQuestionnaire && (
-					<>
-						<CreateItinerary handleCreateItinerary={handleCreateItinerary} />
-					</>
-				)}
+      <Grid item xs={12} md={12} style={{ margin: "15px" }}>
+        {openQuestionnaire && (
+          <>
+            <CreateItinerary
+              handleCreateItinerary={handleCreateItinerary}
+              addItem={addItem}
+            />
+          </>
+        )}
 
-				{!openQuestionnaire && (
-					<Grid container  spacing={2} >
-						<Grid item xs={12} md={6} >
-							<Paper variant="outlined" sx={{ p: 2, elevation: 5 }}>
-                <Typography variant="h5" align="center" gutterBottom color="text.primary">
-                  Upcoming Trips...
-                </Typography>
+        {!openQuestionnaire && (
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Typography
+                variant="h5"
+                align="center"
+                gutterBottom
+                color="text.primary"
+              >
+                Upcoming Trips...
+              </Typography>
+              {itineraryItems.length == 0 ? (
                 <Typography
                   variant="subtitle1"
                   align="center"
@@ -49,22 +62,39 @@ export const Dashboard = () => {
                 >
                   You haven’t created anything yet.
                 </Typography>
-                <Box display="flex" justifyContent="center">
-                  <Button
-                    onClick={handleCreateItinerary}
-                    variant="contained"
-                    color="secondary"
-                    startIcon={<AddIcon />}
-                  >
-                    CREATE
-                  </Button>
-                </Box>
-              </Paper>
+              ) : (
+                itineraryItems.map((item) => {
+                  return (
+                    <Paper style={{ marginBottom: '10px' }}>
+                      name:{item.name}<br />
+                      date:{item.date}<br />
+                      timeFrom:{item.startTime}<br />
+                      endFrom:{item.endTime}<br />
+                      comments:{item.comments}<br />
+                    </Paper>);
+                })
+              )}
+
+              <Box display="flex" justifyContent="center">
+                <Button
+                  onClick={handleCreateItinerary}
+                  variant="contained"
+                  color="secondary"
+                  startIcon={<AddIcon />}
+                >
+                  CREATE
+                </Button>
+              </Box>
             </Grid>
             <Box mt={4} />
             <Grid item xs={12} md={6}>
               <Paper variant="outlined" sx={{ p: 2, elevation: 5 }}>
-                <Typography variant="h5" align="center" gutterBottom color="text.primary">
+                <Typography
+                  variant="h5"
+                  align="center"
+                  gutterBottom
+                  color="text.primary"
+                >
                   Past Trips
                 </Typography>
                 <Typography
@@ -85,6 +115,6 @@ export const Dashboard = () => {
           </Grid>
         )}
       </Grid>
-    </Grid>
+    </Grid >
   );
 };
