@@ -1,12 +1,18 @@
-let express = require('express');
-let cors = require('cors');
-let router = require('./router');
+let express = require('express')
+let cors = require('cors')
+let path = require('path')
+let router = require('./router')
 
-let app = express();
+let app = express()
 
-app.use(cors());
-app.use('/api', router);
+app.use(express.static(path.join(__dirname, '../flask_react/frontend/build')))
+app.use(cors())
+app.use('/api', router)
 
-app.listen(5000, () => {   // Make sure to choose the correct port here
-    console.log('The server is running on http://localhost:5000');
-});
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, '../flask_react/frontend/build', 'index.html'))
+})
+
+app.listen(80, () => {
+    console.log('The server is running on http://127.0.0.1')
+})
