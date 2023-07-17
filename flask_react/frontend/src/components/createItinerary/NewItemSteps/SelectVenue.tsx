@@ -1,30 +1,39 @@
 import React, { useState } from "react";
 import venueData from "../../../temp/dummy_data/venueData.json";
-import { Autocomplete, Box, Button, Chip, Grid, TextField } from "@mui/material";
+import {
+	Autocomplete,
+	Box,
+	Button,
+	Chip,
+	Grid,
+	TextField,
+} from "@mui/material";
 import { busynessLevel, getColor } from "../../../models/busynessLevel";
 import IVenueItem from "../../../models/IVenueItem";
 
 interface IProps {
 	moveNext: () => void;
-	newItemDetails:IVenueItem;
-	updateNewItem: (item:IVenueItem) => void;
+	newItemDetails: IVenueItem;
+	updateNewItem: (item: IVenueItem) => void;
 }
 
-
-export const SelectVenue: React.FC<IProps> = ({ moveNext,newItemDetails,updateNewItem }) => {
+export const SelectVenue: React.FC<IProps> = ({
+	moveNext,
+	newItemDetails,
+	updateNewItem,
+}) => {
 	const [selectedItem, setSelectedItem] = useState<string | null>();
-	
-	const setVenue = (data:IVenueItem)=> {
+
+	const setVenue = (data: IVenueItem) => {
 		let temp = newItemDetails;
 		temp.imgLink = data.imgLink;
 		temp.title = data.title;
 		temp.description = data.description;
 		temp.venueId = data.venueId;
-		temp.weatherCode =data.weatherCode
-		temp.busyness =data.busyness
-		updateNewItem(temp)
-	}
-	
+		temp.weatherCode = data.weatherCode;
+		temp.busyness = data.busyness;
+		updateNewItem(temp);
+	};
 
 	let selectData = [
 		...[
@@ -40,8 +49,8 @@ export const SelectVenue: React.FC<IProps> = ({ moveNext,newItemDetails,updateNe
 				weatherCode: 0,
 				busyness: "",
 				rating: 0,
-				lon:0,
-				lat:0
+				lon: 0,
+				lat: 0,
 			},
 		],
 		...venueData,
@@ -53,8 +62,10 @@ export const SelectVenue: React.FC<IProps> = ({ moveNext,newItemDetails,updateNe
 				id="weather-select-demo"
 				options={selectData}
 				autoHighlight
-				//@ts-ignore
-				onChange={(e,v)=>{setVenue(v)}}
+				onChange={(e, v) => {
+					//@ts-ignore
+					setVenue(v);
+				}}
 				getOptionLabel={(option) => option.title}
 				getOptionDisabled={(option) => option.venueId === "HEADINGS"}
 				renderOption={(props, option) => (
@@ -173,7 +184,13 @@ export const SelectVenue: React.FC<IProps> = ({ moveNext,newItemDetails,updateNe
 					/>
 				)}
 			/>
-			<Button variant='contained' style={{marginTop:'5px'}} onClick={moveNext}>Next</Button>
+			<Button
+				variant="contained"
+				style={{ marginTop: "5px" }}
+				onClick={moveNext}
+			>
+				Next
+			</Button>
 		</div>
 	);
 };

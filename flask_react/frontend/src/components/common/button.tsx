@@ -4,16 +4,11 @@ import styled from "styled-components";
 
 
 interface IProps {
-	title: string;
-	onClick: () => void;
+  title: string;
+  onClick: () => void;
 }
 
-export const CButton : React.FC<IProps> = ({
-	title,
-	onClick
-
-})  => {
-    const Background = styled.div`
+const Background = styled.div`
 //   background: #2d2d2d;
   display: flex;
   justify-content: center;
@@ -141,15 +136,22 @@ const Content = styled.a`
   }
 `;
 
-    return (
-        <Background className="portfolio-experiment">
-        <Content onClick={onClick} href="#">
-          <span className="text">{title}</span>
-          <span className="line -right"></span>
-          <span className="line -top"></span>
-          <span className="line -left"></span>
-          <span className="line -bottom"></span>
-        </Content>
-      </Background>
-    );
+
+export const CButton: React.FC<IProps> = ({
+  title,
+  onClick
+
+}) => {
+
+  return (
+    <Background className="portfolio-experiment">
+      <Content onClick={onClick} href="#">
+        <span className="text">{title}</span>
+        <span className="line -right"></span>
+        <span className="line -top"></span>
+        <span className="line -left"></span>
+        <span className="line -bottom"></span>
+      </Content>
+    </Background>
+  );
 }

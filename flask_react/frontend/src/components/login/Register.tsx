@@ -28,7 +28,7 @@ export const Register: React.FC<IProps> = ({
 		surname: "",
 		email: "",
 		password: "",
-		confirmPassword:""
+		confirmPassword: "",
 	});
 
 	const [format, setFormat] = useState({
@@ -36,10 +36,10 @@ export const Register: React.FC<IProps> = ({
 		surname: false,
 		email: false,
 		password: false,
-		confirmPassword: false
-	})
+		confirmPassword: false,
+	});
 
-	const [errorMessage, setErrorMessage] = useState<string | null>(null)
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
 	const handleInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
 		setRegisterRequest({
@@ -51,107 +51,105 @@ export const Register: React.FC<IProps> = ({
 		let results = smartApi.register(registerRequest, true);
 		if (results.valid) {
 			//valid register
-
 		} else {
-			setErrorMessage(results.errorMessage!)
+			setErrorMessage(results.errorMessage!);
 		}
+	};
 
-	}
-
-	const validateName=(name:string)=>{
-		console.log(name, name === "", !( /^[a-zA-Z\s'-]+$/.test(name)))
-		if (name === "" || !( /^[a-zA-Z\s'-]+$/.test(name))){
+	const validateName = (name: string) => {
+		if (name === "" || !/^[a-zA-Z\s'-]+$/.test(name)) {
 			setFormat({
 				...format,
-				firstName: true
-			})
-			return false
-		}else{
+				firstName: true,
+			});
+			return false;
+		} else {
 			setFormat({
 				...format,
-				firstName: false
-			})
-			return true
+				firstName: false,
+			});
+			return true;
 		}
-	}
+	};
 
-	const validateSurname=(name:string)=>{
-		if (name === "" || !(/^[a-z ,.'-]+$/i.test(name))){
+	const validateSurname = (name: string) => {
+		if (name === "" || !/^[a-z ,.'-]+$/i.test(name)) {
 			setFormat({
 				...format,
-				surname: true
-			})
-			return false
-		}else{
+				surname: true,
+			});
+			return false;
+		} else {
 			setFormat({
 				...format,
-				surname: false
-			})
-			return true
+				surname: false,
+			});
+			return true;
 		}
-	}
+	};
 
-	const validateEmail=(email:string)=>{
-		if (email === "" || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+	const validateEmail = (email: string) => {
+		if (
+			email === "" ||
+			!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+		) {
 			setFormat((prevFormat) => ({
-			  ...prevFormat,
-			  email: true
+				...prevFormat,
+				email: true,
 			}));
-			return false
-		  } else {
+			return false;
+		} else {
 			setFormat((prevFormat) => ({
-			  ...prevFormat,
-			  email: false
+				...prevFormat,
+				email: false,
 			}));
-			return true
-		  }
-	}
+			return true;
+		}
+	};
 
-
-	const validatePassword=(password:string)=>{
+	const validatePassword = (password: string) => {
 		if (password === "") {
 			setFormat((prevFormat) => ({
-			  ...prevFormat,
-			  password: true
+				...prevFormat,
+				password: true,
 			}));
-			return false
-		  } else {
+			return false;
+		} else {
 			setFormat((prevFormat) => ({
-			  ...prevFormat,
-			  password: false
+				...prevFormat,
+				password: false,
 			}));
-			return true
-		  }
-	}
+			return true;
+		}
+	};
 
-	const validateConfirmPassword=(password:string)=>{
+	const validateConfirmPassword = (password: string) => {
 		if (password === "" || password !== registerRequest.password) {
 			setFormat((prevFormat) => ({
-			  ...prevFormat,
-			  confirmPassword: true
+				...prevFormat,
+				confirmPassword: true,
 			}));
-			return false
-		  } else {
+			return false;
+		} else {
 			setFormat((prevFormat) => ({
-			  ...prevFormat,
-			  confirmPassword: false
+				...prevFormat,
+				confirmPassword: false,
 			}));
-			return true
-		  }
-	}
-
-	const formValidator = () =>{
-		if (
-			validateName(registerRequest.firstName)&&
-			validateSurname(registerRequest.surname)&&
-			validateEmail(registerRequest.email) && 
-			validatePassword(registerRequest.password)&&
-			validateConfirmPassword(registerRequest.confirmPassword)
-			)
-			{
-			handleSubmit()
+			return true;
 		}
-	}
+	};
+
+	const formValidator = () => {
+		if (
+			validateName(registerRequest.firstName) &&
+			validateSurname(registerRequest.surname) &&
+			validateEmail(registerRequest.email) &&
+			validatePassword(registerRequest.password) &&
+			validateConfirmPassword(registerRequest.confirmPassword)
+		) {
+			handleSubmit();
+		}
+	};
 
 	return (
 		<Dialog
@@ -167,9 +165,7 @@ export const Register: React.FC<IProps> = ({
 			</DialogTitle>
 			<Divider />
 			<DialogContent>
-
 				<Grid container spacing={2}>
-
 					<Grid item md={6} xs={12} lg={6}>
 						<Box my={2}>
 							<TextField
@@ -183,7 +179,11 @@ export const Register: React.FC<IProps> = ({
 								value={registerRequest.firstName}
 								onChange={handleInputOnChange}
 								error={format.firstName}
-								helperText={format.firstName ? "Hold on, your first name needs a vacation upgrade! Let's sprinkle some travel excitement into it.":""}
+								helperText={
+									format.firstName
+										? "Hold on, your first name needs a vacation upgrade! Let's sprinkle some travel excitement into it."
+										: ""
+								}
 							/>
 						</Box>
 					</Grid>
@@ -200,7 +200,11 @@ export const Register: React.FC<IProps> = ({
 								value={registerRequest.surname}
 								onChange={handleInputOnChange}
 								error={format.surname}
-								helperText={format.surname ? "Surname getaway! Oops, that's not a valid one.":""}
+								helperText={
+									format.surname
+										? "Surname getaway! Oops, that's not a valid one."
+										: ""
+								}
 							/>
 						</Box>
 					</Grid>
@@ -218,7 +222,11 @@ export const Register: React.FC<IProps> = ({
 						value={registerRequest.email}
 						onChange={handleInputOnChange}
 						error={format.email}
-						helperText={format.email ? "Looks like your Email decided to take a vacation! Please enter a valid one.":""}
+						helperText={
+							format.email
+								? "Looks like your Email decided to take a vacation! Please enter a valid one."
+								: ""
+						}
 					/>
 				</Box>
 				<Box my={2}>
@@ -233,7 +241,11 @@ export const Register: React.FC<IProps> = ({
 						value={registerRequest.password}
 						onChange={handleInputOnChange}
 						error={format.password}
-						helperText={format.password?"Oops! Your password needs a vacation from errors. Please enter a valid one.":""}
+						helperText={
+							format.password
+								? "Oops! Your password needs a vacation from errors. Please enter a valid one."
+								: ""
+						}
 					/>
 				</Box>
 				<Box my={2}>
@@ -249,7 +261,11 @@ export const Register: React.FC<IProps> = ({
 						value={registerRequest.confirmPassword}
 						onChange={handleInputOnChange}
 						error={format.confirmPassword}
-						helperText={format.confirmPassword?"Uh-oh! Your password wants a travel companion for confirmation. Let's make sure they're on the same journey!":""}
+						helperText={
+							format.confirmPassword
+								? "Uh-oh! Your password wants a travel companion for confirmation. Let's make sure they're on the same journey!"
+								: ""
+						}
 					/>
 				</Box>
 				{errorMessage != null && <Alert severity="error">{errorMessage}</Alert>}

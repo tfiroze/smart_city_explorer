@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Typography, Tooltip } from "@mui/material";
 import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
+
 import {
   Button,
   Grid,
@@ -13,6 +14,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  DialogContentText, DialogActions,
   SpeedDial,
   SpeedDialAction,
   makeStyles,
@@ -138,8 +140,6 @@ const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
 	margin: 0 8px;
 `;
 
-
-
 interface IProps {
   moveNext: (data: IVenueItem[]) => void;
 }
@@ -150,6 +150,7 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
   const [controlsOpen, setControlsOpen] = React.useState(false);
   const [viewVenue, setViewVenue] = React.useState(false);
   const [viewVenueItem, setViewVenueItem] = React.useState<IVenueItem | null>(null);
+  const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
 
   useEffect(() => {
     const response = [...(venueData as IVenueItem[])];
@@ -164,6 +165,7 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
     if (!isTimeRangeValid) {
       // Display an error message or handle invalid time range
       console.error("Invalid time range");
+      setErrorDialogOpen(true);
       return;
     }
 
@@ -172,6 +174,10 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
       handleControlsToggle();
     }
     setItinerary(items);
+  };
+
+  const handleCloseErrorDialog = () => {
+    setErrorDialogOpen(false);
   };
 
   const identifyConflicts = (data: IVenueItem[]) => {
@@ -219,6 +225,24 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
       {viewVenueItem && (
         <ViewVenueItem close={closeViewItem} item={viewVenueItem} open={viewVenue} />
       )}
+      <Dialog
+        open={errorDialogOpen}
+        onClose={handleCloseErrorDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Invalid Time Range"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Please enter a valid time range.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseErrorDialog} color="primary" autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Grid item xs={12} style={{ maxHeight: "70vh", overflowY: "scroll" }}>
         <Grid item xs={12} display='flex' justifyContent='center'>
           <Button onClick={() => moveNext(itinerary)} variant='contained'>Finish</Button>
@@ -290,8 +314,6 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
                         </Typography>
                       </Grid>
                     </Grid>
-                    {/* </CardContent>
-                  <CardContent> */}
                     <Grid container alignItems="center" spacing={1}>
                       <Grid item>
                         <StyledScheduleIcon />

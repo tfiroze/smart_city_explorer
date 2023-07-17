@@ -219,7 +219,6 @@ export const Login = () => {
 								<Checkbox
 									checked={autoLogin}
 									onChange={handleAutoLoginChange}
-									defaultChecked
 								/>
 							}
 							label="Remember Me?"

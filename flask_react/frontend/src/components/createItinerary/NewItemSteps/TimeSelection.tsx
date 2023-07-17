@@ -29,24 +29,15 @@ export const TimeSelection: React.FC<IProps> = ({
 	const currentTime = new Date();
 	const [startTime, setStartTime] = React.useState<any>(dayjs(currentTime));
 	const [endTime, setEndTime] = React.useState<any>(dayjs(currentTime));
-	
+
 	const onChangeStartTime = (time: any) => {
 		setStartTime(time);
-		console.log(1);
-		setStartTime(time);
-		console.log(2);
-
 		let temp = newItemDetails;
-		console.log(3);
-
 		temp.timeFrom = dayjs(time).format("HH:mm");
-		console.log(4);
-
 		updateNewItem(temp);
-		console.log(5);
 	};
 
-	const onChangeEndTime = (time:any) => {
+	const onChangeEndTime = (time: any) => {
 		setEndTime(time);
 		let temp = newItemDetails;
 		temp.timeTo = dayjs(time).format("HH:mm");
@@ -55,21 +46,20 @@ export const TimeSelection: React.FC<IProps> = ({
 
 	return (
 		<Paper elevation={3} sx={{ p: 2 }}>
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={['TimePicker', 'TimePicker']}>
-
-        <TimePicker
-          label="Start Time"
-          value={startTime}
-          onChange={(newValue) => onChangeStartTime(newValue)}
-        />
-		       <TimePicker
-          label="End Time"
-          value={endTime}
-          onChange={(newValue) => onChangeEndTime(newValue)}
-        />
-      </DemoContainer>
-    </LocalizationProvider>
+			<LocalizationProvider dateAdapter={AdapterDayjs}>
+				<DemoContainer components={["TimePicker", "TimePicker"]}>
+					<TimePicker
+						label="Start Time"
+						value={startTime}
+						onChange={(newValue) => onChangeStartTime(newValue)}
+					/>
+					<TimePicker
+						label="End Time"
+						value={endTime}
+						onChange={(newValue) => onChangeEndTime(newValue)}
+					/>
+				</DemoContainer>
+			</LocalizationProvider>
 			<Button
 				variant="contained"
 				onClick={moveNext}

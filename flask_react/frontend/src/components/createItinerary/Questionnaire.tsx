@@ -127,8 +127,6 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
     const selectedVenueTypes = venueTypes.filter((venue) =>
       selectedTags.includes(venue.tag)
     );
-
-    console.log(selectedVenueTypes);
   };
 
   return (

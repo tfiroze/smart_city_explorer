@@ -11,12 +11,11 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
     <Routes>
       {auth ? (
         <>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/*" element={<Dashboard />} />
         </>
       ) : (
         <>
-          <Route path="/" element={<Startup />} />
+          <Route path="/*" element={<Startup />} />
         </>
       )}
     </Routes>

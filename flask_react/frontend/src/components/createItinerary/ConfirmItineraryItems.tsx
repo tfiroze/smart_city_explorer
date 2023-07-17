@@ -97,7 +97,7 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({ data, completed }) => 
           </StyledButton>
         </Grid>
         <StyledDisclaimer variant="body2" align="center" mt={2}>
-          *Disclaimer: By clicking "Finish Planning," you agree to embark on this amazing adventure with a smile and a sense of humor. Bon voyage!
+          *Disclaimer: By clicking "Finish Planning," you agree to embark on this amazing adventure with a smile and a sense of humour. Bon voyage!
         </StyledDisclaimer>
       </StyledPaper>
     </Grid>
