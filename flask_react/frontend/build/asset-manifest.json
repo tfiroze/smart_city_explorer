@@ -1,0 +1,11 @@
+{
+  "files": {
+    "main.js": "/static/js/main.a3f600bf.js",
+    "static/media/login-background.jpg": "/static/media/login-background.9707f1079d25c81e5de8.jpg",
+    "index.html": "/index.html",
+    "main.a3f600bf.js.map": "/static/js/main.a3f600bf.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.a3f600bf.js"
+  ]
+}
