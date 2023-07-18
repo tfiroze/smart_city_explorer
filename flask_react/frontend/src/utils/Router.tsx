@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Dashboard } from "../views/Dashboard";
-import { Questionnaire } from "../views/Questionnaire";
 import { Startup } from "../views/Startup";
 
 interface RouterProps {
@@ -12,13 +11,11 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
     <Routes>
       {auth ? (
         <>
-          <Route path="/" element={<Navigate to="/dashboard" />} />
-          <Route path="/questionnaire" element={<Questionnaire />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/*" element={<Dashboard />} />
         </>
       ) : (
         <>
-          <Route path="/" element={<Startup />} />
+          <Route path="/*" element={<Startup />} />
         </>
       )}
     </Routes>
