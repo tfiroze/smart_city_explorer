@@ -132,27 +132,13 @@ export const Login = () => {
 				handleRegisterDialogOpen={handleRegisterDialogOpen}
 			/>
 			<Paper
-				style={{
-					paddingLeft: "20px",
-					marginLeft: "15%",
-					marginRight: "15%",
-					height: "100vh",
-				}}
 				elevation={0}
+				style={{
+					background:'#f7f7f7'
+				}}
 			>
 				<Grid container>
-					<Grid
-						item
-						style={{
-							backgroundImage: `URL(${background})`,
-							backgroundSize: "100% 100%",
-						}}
-						sm={0}
-						xs={0}
-						md={5}
-						lg={5}
-					></Grid>
-					<Grid item xs={12} sm={12} md={7} lg={7} style={{ padding: "10px" }}>
+					<Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
 						<Typography
 							variant="h4"
 							align="center"
@@ -226,7 +212,13 @@ export const Login = () => {
 						<Box mt={3}>
 							<Grid container spacing={2}>
 								<Grid item xs={12} sm={6}>
-									<CButton title="LOGIN" onClick={formValidator} />
+									<CButton
+										title="LOGIN"
+										onClick={formValidator}
+										style={{
+											background:'#1ED760', color: 'white'
+										}}
+									/>
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<Button
