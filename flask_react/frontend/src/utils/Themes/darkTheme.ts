@@ -20,5 +20,34 @@ export default createTheme({
         },
       },
     },
+    MuiSpeedDialAction: {
+      styleOverrides: {
+        staticTooltipLabel: {
+          width: 150,
+        },
+      },
+    },
+    MuiStepper: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'transparent',
+        },
+      },
+    },
+    MuiStepConnector: {
+      styleOverrides: {
+        line: {
+          borderColor: '#ddd',
+        },
+      },
+    },
+    MuiStepLabel: {
+      styleOverrides: {
+        label: {
+          color: '#555',
+          fontWeight: 'bold',
+        },
+      },
+    },
   },
 });

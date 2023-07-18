@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
 	const authContext = useContext(AuthContext);
-	const [autoLogin, setAutoLogin] = useState(false)
+	const [autoLogin, setAutoLogin] = useState(false);
 	const [loginRequest, setLoginRequest] = useState<ILoginRequest>({
 		email: "",
 		password: "",
@@ -32,35 +32,37 @@ export const Login = () => {
 
 	const navigate = useNavigate();
 
-
-
-
 	const [format, setformat] = useState({
 		email: false,
-		password: false
-	})
+		password: false,
+	});
 
 	const formValidator = () => {
-		handleSubmit()
-		if (validateEmail(loginRequest.email) && validatePassword(loginRequest.password)) {
-			handleSubmit()
+		handleSubmit();
+		if (
+			validateEmail(loginRequest.email) &&
+			validatePassword(loginRequest.password)
+		) {
+			handleSubmit();
 		}
-
-	}
+	};
 
 	const validateEmail = (email: string) => {
-		if (email === "" || !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
+		if (
+			email === "" ||
+			!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+		) {
 			setformat((prevFormat) => ({
 				...prevFormat,
-				email: true
+				email: true,
 			}));
-			return false
+			return false;
 		} else {
 			setformat((prevFormat) => ({
 				...prevFormat,
-				email: false
+				email: false,
 			}));
-			return true
+			return true;
 		}
 	};
 
@@ -68,15 +70,15 @@ export const Login = () => {
 		if (password === "") {
 			setformat((prevFormat) => ({
 				...prevFormat,
-				password: true
+				password: true,
 			}));
-			return false
+			return false;
 		} else {
 			setformat((prevFormat) => ({
 				...prevFormat,
-				password: false
+				password: false,
 			}));
-			return true
+			return true;
 		}
 	};
 
@@ -90,11 +92,11 @@ export const Login = () => {
 		let results = smartApi.login(loginRequest, false);
 		if (results.valid) {
 			const d = new Date();
-			d.setTime(d.getTime() + (360 * 24 * 60 * 60 * 1000));
+			d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);
 			let expires = d.toUTCString();
-			setCookie('accessToken', results.token, expires);
-			setCookie('refreshToken', results.refreshToken, expires);
-			console.log('logged In');
+			setCookie("accessToken", results.token, expires);
+			setCookie("refreshToken", results.refreshToken, expires);
+			console.log("logged In");
 
 			authContext.authenticate(true, {
 				first_name: "string",
@@ -102,21 +104,25 @@ export const Login = () => {
 				userUid: "string",
 				email: "string",
 			});
-			localStorage.setItem('userUid', 'string');
-			localStorage.setItem('email', 'string');
-			localStorage.setItem('first_name', 'string');
-			localStorage.setItem('last_name', 'string');
+			localStorage.setItem("userUid", "string");
+			localStorage.setItem("email", "string");
+			localStorage.setItem("first_name", "string");
+			localStorage.setItem("last_name", "string");
 		} else {
 		}
-		navigate('/dashboard')
+		navigate("/dashboard");
 	};
-	function setCookie(name: string, value: string | null | undefined, expires: string) {
+	function setCookie(
+		name: string,
+		value: string | null | undefined,
+		expires: string
+	) {
 		document.cookie = `${name}=${value}; expires=${expires}; path=/`;
 	}
 
 	const handleAutoLoginChange = () => {
-		setAutoLogin(!autoLogin)
-	}
+		setAutoLogin(!autoLogin);
+	};
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
 	return (
@@ -126,28 +132,13 @@ export const Login = () => {
 				handleRegisterDialogOpen={handleRegisterDialogOpen}
 			/>
 			<Paper
-				style={{
-					paddingLeft: "20px",
-					marginLeft: "15%",
-					marginRight: "15%",
-					height: "100vh"
-				}}
 				elevation={0}
+				style={{
+					background:'#f7f7f7'
+				}}
 			>
 				<Grid container>
-
-					<Grid
-						item
-						style={{
-							backgroundImage: `URL(${background})`,
-							backgroundSize: "100% 100%",
-						}}
-						sm={0}
-						xs={0}
-						md={5}
-						lg={5}
-					></Grid>
-					<Grid item xs={12} sm={12} md={7} lg={7} style={{ padding: "10px" }}>
+					<Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
 						<Typography
 							variant="h4"
 							align="center"
@@ -176,7 +167,11 @@ export const Login = () => {
 								value={loginRequest.email}
 								onChange={handleInputOnChange}
 								error={format.email}
-								helperText={format.email ? "Looks like your Email decided to take a vacation! Please enter a valid one." : ""}
+								helperText={
+									format.email
+										? "Looks like your Email decided to take a vacation! Please enter a valid one."
+										: ""
+								}
 							/>
 						</Box>
 						<Box my={2}>
@@ -198,11 +193,20 @@ export const Login = () => {
 								value={loginRequest.password}
 								error={format.password}
 								onChange={handleInputOnChange}
-								helperText={format.password ? "Oops! Your password needs a vacation from errors. Please enter a valid one." : ""}
+								helperText={
+									format.password
+										? "Oops! Your password needs a vacation from errors. Please enter a valid one."
+										: ""
+								}
 							/>
 						</Box>
 						<FormControlLabel
-							control={<Checkbox checked={autoLogin} onChange={handleAutoLoginChange} defaultChecked />}
+							control={
+								<Checkbox
+									checked={autoLogin}
+									onChange={handleAutoLoginChange}
+								/>
+							}
 							label="Remember Me?"
 						/>
 						<Box mt={3}>
@@ -211,6 +215,9 @@ export const Login = () => {
 									<CButton
 										title="LOGIN"
 										onClick={formValidator}
+										style={{
+											background:'#1ED760', color: 'white'
+										}}
 									/>
 								</Grid>
 								<Grid item xs={12} sm={6}>

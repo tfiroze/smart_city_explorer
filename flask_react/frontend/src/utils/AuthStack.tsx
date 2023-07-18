@@ -9,8 +9,6 @@ export const AuthStack = () => {
     userInfo: null,
     token: null,
     authenticate: (cond, info) => {
-      console.log(cond, 'Condition for relogin');
-
       if (cond) {
         setAuthInfo((prevAuthInfo) => ({
           ...prevAuthInfo,
@@ -30,17 +28,13 @@ export const AuthStack = () => {
   const authContextValue: IAuthenticationInfo = {
     ...authInfo,
   };
-  console.log('AuthContext Called', authInfo.authenticated);
-
   useEffect(() => {
     const accessToken = getCookie('accessToken');
     const refreshToken = getCookie('refreshToken');
     checkLoginStatus(accessToken)
-
   }, []);
 
   useEffect(() => {
-    console.log(authInfo, 'Verification'); // Verify that authContext is updated
   }, [authInfo]);
 
   function getCookie(name: string) {
@@ -60,7 +54,6 @@ export const AuthStack = () => {
       const email = localStorage.getItem('email');
       const first_name = localStorage.getItem('first_name');
       const last_name = localStorage.getItem('last_name');
-      console.log(first_name, authInfo, 'APP AUTH');
 
       authInfo.authenticate(true, {
         first_name: first_name,
