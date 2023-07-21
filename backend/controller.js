@@ -11,7 +11,7 @@ let secretKey = 'This is the smart_city_explorer app'
 let connTest = (req, res) => {
     let dbOperation = (conn) => {
         conn.query('select * from usersInfo where userId=1').then(([rows]) => {
-            res.json(rows);
+            res.json(rows)
         }).catch((err) => {
             console.error(err);
         })
@@ -19,6 +19,7 @@ let connTest = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
+// Register (Required: firstname, surname, email, password)
 let register = (req, res) => {
     let dbOperation = (conn) => {
         let sqlStr = 'insert into usersInfo (firstname, surname, email, password) values (?, ?, ?, ?)'
@@ -38,6 +39,7 @@ let register = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
+// Login (Required: email, password)
 let login = (req, res) => {
     let dbOperation = (conn) => {
         sqlStr = 'select userId, firstname, surname, email from usersInfo where email=? and password=?'
@@ -47,8 +49,10 @@ let login = (req, res) => {
                 return res.status(200).send({valid: false, message: 'Failed to login'})
             }
         }).then(([rows]) => {
-            let tokenStr = jwt.sign({rows}, secretKey, {expiresIn: 7*24*60*60})
+            let userIdStr = rows[0].userId
+            let tokenStr = jwt.sign({userIdStr}, secretKey, {expiresIn: 7*24*60*60})
             return res.status(200).send({
+                valid: true,
                 message: 'Succeed to login',
                 token: tokenStr
             })
@@ -57,30 +61,63 @@ let login = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
-// retrive user information
+// Retrive user information (Required: token)
 let userInfo = (req, res) => {
     let token = req.headers['token']
     try {
-        let decode = jwt.verify(token, secretKey).rows;
+        let decode = jwt.verify(token, secretKey).userIdStr;
         let dbOperation = (conn) => {
             let sqlStr = 'select userId, firstname, surname, email from usersInfo where userId=?'
-            conn.query(sqlStr, [decode[0].userId], (err, result) => {
+            conn.query(sqlStr, [decode], (err, result) => {
                 if(err) return res.status(200).send(err.message)
             }).then(([rows]) => {
-                return res.status(200).send(rows)
+                return res.status(200).json(rows[0])
             })
         }
         createSSHTunnel(dbOperation)
     } catch (err) {
-        console.log(err);
+        console.log(err)
     }
 }
 
+// Update user information (Required: firstname, surname, email, userId)
+let userUpdate = (req, res) => {
+    let dbOperation = (conn) => {
+        const sqlStr = `update usersInfo set firstname=?, surname=? ,email=? WHERE userId=?`
+        conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, req.body.userId], (err, result) => {
+            if(err) return res.status(200).send(err.message)
+            }).then(([rows]) => {
+            return res.status(200).send({
+                valid: true,
+                message: 'Succeed to update user information'
+            })
+        })
+    }
+    createSSHTunnel(dbOperation)
+}
+
+// update user password (Required: new password, userId)
+let pwdUpdate = (req, res) => {
+    let dbOperation = (conn) => {
+        const sqlStr = 'update usersInfo set password=? WHERE userId=?'
+        conn.query(sqlStr, [md5(req.body.password), req.body.userId], (err, result) => {
+            if(err) return res.status(200).send(err.message)
+        }).then(([rows]) => {
+            return res.status(200).send({
+                valid: true,
+                message: 'Succeed to update password'
+            })
+        })
+    }
+    createSSHTunnel(dbOperation)
+}
 
 
 module.exports = {
+    connTest,
     register,
     login,
     userInfo,
-    connTest
+    userUpdate,
+    pwdUpdate
 }

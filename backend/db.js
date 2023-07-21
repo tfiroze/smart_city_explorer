@@ -1,3 +1,6 @@
+// Login information for root user:
+    // email: root@example.com
+    // password: root_pwd
 
 const mysql = require('mysql2/promise');
 const express = require('express');
