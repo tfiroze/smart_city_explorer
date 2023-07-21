@@ -1,58 +1,76 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const md5 = require('md5')
-const db = require('./db')
+const createSSHTunnel = require('./db')
 
 let secretKey = 'This is the smart_city_explorer app'
 
-let indexPage = (req, res) => {
-    res.sendFile(__dirname + '/temp_public/index.html')
+
+
+// Testing Database Connection
+let connTest = (req, res) => {
+    let dbOperation = (conn) => {
+        conn.query('select * from usersInfo where userId=1').then(([rows]) => {
+            res.json(rows);
+        }).catch((err) => {
+            console.error(err);
+        })
+    }
+    createSSHTunnel(dbOperation)
 }
 
 let register = (req, res) => {
-    let sqlStr = 'insert into users (firstName, surname, email, password) values (?, ?, ?, ?)'
-    db.query(sqlStr, [req.body.firstName, req.body.surname, req.body.email, md5(req.body.password)], (err, result) => {
-    if(err) {
-        console.log(err.message)
-        return res.status(200).send({valid: false, message: 'Failed to register'})
+    let dbOperation = (conn) => {
+        let sqlStr = 'insert into usersInfo (firstname, surname, email, password) values (?, ?, ?, ?)'
+        conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, md5(req.body.password)], (err, result) => {
+            if(err) {
+                console.log(err.message)
+                return res.status(200).send({valid: false, message: 'Failed to register'})
+            }
+        }).then(([rows]) => {
+            if(rows.affectedRows === 1){
+                return res.status(200).send({valid: true, message: 'Succeed to register'})
+            }else {
+                return res.status(200).send({valid: false, message: 'Failed to register'})
+            }
+        })
     }
-    // determine if the insertion was successful
-    if(result.affectedRows === 1) {
-        return res.status(200).send({valid: true, message: 'Succeed to register'})
-    }
-})
+    createSSHTunnel(dbOperation)
 }
 
 let login = (req, res) => {
-    sqlStr = 'select * from users where email=? and password=?'
-    db.query(sqlStr, [req.body.email, md5(req.body.password)], (err, result) => {
-        if(err) {
-            return res.status(200).send({valid: false, message: 'Failed to login'})
-        }
-        if(result && result.length > 0){
-            let tokenStr = jwt.sign({result}, secretKey, {expiresIn: '300s'})
+    let dbOperation = (conn) => {
+        sqlStr = 'select userId, firstname, surname, email from usersInfo where email=? and password=?'
+        conn.query(sqlStr, [req.body.email, md5(req.body.password)], (err, result) => {
+            if(err) {
+                console.error(err);
+                return res.status(200).send({valid: false, message: 'Failed to login'})
+            }
+        }).then(([rows]) => {
+            let tokenStr = jwt.sign({rows}, secretKey, {expiresIn: 7*24*60*60})
             return res.status(200).send({
                 message: 'Succeed to login',
                 token: tokenStr
             })
-        }else {
-            return res.status(200).send({authentication:false, message:'Failed to login'})
-        }
-    })
+        })
+    }
+    createSSHTunnel(dbOperation)
 }
 
 // retrive user information
 let userInfo = (req, res) => {
     let token = req.headers['token']
     try {
-        let decode = jwt.verify(token, secretKey).result;
-        console.log(decode)
-        // RETRIEVE
-        let sqlStr = 'select firstName,surname,email from users where email=?'
-        db.query(sqlStr, [decode[0].email], (err, result) => {
-            if(err) return res.status(200).send(err.message)
-            return res.status(200).send(result)
-})
+        let decode = jwt.verify(token, secretKey).rows;
+        let dbOperation = (conn) => {
+            let sqlStr = 'select userId, firstname, surname, email from usersInfo where userId=?'
+            conn.query(sqlStr, [decode[0].userId], (err, result) => {
+                if(err) return res.status(200).send(err.message)
+            }).then(([rows]) => {
+                return res.status(200).send(rows)
+            })
+        }
+        createSSHTunnel(dbOperation)
     } catch (err) {
         console.log(err);
     }
@@ -61,8 +79,8 @@ let userInfo = (req, res) => {
 
 
 module.exports = {
-    indexPage,
     register,
     login,
-    userInfo
+    userInfo,
+    connTest
 }

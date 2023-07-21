@@ -2,6 +2,7 @@ let express = require('express')
 let cors = require('cors')
 let path = require('path')
 let router = require('./router')
+const createSSHTunnel = require('./db')
 
 let app = express()
 
@@ -14,5 +15,5 @@ app.get('*', (req, res) => {
 })
 
 app.listen(5000, () => {
-    console.log('The server is running on http://127.0.0.1')
+    console.log('The server is running on http://127.0.0.1:5000')
 })
