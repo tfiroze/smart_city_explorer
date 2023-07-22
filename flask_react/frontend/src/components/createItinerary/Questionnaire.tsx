@@ -146,7 +146,7 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                   />
                 </DemoItem>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              {/* <Grid item xs={12} sm={6}>
                 <DemoItem label="Start Time">
                   <DesktopTimePicker
                     defaultValue={dayjs()}
@@ -161,7 +161,7 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                     onChange={(value) => changeTime(value, "end")}
                   />
                 </DemoItem>
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <DemoItem label="Interests">
                   <Autocomplete
@@ -181,7 +181,7 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                   />
                 </DemoItem>
               </Grid>
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <DemoItem label="Sub Selection">
                   <Autocomplete
                     multiple
@@ -199,9 +199,9 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                     )}
                   />
                 </DemoItem>
-              </Grid>
+              </Grid> */}
               <Grid item xs={6}>
-                <DemoItem label="Budget">
+                {/* <DemoItem label="Budget">
                   <TextField
                     onChange={(value) => {
                       setBudget(parseInt(value.target.value));
@@ -214,10 +214,10 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                       startAdornment: <CreditScoreIcon />,
                     }}
                   />
-                </DemoItem>
+                </DemoItem> */}
               </Grid>
               <Grid item xs={6}>
-                <DemoItem label="Minimum Rating">
+                {/* <DemoItem label="Minimum Rating">
                   <Rating
                     name="text-feedback"
                     value={starsSelected}
@@ -227,7 +227,7 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                       <StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />
                     }
                   />
-                </DemoItem>
+                </DemoItem> */}
               </Grid>
               <Grid item xs={12}>
                 <Box textAlign="center">

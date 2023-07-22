@@ -10,15 +10,39 @@ import {
 	Step,
 	StepLabel,
 	Stepper,
+	styled,
 } from "@mui/material";
 import React, { useState, ChangeEvent } from "react";
 import { SelectVenue } from "./NewItemSteps/SelectVenue";
 import { InviteFriends } from "./NewItemSteps/InviteFriends";
 import { ConfirmNewItem } from "./NewItemSteps/ConfirmNewItem";
 import IVenueItem from "../../models/IVenueItem";
-import { TimeSelection } from './NewItemSteps/TimeSelection';
+import { TimeSelection } from "./NewItemSteps/TimeSelection";
 
 const steps = ["Time Selection", "Venue Selection", "Invites", "Confirm"];
+
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+	"& .MuiDrawer-paper": {
+		width: "100%",
+		maxWidth: "400px",
+		[theme.breakpoints.up("sm")]: {
+			maxWidth: "600px",
+		},
+		[theme.breakpoints.up("md")]: {
+			maxWidth: "800px",
+		},
+	},
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+	width: "100%",
+	padding: theme.spacing(2),
+	marginTop: theme.spacing(3),
+}));
+
+const StyledStepper = styled(Stepper)(({ theme }) => ({
+	marginTop: theme.spacing(2),
+}));
 
 interface IProps {
 	open: boolean;
@@ -29,7 +53,7 @@ interface IProps {
 export const VenueSelectionControls: React.FC<IProps> = ({
 	open,
 	changeOpenState,
-	addItem
+	addItem,
 }) => {
 	const [itinerary, setItinerary] = useState<IVenueItem>({
 		budget: 0,
@@ -40,8 +64,8 @@ export const VenueSelectionControls: React.FC<IProps> = ({
 		timeTo: "",
 		title: "",
 		venueId: "",
-		conflictsWithPrevouse: false,
-		invitedParticipant: []
+		// conflictsWithPrevious: false,
+		invitedParticipant: [],
 	});
 
 	const [currentStep, setCurrentStep] = useState(0);
@@ -55,8 +79,8 @@ export const VenueSelectionControls: React.FC<IProps> = ({
 	};
 
 	const handleConfirm = () => {
-		addItem(itinerary)
-	}
+		addItem(itinerary);
+	};
 
 	const renderStep = () => {
 		switch (currentStep) {
@@ -97,29 +121,24 @@ export const VenueSelectionControls: React.FC<IProps> = ({
 				return null;
 		}
 	};
+
 	return (
-		<Drawer anchor="right" open={open} onClose={changeOpenState}>
+		<StyledDrawer anchor="right" open={open} onClose={changeOpenState}>
 			<Grid container spacing={2} p={2}>
 				<Grid item xs={12}>
 					<Alert severity="info">Venue Planner Controls</Alert>
 				</Grid>
-				<Paper elevation={3} sx={{ width: "100%", p: 2, marginTop: "15px" }}>
-					<Stepper activeStep={currentStep}>
-						{steps.map((label, index) => {
-							const labelProps: {
-								optional?: React.ReactNode;
-								error?: boolean;
-							} = {};
-							return (
-								<Step key={label}>
-									<StepLabel {...labelProps}>{label}</StepLabel>
-								</Step>
-							);
-						})}
-					</Stepper>
-				</Paper>
+				<StyledPaper elevation={3}>
+					<StyledStepper activeStep={currentStep}>
+						{steps.map((label, index) => (
+							<Step key={label}>
+								<StepLabel>{label}</StepLabel>
+							</Step>
+						))}
+					</StyledStepper>
+				</StyledPaper>
 			</Grid>
 			{renderStep()}
-		</Drawer>
+		</StyledDrawer>
 	);
 };

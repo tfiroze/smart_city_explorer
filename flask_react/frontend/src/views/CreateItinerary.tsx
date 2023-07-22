@@ -9,35 +9,35 @@ import {
   Paper,
   Typography,
   Divider,
+  styled,
+  Fab,
+  Tooltip,
 } from "@mui/material";
 import VenueSelection from "../components/createItinerary/VenueSelection";
 import { Questionnaire } from "../components/createItinerary/Questionnaire";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import { styled } from "@mui/system";
 import IVenueItem from "../models/IVenueItem";
 import { ConfirmItineraryItems } from "../components/createItinerary/ConfirmItineraryItems";
 import IItinerary from "../models/IItinerary";
+import { PickRecommendation } from "../components/createItinerary/PickRecommendation";
 
-const steps = ["Trip Information", "Edit Itinerary", "Confirm"];
+const steps = ["Trip Information", "Pick Recommendation", "Edit Itinerary", "Confirm"];
 
-const CancelButton = styled(Button)`
-  @media (max-width: 600px) {
-    width: 100%;
-    margin-top: 16px;
-  }
-`;
-
-const SmallCancelButton = styled(CancelButton)`
-  padding: 6px;
-  font-size: 14px;
-`;
+const StyledFab = styled(Fab)(({ theme }) => ({
+  position: "fixed",
+  bottom: theme.spacing(2),
+  right: theme.spacing(2),
+}));
 
 interface IProps {
   handleCreateItinerary: () => void;
   addItem: (item: IItinerary) => void;
 }
 
-export const CreateItinerary: React.FC<IProps> = ({ handleCreateItinerary, addItem }) => {
+export const CreateItinerary: React.FC<IProps> = ({
+  handleCreateItinerary,
+  addItem,
+}) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [venueItems, setVenueItems] = useState<IVenueItem[]>([]);
@@ -48,72 +48,73 @@ export const CreateItinerary: React.FC<IProps> = ({ handleCreateItinerary, addIt
     endTime: "",
     startTime: "",
     name: "",
-    plan: []
+    plan: [],
   });
 
   const finelize = (data: IVenueItem[]) => {
-    setVenueItems(data)
-    setCurrentStep(currentStep + 1)
-    setItinerary({ ...itinerary, plan: data })
-  }
+    setVenueItems(data);
+    setCurrentStep(currentStep + 1);
+    setItinerary({ ...itinerary, plan: data });
+  };
 
   const moveNextStep = (data: IItinerary) => {
-    setItinerary(data)
+    setItinerary(data);
     setCurrentStep(currentStep + 1);
-  }
-
+  };
 
   const renderStep = () => {
     switch (currentStep) {
       case 0:
         return <Questionnaire showVenues={moveNextStep} />;
       case 1:
-        return <VenueSelection moveNext={finelize} />;
+        return <PickRecommendation />
       case 2:
+        return <VenueSelection moveNext={finelize} />;
+      case 3:
         return <ConfirmItineraryItems completed={addItem} data={itinerary} />;
       default:
         return null;
     }
   };
 
-  return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={1}>
-        <Box m={1}>
-          <SmallCancelButton
-            startIcon={<ArrowBackIosIcon />}
-            onClick={handleCreateItinerary}
-            color="secondary"
-            variant="outlined"
-          >
-            Cancel
-          </SmallCancelButton>
-        </Box>
-      </Grid>
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    } else {
+      handleCreateItinerary();
+    }
+  };
 
-      <Grid item xs={10} md={10}>
-        <Paper elevation={3} sx={{ width: "100%", p: 2 }}>
-          <Stepper activeStep={currentStep} sx={{ mx: "auto" }}>
-            {steps.map((label, index) => {
-              const labelProps: {
-                optional?: React.ReactNode;
-                error?: boolean;
-              } = {};
-              return (
+  return (
+    <>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={12}>
+          <Paper elevation={3}>
+            <Stepper activeStep={currentStep} sx={{ mx: "auto" }}>
+              {steps.map((label, index) => (
                 <Step key={label}>
-                  <StepLabel {...labelProps}>{label}</StepLabel>
+                  <StepLabel>{label}</StepLabel>
                 </Step>
-              );
-            })}
-          </Stepper>
-        </Paper>
+              ))}
+            </Stepper>
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Divider />
+        </Grid>
+        <Grid item xs={12}>
+          {renderStep()}
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <Divider />
-      </Grid>
-      <Grid item xs={12}>
-        {renderStep()}
-      </Grid>
-    </Grid>
+      <Tooltip title="Back">
+        <StyledFab
+          color="secondary"
+          aria-label="Back"
+          onClick={handleBack}
+        >
+          <ArrowBackIosIcon />
+        </StyledFab>
+      </Tooltip>
+    </>
   );
 };

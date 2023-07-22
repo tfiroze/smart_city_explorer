@@ -10,7 +10,7 @@ import {
 	Grid,
 	TextField,
 } from "@mui/material";
-import React, { ChangeEvent, useState, useEffect } from "react";
+import React, { ChangeEvent, useState } from "react";
 import IRegisterRequest from "../../models/IRegisterRequest";
 import { smartApi } from "../../utils/apiCalls";
 import { CButton } from "../common/button";
@@ -24,6 +24,7 @@ export const Register: React.FC<IProps> = ({
 	open,
 	handleRegisterDialogOpen,
 }) => {
+
 	const [registerRequest, setRegisterRequest] = useState<IRegisterRequest>({
 		firstName: "",
 		surname: "",
@@ -161,12 +162,10 @@ export const Register: React.FC<IProps> = ({
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
-			<DialogTitle id="alert-dialog-title">
-				Create your free account
-			</DialogTitle>
+			<DialogTitle id="alert-dialog-title">{"Let's Create Your Free Account"}</DialogTitle>
 			<Divider />
 			<DialogContent>
-				<Grid container spacing={2}>
+				<Grid container spacing={3}>
 					<Grid item md={6} xs={12} lg={6}>
 						<Box my={2}>
 							<TextField
@@ -272,18 +271,18 @@ export const Register: React.FC<IProps> = ({
 				{errorMessage != null && <Alert severity="error">{errorMessage}</Alert>}
 			</DialogContent>
 			<DialogActions>
-				<CButton 
-					title="Cancle"
+				<CButton
+					title="Cancel"
 					style={{
-						border:'1px solid #1ED760', color: '#1ED760', background:'white'
+						border: '1px solid #008080', color: '#008080', background: 'white'
 					}}
-					 onClick={handleRegisterDialogOpen}/>
-					
+					onClick={handleRegisterDialogOpen} />
+
 				<CButton
 					title="REGISTER"
 					onClick={formValidator}
 					style={{
-						background:'#1ED760', color: 'white'
+						background: '#008080', color: 'white'
 					}}
 				/>
 			</DialogActions>

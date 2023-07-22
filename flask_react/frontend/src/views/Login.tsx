@@ -20,6 +20,9 @@ import { smartApi } from "../utils/apiCalls";
 import { AuthContext } from "../utils/AuthContext";
 import { CButton } from "../components/common/button";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "@mui/lab";
+import { Card, CardContent, CardActions, Snackbar } from "@mui/material";
+
 
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
@@ -134,7 +137,7 @@ export const Login = () => {
 			<Paper
 				elevation={0}
 				style={{
-					background:'#f7f7f7'
+					background: '#f7f7f7'
 				}}
 			>
 				<Grid container>
@@ -216,7 +219,7 @@ export const Login = () => {
 										title="LOGIN"
 										onClick={formValidator}
 										style={{
-											background:'#1ED760', color: 'white'
+											background: '#008080', color: 'white'
 										}}
 									/>
 								</Grid>
