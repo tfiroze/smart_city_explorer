@@ -2,10 +2,9 @@ const express = require('express')
 const jwt = require('jsonwebtoken')
 const md5 = require('md5')
 const createSSHTunnel = require('./db')
+const captchaCheck = require('./services/emailVerification')
 
 let secretKey = 'This is the smart_city_explorer app'
-
-
 
 // Testing Database Connection
 let connTest = (req, res) => {
@@ -19,8 +18,12 @@ let connTest = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
-// Register (Required: firstname, surname, email, password)
+// Register (Required: firstname, surname, email, captcha, password)
 let register = (req, res) => {
+    let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
+    if (!captchaCheckResult.isValid) {
+        return res.status(400).send({valid: false, message: 'captcha is not valid'})
+    }
     let dbOperation = (conn) => {
         let sqlStr = 'insert into usersInfo (firstname, surname, email, password) values (?, ?, ?, ?)'
         conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, md5(req.body.password)], (err, result) => {
