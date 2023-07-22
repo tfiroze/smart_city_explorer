@@ -52,16 +52,15 @@ const QuestionnaireButton = styled(Button)(({ theme }) => ({
 }));
 
 interface IProps {
-  showVenues: (data: IItinerary) => void;
+  updateItinerary: (data: IItinerary) => void;
+  currentItinerary: IItinerary;
 }
 
-export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
+export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [starsSelected, setStarsSelected] = useState<number>(0.0);
   const [subCategory, setSubCategory] = useState<string[]>([]);
-  const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<
-    string[]
-  >([]);
+  const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<string[]>([]);
   const [hovering, setHovering] = useState(false);
   const [budget, setBudget] = useState(0);
   const [date, setDate] = useState("");
@@ -70,20 +69,27 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
 
   const changeTime = (time: Dayjs | null, type: "start" | "end" | "date") => {
     let date = "";
+    let temp = currentItinerary;
     switch (type) {
       case "date":
         date = `${time?.year()} ${time?.month()} ${time?.day()}`;
         setDate(date);
+        temp.date = date;
         break;
       case "start":
         date = `${time?.hour()} ${time?.minute()}`;
         setStartTime(date);
+        temp.startTime = date;
+
         break;
       case "end":
         date = `${time?.hour()} ${time?.minute()}`;
         setEndTime(date);
+        temp.endTime = date;
+
         break;
     }
+    updateItinerary(temp)
   };
 
   const handleStarsSelectionChange = (event: React.ChangeEvent<any>) => {
@@ -146,22 +152,6 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                   />
                 </DemoItem>
               </Grid>
-              {/* <Grid item xs={12} sm={6}>
-                <DemoItem label="Start Time">
-                  <DesktopTimePicker
-                    defaultValue={dayjs()}
-                    onChange={(value) => changeTime(value, "start")}
-                  />
-                </DemoItem>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <DemoItem label="End Time">
-                  <DesktopTimePicker
-                    defaultValue={dayjs()}
-                    onChange={(value) => changeTime(value, "end")}
-                  />
-                </DemoItem>
-              </Grid> */}
               <Grid item xs={12}>
                 <DemoItem label="Interests">
                   <Autocomplete
@@ -180,75 +170,6 @@ export const Questionnaire: React.FC<IProps> = ({ showVenues }) => {
                     )}
                   />
                 </DemoItem>
-              </Grid>
-              {/* <Grid item xs={12}>
-                <DemoItem label="Sub Selection">
-                  <Autocomplete
-                    multiple
-                    id="tags-standard"
-                    options={subCategory}
-                    value={selectedSubCategoryTags}
-                    onChange={handleSubTagChange}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        variant="outlined"
-                        label="Select Categories"
-                        placeholder="Tags"
-                      />
-                    )}
-                  />
-                </DemoItem>
-              </Grid> */}
-              <Grid item xs={6}>
-                {/* <DemoItem label="Budget">
-                  <TextField
-                    onChange={(value) => {
-                      setBudget(parseInt(value.target.value));
-                    }}
-                    id="outlined-basic"
-                    style={{ textAlign: "right" }}
-                    type="number"
-                    variant="outlined"
-                    InputProps={{
-                      startAdornment: <CreditScoreIcon />,
-                    }}
-                  />
-                </DemoItem> */}
-              </Grid>
-              <Grid item xs={6}>
-                {/* <DemoItem label="Minimum Rating">
-                  <Rating
-                    name="text-feedback"
-                    value={starsSelected}
-                    onChange={handleStarsSelectionChange}
-                    precision={0.5}
-                    emptyIcon={
-                      <StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />
-                    }
-                  />
-                </DemoItem> */}
-              </Grid>
-              <Grid item xs={12}>
-                <Box textAlign="center">
-                  <QuestionnaireButton
-                    variant="contained"
-                    color="primary"
-                    onClick={() =>
-                      showVenues({
-                        budget: budget,
-                        comments: "",
-                        date: date,
-                        endTime: endTime,
-                        startTime: startTime,
-                        name: "",
-                        plan: [],
-                      })
-                    }
-                  >
-                    Generate Itinerary
-                  </QuestionnaireButton>
-                </Box>
               </Grid>
             </Grid>
           </DemoContainer>

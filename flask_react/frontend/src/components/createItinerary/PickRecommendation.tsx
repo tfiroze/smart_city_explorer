@@ -1,11 +1,18 @@
-import { Grid, Typography, Paper, Checkbox, Divider } from "@mui/material";
+import {
+    Grid,
+    Typography,
+    Paper,
+    Checkbox,
+    Divider,
+    Alert,
+    styled,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
 import shoppingDummyData from "../../temp/dummy_data/shoppingData.json";
 import restaurantDummyData from "../../temp/dummy_data/restaurantData.json";
 import { MapContainer, TileLayer, Popup, useMap, Marker } from "react-leaflet";
 import { Map, LatLngLiteral, LatLng } from "leaflet";
-import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.css";
 import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
@@ -26,6 +33,26 @@ let DefaultIcon = L.icon({
     shadowUrl: iconShadow,
 });
 L.Marker.prototype.options.icon = DefaultIcon;
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    padding: theme.spacing(2),
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+    borderRadius: theme.spacing(2),
+}));
+
+const StyledHeading = styled(Typography)(({ theme }) => ({
+    fontWeight: "bold",
+    marginBottom: theme.spacing(2),
+}));
+
+const StyledVenueName = styled(Typography)(({ theme }) => ({
+    fontSize: theme.typography.pxToRem(18),
+    fontWeight: "bold",
+    marginBottom: theme.spacing(1),
+}));
 
 export const PickRecommendation = () => {
     const [thingsTodo, setThingsTodo] = useState<any[]>([]);
@@ -58,9 +85,9 @@ export const PickRecommendation = () => {
 
     return (
         <>
-            <Grid container spacing={2} rowGap={1}>
+            <Grid container spacing={2} rowGap={1} style={{ marginTop: '20px' }}>
                 <Grid item xs={12}>
-                    <Typography variant="h6">Things to do</Typography>
+                    <Alert severity="info">Things to do</Alert>
                 </Grid>
                 {thingsTodo.map((item, index) => {
                     return (
@@ -72,10 +99,10 @@ export const PickRecommendation = () => {
                             onClick={() => selectThingsTodo(index)}
                             className="unselectable"
                         >
-                            <Paper elevation={item.selected ? 5 : 1}>
+                            <StyledPaper elevation={item.selected ? 5 : 1}>
                                 <Grid container>
                                     <Grid item xs={11}>
-                                        <Typography variant="h6">{item.venue_name}</Typography>
+                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
                                     </Grid>
                                     <Grid item xs={1} display="flex" justifyContent="flex-end">
                                         <Checkbox checked={item.selected} />
@@ -127,14 +154,14 @@ export const PickRecommendation = () => {
                                         </MapContainer>
                                     </Grid>
                                 </Grid>
-                            </Paper>
+                            </StyledPaper>
                         </Grid>
                     );
                 })}
             </Grid>
-            <Grid container spacing={2} rowGap={1}>
+            <Grid container spacing={2} rowGap={1} style={{ marginTop: '20px' }}>
                 <Grid item xs={12}>
-                    <Typography variant="h6">Restaurants</Typography>
+                    <Alert severity="info">Restaurants</Alert>
                 </Grid>
                 {resturantTodo.map((item, index) => {
                     return (
@@ -146,10 +173,10 @@ export const PickRecommendation = () => {
                             onClick={() => selectResturantTodo(index)}
                             className="unselectable"
                         >
-                            <Paper elevation={item.selected ? 5 : 1}>
+                            <StyledPaper elevation={item.selected ? 5 : 1}>
                                 <Grid container>
                                     <Grid item xs={11}>
-                                        <Typography variant="h6">{item.venue_name}</Typography>
+                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
                                     </Grid>
                                     <Grid item xs={1} display="flex" justifyContent="flex-end">
                                         <Checkbox checked={item.selected} />
@@ -201,14 +228,14 @@ export const PickRecommendation = () => {
                                         </MapContainer>
                                     </Grid>
                                 </Grid>
-                            </Paper>
+                            </StyledPaper>
                         </Grid>
                     );
                 })}
             </Grid>
-            <Grid container spacing={2} rowGap={1}>
+            <Grid container spacing={2} rowGap={1} style={{ marginTop: '20px' }}>
                 <Grid item xs={12}>
-                    <Typography variant="h6">Shopping</Typography>
+                    <Alert severity="info">Shopping</Alert>
                 </Grid>
                 {shoppingTodo.map((item, index) => {
                     return (
@@ -220,10 +247,10 @@ export const PickRecommendation = () => {
                             onClick={() => selectShoppingTodo(index)}
                             className="unselectable"
                         >
-                            <Paper elevation={item.selected ? 5 : 1}>
+                            <StyledPaper elevation={item.selected ? 5 : 1}>
                                 <Grid container>
                                     <Grid item xs={11}>
-                                        <Typography variant="h6">{item.venue_name}</Typography>
+                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
                                     </Grid>
                                     <Grid item xs={1} display="flex" justifyContent="flex-end">
                                         <Checkbox checked={item.selected} />
@@ -275,7 +302,7 @@ export const PickRecommendation = () => {
                                         </MapContainer>
                                     </Grid>
                                 </Grid>
-                            </Paper>
+                            </StyledPaper>
                         </Grid>
                     );
                 })}

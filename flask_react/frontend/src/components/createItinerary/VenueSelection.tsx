@@ -14,7 +14,8 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  DialogContentText, DialogActions,
+  DialogContentText,
+  DialogActions,
   SpeedDial,
   SpeedDialAction,
   makeStyles,
@@ -42,6 +43,9 @@ import venueData from "../../temp/dummy_data/venueData.json";
 import { ViewVenueItem } from "./ViewVenueItem";
 import IVenueItem from "../../models/IVenueItem";
 import { VenueSelectionControls } from "./VenueSelectionControls";
+import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
+import PaymentIcon from "@mui/icons-material/Payment";
+//#region styled crap
 
 const slideInAnimation = keyframes`
   0% {
@@ -55,10 +59,10 @@ const slideInAnimation = keyframes`
 `;
 
 const StyledDivider = styled(Divider)`
-  background-color: #008080;
-  margin: 24px 0;
-  height: 2px;
-  animation: ${keyframes`
+	background-color: #008080;
+	margin: 24px 0;
+	height: 2px;
+	animation: ${keyframes`
     from {
       width: 0;
     }
@@ -69,50 +73,50 @@ const StyledDivider = styled(Divider)`
 `;
 
 const StyledScheduleIcon = styled(ScheduleIcon)`
-  color: #008080;
-  margin-right: 4px;
-  margin-top: 4px;
-  animation: ${slideInAnimation} 0.5s ease-in-out;
+	color: #008080;
+	margin-right: 4px;
+	margin-top: 4px;
+	animation: ${slideInAnimation} 0.5s ease-in-out;
 `;
 
 const StyledLocationOnIcon = styled(LocationOnIcon)`
-  color: #008080;
-  margin-right: 2px;
-  animation: ${slideInAnimation} 0.5s ease-in-out;
-  position: relative;
-  top: 2px;
+	color: #008080;
+	margin-right: 2px;
+	animation: ${slideInAnimation} 0.5s ease-in-out;
+	position: relative;
+	top: 2px;
 `;
 
 const StyledPeopleIcon = styled(PeopleIcon)`
-  color: #008080;
-  margin-right: 4px;
-  animation: ${slideInAnimation} 0.5s ease-in-out;
+	color: #008080;
+	margin-right: 4px;
+	animation: ${slideInAnimation} 0.5s ease-in-out;
 `;
 
 const CenteredCardActions = styled(CardActions)`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 8px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 8px;
 `;
 
 const StyledTimeWrapper = styled("div")`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 12px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-top: 12px;
 `;
 
 const StyledTimeLabel = styled(Typography)`
-  color: #008080;
-  margin-right: 4px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
+	color: #008080;
+	margin-right: 4px;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
 `;
 
 const StyledTime = styled(Typography)`
-  font-weight: 600;
+	font-weight: 600;
 `;
 
 const DividerWrapper = styled("div")`
@@ -140,6 +144,8 @@ const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
 	margin: 0 8px;
 `;
 
+//#endregion
+
 interface IProps {
   moveNext: (data: IVenueItem[]) => void;
 }
@@ -149,7 +155,9 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
   const [itinerary, setItinerary] = React.useState<IVenueItem[]>([]);
   const [controlsOpen, setControlsOpen] = React.useState(false);
   const [viewVenue, setViewVenue] = React.useState(false);
-  const [viewVenueItem, setViewVenueItem] = React.useState<IVenueItem | null>(null);
+  const [viewVenueItem, setViewVenueItem] = React.useState<IVenueItem | null>(
+    null
+  );
   const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
 
   useEffect(() => {
@@ -181,8 +189,6 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
   };
 
   const identifyConflicts = (data: IVenueItem[]) => {
-    // Implement conflict identification logic here
-    // Currently just returning the input data as is
     return data;
   };
 
@@ -223,7 +229,11 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
   return (
     <Grid container justifyContent="center">
       {viewVenueItem && (
-        <ViewVenueItem close={closeViewItem} item={viewVenueItem} open={viewVenue} />
+        <ViewVenueItem
+          close={closeViewItem}
+          item={viewVenueItem}
+          open={viewVenue}
+        />
       )}
       <Dialog
         open={errorDialogOpen}
@@ -231,7 +241,9 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{"Invalid Time Range"}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {"Invalid Time Range"}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Please enter a valid time range.
@@ -244,24 +256,49 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
         </DialogActions>
       </Dialog>
       <Grid item xs={12} style={{ maxHeight: "70vh", overflowY: "scroll" }}>
-        <Grid item xs={12} display='flex' justifyContent='center'>
-          <Button onClick={() => moveNext(itinerary)} variant='contained'>Finish</Button>
-        </Grid>
+
         <Timeline position="alternate-reverse">
           {itinerary.map((item, index) => (
             <TimelineItem key={index}>
               <TimelineOppositeContent>
-                <StyledTimeWrapper>
-                  <StyledTimeLabel variant="subtitle2" color="textSecondary">
-                    From
-                  </StyledTimeLabel>
-                  <StyledTime variant="subtitle2">{item.timeFrom}</StyledTime>
-                  <ArrowForwardIcon sx={{ color: "#008080" }} />
-                  <StyledTimeLabel variant="subtitle2" color="textSecondary">
-                    To
-                  </StyledTimeLabel>
-                  <StyledTime variant="subtitle2">{item.timeTo}</StyledTime>
-                </StyledTimeWrapper>
+                <Grid container>
+                  <StyledTimeWrapper>
+                    <StyledTimeLabel variant="subtitle2" color="textSecondary">
+                      From
+                    </StyledTimeLabel>
+                    <StyledTime variant="subtitle2">{item.timeFrom}</StyledTime>
+                    <ArrowForwardIcon sx={{ color: "#008080" }} />
+                    <StyledTimeLabel variant="subtitle2" color="textSecondary">
+                      To
+                    </StyledTimeLabel>
+                    <StyledTime variant="subtitle2">{item.timeTo}</StyledTime>
+                  </StyledTimeWrapper>
+                </Grid>
+                <Grid container>
+                  <Grid item xs={12}>
+                    <div
+                      style={{
+                        justifyContent: "left",
+                        display: "flex",
+                        alignContent: "center",
+                      }}
+                    >
+                      <LocalTaxiIcon style={{ marginRight: '5px' }} />
+                      15 minutes
+                    </div>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <div
+                      style={{
+                        justifyContent: "left",
+                        display: "flex",
+                        alignContent: "center",
+                      }}
+                    >
+                      <PaymentIcon style={{ marginRight: '5px' }} /> $22.23
+                    </div>
+                  </Grid>
+                </Grid>
               </TimelineOppositeContent>
               <TimelineSeparator>
                 <TimelineDot color="primary" variant="outlined">
@@ -310,7 +347,9 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
                           <strong>Invited: </strong>
                         </Typography>
                         <Typography variant="body2" component="span">
-                          {item.invitedParticipant?.length ? item.invitedParticipant?.length : 0}
+                          {item.invitedParticipant?.length
+                            ? item.invitedParticipant?.length
+                            : 0}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -382,7 +421,9 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
               <SentimentVerySatisfiedIcon />
             )
           }
-          tooltipTitle={introvertMode ? "Introvert Mode: ON" : "Introvert Mode: OFF"}
+          tooltipTitle={
+            introvertMode ? "Introvert Mode: ON" : "Introvert Mode: OFF"
+          }
           onClick={handleIntrovertModeToggle}
         />
       </SpeedDial>

@@ -20,8 +20,14 @@ import IVenueItem from "../models/IVenueItem";
 import { ConfirmItineraryItems } from "../components/createItinerary/ConfirmItineraryItems";
 import IItinerary from "../models/IItinerary";
 import { PickRecommendation } from "../components/createItinerary/PickRecommendation";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-const steps = ["Trip Information", "Pick Recommendation", "Edit Itinerary", "Confirm"];
+const steps = [
+  "Trip Information",
+  "Pick Recommendation",
+  "Edit Itinerary",
+  "Confirm",
+];
 
 const StyledFab = styled(Fab)(({ theme }) => ({
   position: "fixed",
@@ -57,17 +63,16 @@ export const CreateItinerary: React.FC<IProps> = ({
     setItinerary({ ...itinerary, plan: data });
   };
 
-  const moveNextStep = (data: IItinerary) => {
+  const updateItinerary = (data: IItinerary) => {
     setItinerary(data);
-    setCurrentStep(currentStep + 1);
   };
 
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return <Questionnaire showVenues={moveNextStep} />;
+        return <Questionnaire updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       case 1:
-        return <PickRecommendation />
+        return <PickRecommendation />;
       case 2:
         return <VenueSelection moveNext={finelize} />;
       case 3:
@@ -84,6 +89,10 @@ export const CreateItinerary: React.FC<IProps> = ({
       handleCreateItinerary();
     }
   };
+  const handleNext = () => {
+    setCurrentStep(currentStep + 1);
+  };
+
 
   return (
     <>
@@ -103,18 +112,35 @@ export const CreateItinerary: React.FC<IProps> = ({
           <Divider />
         </Grid>
         <Grid item xs={12}>
+          <Grid container>
+            <Grid item xs={6}>
+              <Button
+                color="secondary"
+                aria-label="Back"
+                onClick={handleBack}
+                startIcon={<ArrowBackIosIcon />}
+                variant="contained"
+              >
+                Back
+              </Button>
+            </Grid>
+            <Grid item xs={6} display='flex' justifyContent="end">
+              <Button
+                color="secondary"
+                aria-label="Back"
+                onClick={handleNext}
+                endIcon={<ArrowForwardIosIcon />}
+                variant="contained"
+              >
+                Next
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
           {renderStep()}
         </Grid>
       </Grid>
-      <Tooltip title="Back">
-        <StyledFab
-          color="secondary"
-          aria-label="Back"
-          onClick={handleBack}
-        >
-          <ArrowBackIosIcon />
-        </StyledFab>
-      </Tooltip>
     </>
   );
 };

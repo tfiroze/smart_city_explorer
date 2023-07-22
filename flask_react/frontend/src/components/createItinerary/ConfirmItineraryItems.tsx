@@ -32,18 +32,18 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
 const StyledButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(3),
-  animation: "wiggle 1s infinite",
-  "@keyframes wiggle": {
-    "0%": {
-      transform: "rotate(-2deg)",
-    },
-    "50%": {
-      transform: "rotate(2deg)",
-    },
-    "100%": {
-      transform: "rotate(-2deg)",
-    },
-  },
+  // animation: "wiggle 1s infinite",
+  // "@keyframes wiggle": {
+  //   "0%": {
+  //     transform: "rotate(-2deg)",
+  //   },
+  //   "50%": {
+  //     transform: "rotate(2deg)",
+  //   },
+  //   "100%": {
+  //     transform: "rotate(-2deg)",
+  //   },
+  // },
 }));
 
 const StyledDisclaimer = styled(Typography)(({ theme }) => ({
