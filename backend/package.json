@@ -9,10 +9,12 @@
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "express-jwt": "^8.4.1",
+    "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.1",
     "md5": "^2.3.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.5.2",
+    "nodemailer": "^6.9.4",
     "ssh2": "^1.14.0"
   }
 }
