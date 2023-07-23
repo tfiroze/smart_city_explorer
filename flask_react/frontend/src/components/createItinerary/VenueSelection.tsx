@@ -45,6 +45,7 @@ import IVenueItem from "../../models/IVenueItem";
 import { VenueSelectionControls } from "./VenueSelectionControls";
 import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
 import PaymentIcon from "@mui/icons-material/Payment";
+import IItinerary from "../../models/IItinerary";
 //#region styled crap
 
 const slideInAnimation = keyframes`
@@ -147,10 +148,11 @@ const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
 //#endregion
 
 interface IProps {
-  moveNext: (data: IVenueItem[]) => void;
+  updateItinerary: (data: IItinerary) => void;
+  currentItinerary: IItinerary;
 }
 
-export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
+export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
   const [introvertMode, setIntrovertMode] = React.useState(false);
   const [itinerary, setItinerary] = React.useState<IVenueItem[]>([]);
   const [controlsOpen, setControlsOpen] = React.useState(false);
@@ -164,6 +166,9 @@ export const VenueSelection: React.FC<IProps> = ({ moveNext }) => {
     const response = [...(venueData as IVenueItem[])];
     const sortedData = sortData(response.slice(0, 3));
     const identifiedConflicts = identifyConflicts(sortedData);
+    let temp = currentItinerary;
+    temp.plan = identifiedConflicts
+    updateItinerary(temp)
     setItinerary(identifiedConflicts);
   }, []);
 

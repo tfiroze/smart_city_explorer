@@ -74,7 +74,7 @@ export const CreateItinerary: React.FC<IProps> = ({
       case 1:
         return <PickRecommendation />;
       case 2:
-        return <VenueSelection moveNext={finelize} />;
+        return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       case 3:
         return <ConfirmItineraryItems completed={addItem} data={itinerary} />;
       default:

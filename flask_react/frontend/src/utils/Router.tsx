@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Dashboard } from "../views/Dashboard";
 import { Startup } from "../views/Startup";
+import ChoroplethMap from "../views/MapTest";
 
 interface RouterProps {
   auth: boolean;
