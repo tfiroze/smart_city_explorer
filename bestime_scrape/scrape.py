@@ -24,7 +24,7 @@ def process_files(input_files):
             response = make_api_call(venue_id)
             responses.append(response)
 
-        output_file = input_file.replace('.json', '_response4.json')
+        output_file = input_file.replace('.json', '_response5.json')
 
         with open("bestime_scrape/" + output_file, 'w') as f:
             json.dump(responses, f)
