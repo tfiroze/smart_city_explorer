@@ -66,6 +66,8 @@ export const VenueSelectionControls: React.FC<IProps> = ({
 		venueId: "",
 		// conflictsWithPrevious: false,
 		invitedParticipant: [],
+		duration: 0,
+		taxiFare: 0,
 	});
 
 	const [currentStep, setCurrentStep] = useState(0);

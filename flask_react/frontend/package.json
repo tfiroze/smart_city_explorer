@@ -30,6 +30,7 @@
 		"@types/react": "^18.2.12",
 		"@types/react-dom": "^18.2.5",
 		"axios": "^1.4.0",
+		"d3-scale": "^4.0.2",
 		"datamaps": "^0.5.9",
 		"date-fns": "^2.30.0",
 		"dayjs": "^1.11.8",

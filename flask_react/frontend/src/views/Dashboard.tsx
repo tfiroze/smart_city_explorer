@@ -22,6 +22,7 @@ import IItinerary from "../models/IItinerary";
 import ModeOfTravelIcon from "@mui/icons-material/ModeOfTravel";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import ChoroplethMap from "./MapTest";
+import Choropleth from "../components/map/Choropleth";
 
 export const Dashboard = () => {
   const [open, setOpen] = useState(false);
@@ -151,9 +152,11 @@ export const Dashboard = () => {
                           >
                             Completed
                           </Button>
+                          <Choropleth />
                         </Grid>
                       </Grid>
                     </Paper>
+
                   ))
                 )}
               </Grid>

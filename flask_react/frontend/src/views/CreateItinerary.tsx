@@ -21,12 +21,13 @@ import { ConfirmItineraryItems } from "../components/createItinerary/ConfirmItin
 import IItinerary from "../models/IItinerary";
 import { PickRecommendation } from "../components/createItinerary/PickRecommendation";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { VenueSelectionControls } from "../components/createItinerary/VenueSelectionControls";
 
 const steps = [
   "Trip Information",
-  "Pick Recommendation",
-  "Edit Itinerary",
-  "Confirm",
+  "Select Recommendations",
+  "Itinerary Overview",
+  "Itinerary Confirmation",
 ];
 
 const StyledFab = styled(Fab)(({ theme }) => ({

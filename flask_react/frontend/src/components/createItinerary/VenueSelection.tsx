@@ -3,6 +3,7 @@ import { Typography, Tooltip } from "@mui/material";
 import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
 
+
 import {
   Button,
   Grid,
@@ -94,6 +95,21 @@ const StyledPeopleIcon = styled(PeopleIcon)`
 	animation: ${slideInAnimation} 0.5s ease-in-out;
 `;
 
+const StyledLocalTaxiIcon = styled(LocalTaxiIcon)`
+color: #FB9403;
+  &:hover {
+    transform: scale(1.1);
+    color: #FFD854;
+  }
+`;
+
+const StyledPaymentIcon = styled(PaymentIcon)`
+  &:hover {
+    transform: scale(1.1);
+    color: #32c75f;
+  }
+`;
+
 const CenteredCardActions = styled(CardActions)`
 	display: flex;
 	justify-content: center;
@@ -106,6 +122,14 @@ const StyledTimeWrapper = styled("div")`
 	align-items: center;
 	gap: 4px;
 	margin-top: 12px;
+`;
+
+const StyledTimelineWrapper = styled('div')`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 16px;
 `;
 
 const StyledTimeLabel = styled(Typography)`
@@ -144,6 +168,19 @@ const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
 	vertical-align: middle;
 	margin: 0 8px;
 `;
+
+const StyledDurationTypography = styled(Typography)`
+  display: flex;
+  align-items: center;
+  // color: #FFD854;
+`;
+
+const StyledTaxiFareTypography = styled(Typography)`
+  display: flex;
+  align-items: center;
+  // color: #32c75f;
+`;
+
 
 //#endregion
 
@@ -261,57 +298,48 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
         </DialogActions>
       </Dialog>
       <Grid item xs={12} style={{ maxHeight: "70vh", overflowY: "scroll" }}>
-
         <Timeline position="alternate-reverse">
           {itinerary.map((item, index) => (
             <TimelineItem key={index}>
               <TimelineOppositeContent>
-                <Grid container>
-                  <StyledTimeWrapper>
-                    <StyledTimeLabel variant="subtitle2" color="textSecondary">
-                      From
-                    </StyledTimeLabel>
-                    <StyledTime variant="subtitle2">{item.timeFrom}</StyledTime>
-                    <ArrowForwardIcon sx={{ color: "#008080" }} />
-                    <StyledTimeLabel variant="subtitle2" color="textSecondary">
-                      To
-                    </StyledTimeLabel>
-                    <StyledTime variant="subtitle2">{item.timeTo}</StyledTime>
-                  </StyledTimeWrapper>
-                </Grid>
-                <Grid container>
-                  <Grid item xs={12}>
-                    <div
-                      style={{
-                        justifyContent: "left",
-                        display: "flex",
-                        alignContent: "center",
-                      }}
-                    >
-                      <LocalTaxiIcon style={{ marginRight: '5px' }} />
-                      15 minutes
-                    </div>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <div
-                      style={{
-                        justifyContent: "left",
-                        display: "flex",
-                        alignContent: "center",
-                      }}
-                    >
-                      <PaymentIcon style={{ marginRight: '5px' }} /> $22.23
-                    </div>
-                  </Grid>
-                </Grid>
+                <StyledTimelineWrapper>
+                  <StyledTimeLabel variant="subtitle2" color="textSecondary">
+                    From
+                  </StyledTimeLabel>
+                  <StyledTime variant="subtitle2">{item.timeFrom}</StyledTime>
+                  <StyledArrowForwardIcon />
+                  <StyledTimeLabel variant="subtitle2" color="textSecondary">
+                    To
+                  </StyledTimeLabel>
+                  <StyledTime variant="subtitle2">{item.timeTo}</StyledTime>
+                </StyledTimelineWrapper>
+
               </TimelineOppositeContent>
+
               <TimelineSeparator>
                 <TimelineDot color="primary" variant="outlined">
                   <StyledLocationOnIcon />
                 </TimelineDot>
                 {index !== itinerary.length - 1 && <TimelineConnector />}
               </TimelineSeparator>
+
+
               <TimelineContent>
+                <StyledDurationTypography>
+
+                  <Tooltip title="Estimated duration of trip">
+                    <StyledLocalTaxiIcon style={{ marginRight: '5px' }} />
+                  </Tooltip>
+                  <StyledDivider />
+                  {item.duration} minutes
+                </StyledDurationTypography>
+
+                <StyledTaxiFareTypography>
+                  <Tooltip title="Estimated taxi fare">
+                    <StyledPaymentIcon style={{ marginRight: '5px' }} />
+                  </Tooltip>
+                  ${item.taxiFare}
+                </StyledTaxiFareTypography>
                 <Card
                   sx={{
                     display: "flex",
@@ -320,6 +348,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
                     boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                   }}
                 >
+
                   <CardContent>
                     <Typography variant="h6" component="div" gutterBottom>
                       {item.title}
@@ -342,6 +371,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
                     </Typography>
                   </CardContent>
                   <Divider />
+
                   <CardContent>
                     <Grid container alignItems="center" spacing={1}>
                       <Grid item>
@@ -393,7 +423,8 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
                     </Button>
                   </CenteredCardActions>
                 </Card>
-                <StyledDivider />
+
+
               </TimelineContent>
             </TimelineItem>
           ))}
