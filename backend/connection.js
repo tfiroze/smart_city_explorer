@@ -1,3 +1,5 @@
+// Test connection with database
+
 const mysql = require('mysql2/promise');
 const express = require('express');
 const app = express();
