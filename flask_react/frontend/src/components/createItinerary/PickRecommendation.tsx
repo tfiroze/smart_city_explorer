@@ -67,10 +67,10 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
 
 
 interface PickRecommendationProps {
-    maxZone: string;
+
 }
 
-export const PickRecommendation: React.FC<PickRecommendationProps> = ({ maxZone }: { maxZone: string }) => {
+export const PickRecommendation: React.FC<PickRecommendationProps> = () => {
     const [thingsTodo, setThingsTodo] = useState<any[]>([]);
     const [shoppingTodo, setShoppingTodo] = useState<any[]>([]);
     const [resturantTodo, setResturantTodo] = useState<any[]>([]);

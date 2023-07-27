@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, FC } from "react";
+import NavBar from '../components/dashboard/Navbar';
 import { Header } from "../components/dashboard/Header";
 import {
   Button,
   Grid,
-  Paper,
   Typography,
   Box,
   IconButton,
@@ -13,18 +13,73 @@ import {
   Dialog,
   DialogContent,
   DialogActions,
-  DialogTitle
+  DialogTitle,
+  Paper,
 } from "@mui/material";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { CreateItinerary } from "./CreateItinerary";
-import { AddCircleOutline as AddIcon, History as HistoryIcon } from "@mui/icons-material";
+import {
+  AddCircleOutline as AddIcon,
+  History as HistoryIcon,
+  ModeOfTravel as ModeOfTravelIcon,
+  EditNote as EditNoteIcon,
+} from "@mui/icons-material";
 import IItinerary from "../models/IItinerary";
-import ModeOfTravelIcon from "@mui/icons-material/ModeOfTravel";
-import EditNoteIcon from "@mui/icons-material/EditNote";
 import ChoroplethMap from "./MapTest";
 import Choropleth from "../components/map/Choropleth";
+import Map from 'react-map-gl';
+import HeatMap from "../components/Heatmap";
+
+
+
+const MAPBOX_TOKEN = 'pk.eyJ1IjoidGVlZG9nIiwiYSI6ImNsa2xmb3A5ZTA0eGIzZXM4eHkybWZuZ24ifQ.Nbo3BvZojkIzyBaZznTqvQ';
+
+
+const PaperItem: FC<{ item: IItinerary, isUpcoming: boolean, viewItem: () => void, markAsCompleted: () => void }> = ({ item, isUpcoming, viewItem, markAsCompleted }) => (
+  <Paper sx={{ mb: 2, p: 2 }} elevation={3}>
+    <Grid container>
+      <Grid item xs={12}>
+        <Alert icon={<ModeOfTravelIcon />} severity="info">
+          {item.name}
+        </Alert>
+      </Grid>
+      <Grid item xs={12}>
+        <Typography textAlign="center" variant="h5">
+          Note <EditNoteIcon />
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Divider />
+      </Grid>
+      <Grid item xs={12}>
+        <Typography variant="subtitle1">
+          {item.comments}
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Box display="flex" justifyContent="end">
+          <Button variant="outlined" color="info" sx={{ m: 1 }} onClick={viewItem}>
+            View
+          </Button>
+          {isUpcoming && (
+            <Button variant="contained" color="primary" sx={{ m: 1 }} onClick={markAsCompleted}>
+              Completed
+            </Button>
+          )}
+          <Choropleth />
+        </Box>
+      </Grid>
+    </Grid>
+  </Paper>
+);
 
 export const Dashboard = () => {
+  const heatmapData = [
+    [-122.4194, 37.7749], // [longitude, latitude]
+    [-122.4195, 37.7750],
+    // Add more data points as needed
+  ];
+
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const [openQuestionnaire, setOpenQuestionnaire] = useState(false);
@@ -49,6 +104,7 @@ export const Dashboard = () => {
 
   return (
     <>
+      <NavBar />
       <Dialog open={dialogOpen} maxWidth='xl' fullWidth>
         <DialogTitle>{dialogItineraryItem?.name}</DialogTitle>
         <DialogContent>
@@ -69,7 +125,6 @@ export const Dashboard = () => {
                 <CreateItinerary
                   handleCreateItinerary={handleCreateItinerary}
                   addItem={addItem}
-                // maxZone={maxZone}
                 />
               </Box>
             </Fade>
@@ -230,5 +285,6 @@ export const Dashboard = () => {
           )}
         </Grid>
       </Grid>
+      <HeatMap />
     </>);
 };
