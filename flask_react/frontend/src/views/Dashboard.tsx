@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Header } from "../components/dashboard/Header";
 import {
   Button,
@@ -13,7 +13,8 @@ import {
   Dialog,
   DialogContent,
   DialogActions,
-  DialogTitle
+  DialogTitle,
+  styled
 } from "@mui/material";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { CreateItinerary } from "./CreateItinerary";
@@ -23,6 +24,11 @@ import ModeOfTravelIcon from "@mui/icons-material/ModeOfTravel";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import ChoroplethMap from "./MapTest";
 import Choropleth from "../components/map/Choropleth";
+import { MapContainer, TileLayer, Popup, Marker, useMap } from 'react-leaflet';
+
+import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
+
+
 
 export const Dashboard = () => {
   const [open, setOpen] = useState(false);
@@ -32,7 +38,13 @@ export const Dashboard = () => {
   const [pastItems, setPastItineraryItems] = useState<IItinerary[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogItineraryItem, setDialogItineraryItems] = useState<IItinerary | null>(null);
+
+  const [firstTime, setFirstTime] = useState(false)
   const handleCreateItinerary = () => setOpenQuestionnaire(!openQuestionnaire);
+
+  const [thingsTodo, setThingsTodo] = useState<any[]>([]);
+
+  const [tab, setTab] = useState(0)
 
   const addItem = (item: IItinerary) => {
     setItineraryItems([...itineraryItems, item]);
@@ -46,8 +58,18 @@ export const Dashboard = () => {
     setItineraryItems(updatedItems);
   };
 
+  useEffect(() => {
+    firstTimeUser()
+    setThingsTodo([...thingsTodoDummyData]);
+  }, [])
+  const firstTimeUser = () => {
+    setFirstTime(true)
+  }
+  { console.log(itineraryItems?.length > 0 && pastItems?.length >= 0, 'Items') }
+
   return (
     <>
+      {/* Questionnare Screen Start */}
       <Dialog open={dialogOpen} maxWidth='xl' fullWidth>
         <DialogTitle>{dialogItineraryItem?.name}</DialogTitle>
         <DialogContent>
@@ -57,176 +79,134 @@ export const Dashboard = () => {
           <Button variant="contained" onClick={() => setDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
-      <Grid container>
-        <Grid item xs={12} md={12}>
-          <Header />
-        </Grid>
-        <Grid item xs={12} md={12} style={{ margin: "15px" }}>
-          {openQuestionnaire && (
-            <Fade in={openQuestionnaire}>
-              <Box my={2}>
-                <CreateItinerary
-                  handleCreateItinerary={handleCreateItinerary}
-                  addItem={addItem}
-                />
+      {/* Questionair screen End  */}
+
+
+      <Grid container style={{ backgroundColor: '#ffff' }}>
+        <Grid container xs={5} style={{ padding: '15px' }}>
+          <Grid item xs={12}>
+            <Header />
+          </Grid>
+          <Grid item xs={12}>
+            {firstTime && <>
+              <Typography
+                variant="h5"
+                align="center"
+                color="text.secondary"
+                sx={{ mb: 4 }}
+                style={{ marginBottom: 0 }}
+              >
+                Unleash the magic of Manhattan in just one day! Plan your perfect itinerary 🗽
+              </Typography>
+              <Box display="flex" justifyContent="center" mt={2}>
+                <Button
+                  onClick={handleCreateItinerary}
+                  variant="contained"
+                  color="secondary"
+                  startIcon={<AddIcon />}
+                >
+                  CREATE
+                </Button>
               </Box>
-            </Fade>
-          )}
+            </>}
+          </Grid>
 
-          {!openQuestionnaire && (
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={6}>
-                <Typography
-                  variant="h5"
-                  align="center"
-                  gutterBottom
-                  color="text.primary"
-                >
-                  Upcoming Trips...
-                </Typography>
 
-                <Box display="flex" justifyContent="center" mt={2}>
-                  <Button
-                    onClick={handleCreateItinerary}
-                    variant="contained"
-                    color="secondary"
-                    style={{ marginBottom: "10px" }}
-                    startIcon={<AddIcon />}
-                  >
-                    CREATE
-                  </Button>
-                </Box>
-                {itineraryItems.length === 0 ? (
-                  <Typography
-                    variant="subtitle1"
-                    align="center"
-                    color="text.secondary"
-                    sx={{ mb: 4 }}
-                  >
-                    You haven’t created anything yet.
-                  </Typography>
-                ) : (
-                  itineraryItems.map((item, index) => (
-                    <Paper
-                      key={index}
-                      style={{ marginBottom: "10px", padding: "10px" }}
-                      elevation={3}
-                    >
-                      <Grid container>
-                        <Grid item xs={12}>
-                          <Alert icon={<ModeOfTravelIcon />} severity="info">
-                            {item.name}
-                          </Alert>
-                        </Grid>
-                        <Grid item xs={12} display="flex" alignContent="center">
-                          <Typography textAlign="center" variant="h5">
-                            Note <EditNoteIcon />
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Divider />
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Typography variant="subtitle1">
-                            {item.comments}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} display="flex" justifyContent="end">
-                          <Button
-                            variant="outlined"
-                            color="info"
-                            style={{ margin: "5px" }}
-                            onClick={() => {
-                              setDialogOpen(true)
-                              setDialogItineraryItems(item)
-                            }
-                            }
-                          >
-                            View
-                          </Button>
-                          <Button
-                            variant="contained"
-                            color="primary"
-                            style={{ margin: "5px" }}
-                            onClick={() => markAsCompleted(index)}
-                          >
-                            Completed
-                          </Button>
-                          <Choropleth />
-                        </Grid>
-                      </Grid>
-                    </Paper>
-
-                  ))
-                )}
+          {
+            
+            (itineraryItems?.length > 0 && pastItems?.length > 0) &&
+          <>
+            <Grid item xs={12} md={12} style={{ margin: "15px" }}>
+            <Typography variant="h5" align="left" color="text.secondary">
+            My Manhattan Itinerary!
+            </Typography>
+              <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                <div style={{ width: '20%', padding: '10px', cursor: 'pointer', borderBottom: tab == 0 ? '2px solid #115b4c' : 'transparent' }} onClick={() => setTab(0)}>
+                  Upcoming
+                </div>
+                <div style={{ width: '20%', padding: '10px', cursor: 'pointer', borderBottom: tab == 1 ? '2px solid #115b4c' : 'transparent' }} onClick={() => setTab(1)}>
+                  Completed
+                </div>
               </Grid>
-              <Grid item xs={12} md={6}>
-                <Typography
-                  variant="h5"
-                  align="center"
-                  gutterBottom
-                  color="text.primary"
-                >
-                  Past Trips
-                </Typography>
-
-                <Box display="flex" justifyContent="center">
-                  <IconButton color="secondary">
-                    <HistoryIcon />
-                  </IconButton>
-                </Box>
-                {pastItems.length === 0 ? (
-                  <Typography
-                    variant="subtitle1"
-                    align="center"
-                    color="text.secondary"
-                    sx={{ mb: 4 }}
-                  >
-                    No Past Trips Found!
-                  </Typography>
-                ) : (
-                  pastItems.map((item, index) => (
-                    <Paper
-                      key={index}
-                      style={{ marginBottom: "10px", padding: "10px" }}
-                      elevation={3}
+              <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                {thingsTodo.slice(0, 3).map((item, index) => {
+                  return (
+                    <Grid
+                      style={{ cursor: "pointer", padding: '5px', width: '35%' }}
+                      item
+                      className="unselectable"
                     >
-                      <Grid container>
-                        <Grid item xs={12}>
-                          <Alert icon={<ModeOfTravelIcon />} severity="info">
-                            {item.name}
-                          </Alert>
-                        </Grid>
-                        <Grid item xs={12} display="flex" alignContent="center">
-                          <Typography textAlign="center" variant="h5">
-                            Note <EditNoteIcon />
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Divider />
-                        </Grid>
-                        <Grid item xs={12}>
-                          <Typography variant="subtitle1">
-                            {item.comments}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} display="flex" justifyContent="end">
-                          <Button
-                            variant="outlined"
-                            color="info"
-                            style={{ margin: "5px" }}
-                          >
-                            View
-                          </Button>
-                        </Grid>
+                      <Grid xs={12} >
+                        <img
+                          src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                          alt=""
+                          style={{ width: '100%', borderRadius: '5px' }}
+                        />
                       </Grid>
-                    </Paper>
-                  ))
-                )}
+                      <Grid xs={12}>
+                        <Typography variant="subtitle2">
+                          {item.venue_name}
+                        </Typography>
+                      </Grid>
+
+                    </Grid>
+                  );
+                })}
               </Grid>
             </Grid>
-          )}
+          </>
+          }
+
+
+
+          <Grid item xs={12}>
+            <Typography variant="h5" align="left" color="text.secondary">
+              Explore Popular Destination!
+            </Typography>
+            <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
+              {thingsTodo.slice(0, 3).map((item, index) => {
+                return (
+                  <Grid
+                    style={{ cursor: "pointer", padding: '5px', width: '35%' }}
+                    item
+                    className="unselectable"
+                  >
+                    <Grid xs={12} >
+                      <img
+                        src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                        alt=""
+                        style={{ width: '100%', borderRadius: '5px' }}
+                      />
+                    </Grid>
+                    <Grid xs={12}>
+                      <Typography variant="subtitle2">
+                        {item.venue_name}
+                      </Typography>
+                    </Grid>
+
+                  </Grid>
+                );
+              })}
+            </Grid>
+
+          </Grid>
+        </Grid>
+        <Grid container xs={7} style={{ overflow: 'hidden' }}>
+          <MapContainer
+            style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
+            zoom={13}
+            center={[40.7831, -73.9712]}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          </MapContainer>
         </Grid>
       </Grid>
-    </>);
+    </>
+  );
 };
+
+
+

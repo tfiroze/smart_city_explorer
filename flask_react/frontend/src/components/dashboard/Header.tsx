@@ -32,7 +32,7 @@ export const Header = () => {
   };
 
   return (
-    <div style={{ marginBottom: '20px' }}>
+    <div style={{ marginBottom: '20px'}}>
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -57,30 +57,30 @@ export const Header = () => {
         </MenuItem>
       </Menu>
       <Paper
-        square
-        elevation={3}
-        sx={{
+        // square
+        elevation={0}
+        style={{
           padding: '10px',
-          backgroundColor: '#115b4c',
-          color: '#fff',
+          backgroundColor: '#ffff',
+          color: '#115b4c',
         }}
       >
         <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item xs={10}>
-            <Typography variant="h5">
-              Welcome {authContext.userInfo?.first_name}!
-            </Typography>
-          </Grid>
-          <Grid item xs={2}>
+        <Grid item xs={2}>
             <Avatar
               style={{
-                float: 'right',
                 cursor: 'pointer',
                 backgroundColor: getAvatarColor(),
               }}
               onClick={handleClick}
             />
           </Grid>
+          <Grid item xs={10}>
+            <Typography variant="h5" align='right'>
+              Welcome {authContext.userInfo?.first_name}!
+            </Typography>
+          </Grid>
+          
         </Grid>
       </Paper>
     </div>
