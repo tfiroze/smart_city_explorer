@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import {
   Grid,
   Paper,
@@ -18,11 +18,26 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import CreditScoreIcon from "@mui/icons-material/CreditScore";
+import FoodIcon from "@mui/icons-material/Restaurant";
 import StarIcon from "@mui/icons-material/Star";
 import IItinerary from "../../models/IItinerary";
 import zoneData from "../../temp/zone_Grouping.json";
 import L from "leaflet";
+import { PickRecommendation } from './PickRecommendation';
+import Legend from "../map/Legend";
+
+
+interface ChangeViewProps {
+  center: [number, number];
+  zoom: number;
+}
+
+const ChangeView: React.FC<ChangeViewProps> = ({ center, zoom }) => {
+  const map = useMap();
+  map.setView(center, zoom);
+  return null;
+}
+
 
 const venueTypes = [
   {
@@ -44,6 +59,15 @@ const venueTypes = [
     venueTypes: ["Cherry Hill", "Strawberry field"],
   },
 ];
+
+const foodIcon = new L.Icon({
+  iconUrl: 'url-to-food-icon',
+  shadowUrl: 'url-to-icon-shadow',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
 
 const redIcon = new L.Icon({
   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
@@ -81,8 +105,16 @@ const orangeIcon = new L.Icon({
   shadowSize: [41, 41]
 });
 
-const purpleIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-purple.png',
+// const purpleIcon = new L.Icon({
+//   iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-purple.png',
+//   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+//   iconSize: [25, 41],
+//   iconAnchor: [12, 41],
+//   popupAnchor: [1, -34],
+//   shadowSize: [41, 41]
+// });
+const blackIcon = new L.Icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-black.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
   iconSize: [25, 41],
   iconAnchor: [12, 41],
@@ -99,6 +131,20 @@ const blueIcon = new L.Icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
 });
+const QuestionnaireContainer = styled(Container)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+}));
+
+const MapContainerStyled = styled(MapContainer)(({ theme }) => ({
+  marginTop: theme.spacing(3),
+  height: '70vh',
+}));
+
+const LegendContainer = styled(Legend)(({ theme }) => ({
+  position: 'absolute',
+  top: '20px',
+  left: '20px',
+}));
 
 const QuestionnaireTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(3),
@@ -127,7 +173,75 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
   const [selectedVenues, setSelectedVenues] = useState([]);
   const [groupedVenues, setGroupedVenues] = useState({});
   const [mapItems, setMapItems] = useState<any[]>([]);
+  const [zoneVenueTypeCounts, setZoneVenueTypeCounts] = useState<Record<string, number>>({});
+  const [zoomLevel, setZoomLevel] = useState(13);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([40.7831, -73.9712]); // Default coordinates
+  const [maxZone, setMaxZone] = useState("");
 
+
+
+
+  useEffect(() => {
+    if (mapItems.length > 0) {
+      // Compute average latitude and longitude :/
+      let totalLat = 0;
+      let totalLng = 0;
+      mapItems.forEach(item => {
+        totalLat += item.latitude;
+        totalLng += item.longitude;
+      });
+      const avgLat = totalLat / mapItems.length;
+      const avgLng = totalLng / mapItems.length;
+
+      setMapCenter([avgLat, avgLng]);
+      setZoomLevel(13);
+    }
+  }, [mapItems]);
+
+
+  useEffect(() => {
+    const newCounts: Record<string, number> = {};
+
+    for (const item of mapItems) {
+      const zoneGroup = item.zone_group;
+      const venueType = item.venue_mod_type;
+      if (selectedTags.includes(venueType)) {
+        if (!newCounts[zoneGroup]) {
+          newCounts[zoneGroup] = 1;
+        } else {
+          newCounts[zoneGroup]++;
+        }
+      }
+    }
+
+    setZoneVenueTypeCounts(newCounts);
+  }, [selectedTags, mapItems]);
+
+  useEffect(() => {
+    const zoneCounts: Record<string, number> = {};
+
+    mapItems.forEach(item => {
+      if (!zoneCounts[item.zone_group]) {
+        zoneCounts[item.zone_group] = 1;
+      } else {
+        zoneCounts[item.zone_group]++;
+      }
+    });
+
+    let maxCount = -1;
+    let maxZone = "";
+    for (const zone in zoneCounts) {
+      if (zoneCounts[zone] > maxCount) {
+        maxCount = zoneCounts[zone];
+        maxZone = zone;
+      }
+    }
+
+    // Update maxZone state
+    setMaxZone(maxZone);
+
+    console.log(`The zone with the most selected categories is: ${maxZone}`);
+  }, [mapItems]);
 
 
   const changeTime = (time: Dayjs | null, type: "start" | "end" | "date") => {
@@ -207,6 +321,8 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
     );
   };
 
+
+
   const interests = zoneData.filter((item) =>
     !item.venue_mod_type.includes('restaurants')
   ).map((item) =>
@@ -214,7 +330,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
   );
 
   const restaurants = zoneData.filter((item) =>
-    item.venue_mod_type.includes('restaurants')
+    item.venue_mod_type.includes('Restaurant')
   ).map((item) =>
     item.venue_mod_type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
   );
@@ -235,97 +351,104 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
 
 
   return (
-    <>
-      <Container maxWidth="sm">
-        <Paper>
+    <QuestionnaireContainer maxWidth="md">
+      <Paper>
+        <Box p={3}>
           <QuestionnaireTitle variant="h4" align="center">
             Trip Information
           </QuestionnaireTitle>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer components={["DesktopDatePicker", "TimePicker"]}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12}>
-                  <DemoItem label="Select Date">
-                    <DesktopDatePicker
-                      onChange={(value) => changeTime(value, "date")}
-                      defaultValue={dayjs()}
-                    />
-                  </DemoItem>
-                </Grid>
-                <Grid item xs={12}>
-                  <DemoItem label="Interests">
-                    <Autocomplete
-                      multiple
-                      id="tags-standard"
-                      options={Array.from(new Set(zoneData.map((item) => (
-                        item.venue_mod_type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
-                      ))))}
-                      value={selectedTags}
-                      onChange={handleTagChange}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          label="Select Categories"
-                          placeholder="Tags"
-                        />
-                      )}
-                    />
-
-
-                  </DemoItem>
-                </Grid>
+            <Grid container spacing={3} alignItems="center">
+              <Grid item xs={12}>
+                <DesktopDatePicker
+                  label="Select Date"
+                  onChange={(value) => changeTime(value, "date")}
+                  defaultValue={dayjs()}
+                />
               </Grid>
-            </DemoContainer>
+              <Grid item xs={12}>
+                <Autocomplete
+                  multiple
+                  id="tags-standard"
+                  options={Array.from(new Set(zoneData.map((item) => (
+                    item.venue_mod_type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+                  ))))}
+                  value={selectedTags}
+                  onChange={handleTagChange}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="outlined"
+                      label="Select Categories"
+                      placeholder="Tags"
+                    />
+                  )}
+                />
+              </Grid>
+            </Grid>
           </LocalizationProvider>
-        </Paper>
-      </Container>
-      <MapContainer
-        style={{ height: "100vh", width: "100%" }}
+        </Box>
+      </Paper>
+      <MapContainerStyled
         zoom={13}
         center={[40.7831, -73.9712]}
       >
+        <ChangeView center={mapCenter} zoom={zoomLevel} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         {mapItems?.map((item) => {
           let icon;
-          switch (item.zone_group) {
-            case "Upper West Side":
-              icon = redIcon;
-              break;
-            case "Midtown Manhattan":
-              icon = greenIcon;
-              break;
-            case "Upper East Side":
-              icon = blueIcon;
-              break;
-            case "Chelsea/Greenwhich market":
-              icon = yellowIcon;
-              break;
-            case "Upper Manhattan":
-              icon = orangeIcon;
-              break;
-            default:
-              icon = purpleIcon;
+          if (item.venue_mod_type.includes('Restaurant')) {
+            icon = foodIcon;
+          } else {
+            switch (item.zone_group) {
+              case "Upper West Side":
+                icon = redIcon;
+                break;
+              case "Midtown Manhattan":
+                icon = greenIcon;
+                break;
+              case "Upper East Side":
+                icon = blueIcon;
+                break;
+              case "Chelsea/Greenwhich market":
+                icon = blackIcon;
+                break;
+              case "Upper Manhattan":
+                icon = orangeIcon;
+                break;
+              default:
+                icon = yellowIcon;
+            }
           }
           return (
+
             //@ts-ignore
             <Marker position={[item.latitude, item.longitude]} icon={icon} riseOnHover>
               <Popup>
                 <Grid container display='flex' spacing={2}>
                   <Grid item xs={12}>
                     <Typography variant="h6">
+                      {item.venue_mod_type.includes('Restaurant') ? <FoodIcon /> : <StarIcon />}
                       {item.name}
                     </Typography>
                   </Grid>
                 </Grid>
               </Popup>
+
             </Marker>
           );
         })}
-      </MapContainer>
-    </>
+
+        {mapItems?.length >= 2 && <Polyline positions={mapItems.map(item => [item.latitude, item.longitude])} />}
+        {/* {/* <LegendContainer>  */}
+        <LegendContainer zoneCounts={zoneVenueTypeCounts} />
+        {/* <LegendContainer /> */}
+      </MapContainerStyled>
+      {/* <PickRecommendation maxZone={maxZone} /> */}
+    </QuestionnaireContainer>
   );
 };
+

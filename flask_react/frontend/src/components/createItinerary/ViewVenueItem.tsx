@@ -1,22 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Icon } from 'leaflet';
 // import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import AvatarGroup from "@mui/material/AvatarGroup";
 import IVenueItem from "../../models/IVenueItem";
-import {
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	Grid,
-	Typography,
-	DialogActions,
-	Button,
-	Chip,
-	Avatar,
-	CardMedia,
-	Stack,
-	Box,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Grid, Typography, DialogActions, Button, Chip, Avatar, CardMedia, Stack, Box, useMediaQuery, useTheme, ButtonGroup } from '@mui/material';
 import { busynessLevel, getColor, getBusynessDescription } from "../../models/busynessLevel";
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import EventIcon from '@mui/icons-material/Event';
@@ -24,13 +11,13 @@ import makeStyles from '@mui/styles/makeStyles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloseIcon from '@mui/icons-material/Close';
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
-import { MapContainer, TileLayer, Popup, useMap, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup as LeafletPopup, useMap, Marker } from 'react-leaflet';
 import { Map, LatLngLiteral, LatLng } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import "leaflet/dist/leaflet.css";
 import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+// import MarkerClusterGroup from 'react-leaflet-markercluster';
 
 function MapUpdater() {
 	const map = useMap();
@@ -41,12 +28,21 @@ function MapUpdater() {
 
 	return null;
 }
-let DefaultIcon = L.icon({
-	iconUrl: icon,
-	shadowUrl: iconShadow,
-});
 
-L.Marker.prototype.options.icon = DefaultIcon;
+
+// delete L.Icon.Default.prototype._getIconUrl;
+// L.Icon.Default.mergeOptions({
+// 	iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+// 	iconUrl: require('leaflet/dist/images/marker-icon.png'),
+// 	shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+// });
+
+// let DefaultIcon = L.icon({
+// 	iconUrl: icon,
+// 	shadowUrl: iconShadow,
+// });
+
+// L.Marker.prototype.options.icon = DefaultIcon;
 
 const useStyles = makeStyles({
 	dialogTitle: {
@@ -95,8 +91,16 @@ const useStyles = makeStyles({
 			transform: 'scale(1.05)',
 			opacity: 0.5,
 		}
+	},
+	darkModeButton: {
+		position: 'absolute',
+		top: '10px',
+		right: '10px',
 	}
 });
+
+
+
 const choroplethStyle = {
 	fillColor: "#ff0000",
 	weight: 2,
@@ -114,29 +118,47 @@ interface IProps {
 
 export const ViewVenueItem: React.FC<IProps> = ({ item, open, close }) => {
 	const classes = useStyles();
+	const theme = useTheme();
+	const isDarkMode = useMediaQuery(theme.breakpoints.down('md'));
+	const [darkMode, setDarkMode] = useState(false);
+
+	const handleDarkModeToggle = () => {
+		setDarkMode(!darkMode);
+	};
+
+	useEffect(() => {
+		setDarkMode(isDarkMode);
+	}, [isDarkMode]);
 	const position: LatLngLiteral = {
 		lat: item.lat !== undefined ? item.lat : 0,
 		lng: item.lon !== undefined ? item.lon : 0,
 	};
 
-	const greenIcon = new Icon({
-		iconUrl: '/resources/images/low.svg',
+	const greenIcon = new L.Icon({
+		iconUrl: 'resources/images/low.svg',
 		iconSize: [25, 41]
 	});
 
-	const yellowIcon = new Icon({
-		iconUrl: '/resources/images/moderate.svg',
+	const yellowIcon = new L.Icon({
+		iconUrl: 'resources/images/moderate.svg',
 		iconSize: [25, 41]
 	});
 
-	const redIcon = new Icon({
-		iconUrl: '/resources/high.svg',
+	const redIcon = new L.Icon({
+		iconUrl: '../../resources/high.svg',
 		iconSize: [25, 41]
 	});
+
+
+
+	const mapStyle = darkMode ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 	return (
 		<Dialog open={open} fullWidth maxWidth="sm">
 			<DialogTitle className={classes.dialogTitle}>
+				<ButtonGroup color="primary" aria-label="outlined primary button group" className={classes.darkModeButton}>
+					<Button onClick={handleDarkModeToggle}>{darkMode ? 'Light Mode' : 'Dark Mode'}</Button>
+				</ButtonGroup>
 				<Typography variant="h6" component="div">
 					{item.title}
 				</Typography>
@@ -218,13 +240,14 @@ export const ViewVenueItem: React.FC<IProps> = ({ item, open, close }) => {
 									url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 								/>
 								{item.lat !== undefined && item.lon !== undefined && (
-									<Marker position={position}>
-										<Popup>
-											<strong>Directions:</strong><br />
-											<span>Lat: {item.lat}, Lon: {item.lon}</span><br />
-											<a href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`} target="_blank" rel="noopener noreferrer">Open in Google Maps</a>
-										</Popup>
+									<Marker position={position} icon={item.busyness === 'low' ? greenIcon : (item.busyness === 'moderate' ? yellowIcon : redIcon)}>
+
+										<LeafletPopup>
+											<Typography>{item.title}</Typography>
+										</LeafletPopup>
+
 									</Marker>
+
 								)}
 								<MapUpdater />
 							</MapContainer>

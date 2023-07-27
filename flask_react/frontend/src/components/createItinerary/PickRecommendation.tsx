@@ -1,11 +1,6 @@
 import {
-    Grid,
-    Typography,
-    Paper,
-    Checkbox,
-    Divider,
-    Alert,
-    styled,
+    Grid, Typography, Paper, Checkbox, Divider, Alert, styled,
+    Fade, Zoom, Slide
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
@@ -16,7 +11,21 @@ import { Map, LatLngLiteral, LatLng } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
+import 'leaflet-routing-machine';
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import zoneData from "../../temp/zone_Grouping.json";
+// import HeatmapLayer from "react-leaflet-heatmap-layer";
+import { geojson } from "../../components/map/manhattan.geojson";
+import { renderToStaticMarkup } from "react-dom/server";
+import { divIcon } from "leaflet";
+import { useSpring, animated } from 'react-spring';
+
+function toSentenceCase(str: string): string {
+    return str.replace(/[a-z]/i, function (letter: string) {
+        return letter.toUpperCase();
+    }).trim();
+}
+
 
 function MapUpdater() {
     const map = useMap();
@@ -52,13 +61,57 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
     fontSize: theme.typography.pxToRem(18),
     fontWeight: "bold",
     marginBottom: theme.spacing(1),
+    textTransform: "capitalize",
 }));
 
-export const PickRecommendation = () => {
+
+
+interface PickRecommendationProps {
+    maxZone: string;
+}
+
+export const PickRecommendation: React.FC<PickRecommendationProps> = ({ maxZone }: { maxZone: string }) => {
     const [thingsTodo, setThingsTodo] = useState<any[]>([]);
     const [shoppingTodo, setShoppingTodo] = useState<any[]>([]);
     const [resturantTodo, setResturantTodo] = useState<any[]>([]);
+    const [selectedThingsTodoMarker, setSelectedThingsTodoMarker] = useState<number | null>(null);
+    const [selectedShoppingTodoMarker, setSelectedShoppingTodoMarker] = useState<number | null>(null);
+    const [selectedResturantTodoMarker, setSelectedResturantTodoMarker] = useState<number | null>(null);
 
+    const markerStyle = useSpring({
+        to: {
+            transform: 'scale(1)',
+            backgroundColor: '#0077be'
+        },
+        from: {
+            transform: 'scale(0)',
+            backgroundColor: '#0077be'
+        },
+        config: { mass: 5, tension: 2000, friction: 200 }
+    });
+
+    const selectedMarkerStyle = useSpring({
+        to: {
+            transform: 'scale(1.5)',
+            backgroundColor: '#d50000'
+        },
+        from: {
+            transform: 'scale(0)',
+            backgroundColor: '#d50000'
+        },
+        config: { mass: 5, tension: 2000, friction: 200 }
+    });
+
+    // const markerStyle = useSpring({
+    //     from: { transform: 'scale(0)' },
+    //     to: { transform: 'scale(1)' },
+    // });
+
+    // useEffect(() => {
+    //     setThingsTodo(zoneData.filter(item => item.zone_group === maxZone));
+    //     setShoppingTodo(zoneData.filter(item => item.zone_group === maxZone));
+    //     setResturantTodo(zoneData.filter(item => item.zone_group === maxZone));
+    // }, [maxZone]);
     useEffect(() => {
         setThingsTodo([...thingsTodoDummyData]);
         setShoppingTodo([...shoppingDummyData]);
@@ -102,7 +155,8 @@ export const PickRecommendation = () => {
                             <StyledPaper elevation={item.selected ? 5 : 1}>
                                 <Grid container>
                                     <Grid item xs={11}>
-                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
+                                        <StyledVenueName>{toSentenceCase(item.venue_name)}</StyledVenueName>
+
                                     </Grid>
                                     <Grid item xs={1} display="flex" justifyContent="flex-end">
                                         <Checkbox checked={item.selected} />
@@ -115,6 +169,7 @@ export const PickRecommendation = () => {
                                         <MapContainer
                                             center={{ lat: item.venue_lat, lng: item.venue_lon }}
                                             zoom={20}
+                                            // layers={heatmapLayer}
                                             scrollWheelZoom={false}
                                             style={{
                                                 height: "100%",
@@ -128,28 +183,34 @@ export const PickRecommendation = () => {
                                             />
                                             {item.lat !== undefined && item.lon !== undefined && (
                                                 <Marker
-                                                    position={{
-                                                        lat: item.venue_lat,
-                                                        lng: item.venue_lon,
+                                                    position={{ lat: item.venue_lat, lng: item.venue_lon }}
+                                                    eventHandlers={{
+                                                        click: () => {
+                                                            setSelectedThingsTodoMarker(index);
+                                                        },
                                                     }}
+                                                    icon={divIcon({
+                                                        className: "custom-icon",
+                                                        html: renderToStaticMarkup(
+                                                            <animated.span style={index === selectedThingsTodoMarker ? selectedMarkerStyle : markerStyle}>
+                                                                <img src={icon} alt="Marker" />
+                                                            </animated.span>
+                                                        ),
+                                                        iconSize: [25, 41],
+                                                        iconAnchor: [12, 41]
+                                                    })}
                                                 >
                                                     <Popup>
-                                                        <strong>Directions:</strong>
-                                                        <br />
-                                                        <span>
-                                                            Lat: {item.lat}, Lon: {item.lon}
-                                                        </span>
-                                                        <br />
-                                                        <a
-                                                            href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            Open in Google Maps
-                                                        </a>
+                                                        <Fade in={true} timeout={500}>
+                                                            <div>
+                                                                <Typography variant="h6">{toSentenceCase(item.venue_name)}</Typography>
+                                                                <Typography variant="body2">{item.venue_desc}</Typography>
+                                                            </div>
+                                                        </Fade>
                                                     </Popup>
                                                 </Marker>
                                             )}
+
                                             <MapUpdater />
                                         </MapContainer>
                                     </Grid>
@@ -176,7 +237,7 @@ export const PickRecommendation = () => {
                             <StyledPaper elevation={item.selected ? 5 : 1}>
                                 <Grid container>
                                     <Grid item xs={11}>
-                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
+                                        <StyledVenueName>{toSentenceCase(item.venue_name)}</StyledVenueName>
                                     </Grid>
                                     <Grid item xs={1} display="flex" justifyContent="flex-end">
                                         <Checkbox checked={item.selected} />
@@ -207,21 +268,7 @@ export const PickRecommendation = () => {
                                                         lng: item.venue_lon,
                                                     }}
                                                 >
-                                                    <Popup>
-                                                        <strong>Directions:</strong>
-                                                        <br />
-                                                        <span>
-                                                            Lat: {item.lat}, Lon: {item.lon}
-                                                        </span>
-                                                        <br />
-                                                        <a
-                                                            href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            Open in Google Maps
-                                                        </a>
-                                                    </Popup>
+
                                                 </Marker>
                                             )}
                                             <MapUpdater />
@@ -250,7 +297,7 @@ export const PickRecommendation = () => {
                             <StyledPaper elevation={item.selected ? 5 : 1}>
                                 <Grid container>
                                     <Grid item xs={11}>
-                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
+                                        <StyledVenueName>{toSentenceCase(item.venue_name)}</StyledVenueName>
                                     </Grid>
                                     <Grid item xs={1} display="flex" justifyContent="flex-end">
                                         <Checkbox checked={item.selected} />
@@ -281,21 +328,7 @@ export const PickRecommendation = () => {
                                                         lng: item.venue_lon,
                                                     }}
                                                 >
-                                                    <Popup>
-                                                        <strong>Directions:</strong>
-                                                        <br />
-                                                        <span>
-                                                            Lat: {item.lat}, Lon: {item.lon}
-                                                        </span>
-                                                        <br />
-                                                        <a
-                                                            href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            Open in Google Maps
-                                                        </a>
-                                                    </Popup>
+
                                                 </Marker>
                                             )}
                                             <MapUpdater />

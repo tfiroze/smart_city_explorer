@@ -39,11 +39,13 @@ const StyledFab = styled(Fab)(({ theme }) => ({
 interface IProps {
   handleCreateItinerary: () => void;
   addItem: (item: IItinerary) => void;
+  maxZone: string;
 }
 
 export const CreateItinerary: React.FC<IProps> = ({
   handleCreateItinerary,
   addItem,
+  maxZone,
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -73,7 +75,7 @@ export const CreateItinerary: React.FC<IProps> = ({
       case 0:
         return <Questionnaire updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       case 1:
-        return <PickRecommendation />;
+        return <PickRecommendation maxZone={maxZone} />;
       case 2:
         return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       case 3:

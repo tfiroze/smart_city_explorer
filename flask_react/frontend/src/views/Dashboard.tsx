@@ -33,6 +33,7 @@ export const Dashboard = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogItineraryItem, setDialogItineraryItems] = useState<IItinerary | null>(null);
   const handleCreateItinerary = () => setOpenQuestionnaire(!openQuestionnaire);
+  // const [maxZone, setMaxZone] = useState(""); // uhm 
 
   const addItem = (item: IItinerary) => {
     setItineraryItems([...itineraryItems, item]);
@@ -68,6 +69,7 @@ export const Dashboard = () => {
                 <CreateItinerary
                   handleCreateItinerary={handleCreateItinerary}
                   addItem={addItem}
+                // maxZone={maxZone}
                 />
               </Box>
             </Fade>
