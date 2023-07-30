@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { Dashboard } from "../views/Dashboard";
 import { Startup } from "../views/Startup";
 import ChoroplethMap from "../views/MapTest";
+import { CreateItinerary } from "../views/CreateItinerary";
 
 interface RouterProps {
   auth: boolean;
@@ -13,6 +14,7 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
       {auth ? (
         <>
           <Route path="/*" element={<Dashboard />} />
+          <Route path="/createItinerary" element={<CreateItinerary/>} />
         </>
       ) : (
         <>

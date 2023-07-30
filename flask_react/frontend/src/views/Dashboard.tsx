@@ -33,23 +33,18 @@ import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
 export const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const [openQuestionnaire, setOpenQuestionnaire] = useState(false);
   const [itineraryItems, setItineraryItems] = useState<IItinerary[]>([]);
   const [pastItems, setPastItineraryItems] = useState<IItinerary[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [dialogItineraryItem, setDialogItineraryItems] = useState<IItinerary | null>(null);
 
   const [firstTime, setFirstTime] = useState(false)
-  const handleCreateItinerary = () => setOpenQuestionnaire(!openQuestionnaire);
 
   const [thingsTodo, setThingsTodo] = useState<any[]>([]);
 
   const [tab, setTab] = useState(0)
 
-  const addItem = (item: IItinerary) => {
-    setItineraryItems([...itineraryItems, item]);
-    handleCreateItinerary();
-  };
+
 
   const markAsCompleted = (itemIndex: number) => {
     const updatedItems = itineraryItems.filter((_, index) => index !== itemIndex);
@@ -65,7 +60,10 @@ export const Dashboard = () => {
   const firstTimeUser = () => {
     setFirstTime(true)
   }
-  { console.log(itineraryItems?.length > 0 && pastItems?.length >= 0, 'Items') }
+
+  const handleCreateItinerary =()=>{
+    navigate('/createItinerary')
+  }
 
   return (
     <>
@@ -110,10 +108,7 @@ export const Dashboard = () => {
               </Box>
             </>}
           </Grid>
-
-
           {
-            
             (itineraryItems?.length > 0 && pastItems?.length > 0) &&
           <>
             <Grid item xs={12} md={12} style={{ margin: "15px" }}>
@@ -156,9 +151,6 @@ export const Dashboard = () => {
             </Grid>
           </>
           }
-
-
-
           <Grid item xs={12}>
             <Typography variant="h5" align="left" color="text.secondary">
               Explore Popular Destination!

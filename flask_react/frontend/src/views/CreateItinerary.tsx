@@ -22,6 +22,7 @@ import IItinerary from "../models/IItinerary";
 import { PickRecommendation } from "../components/createItinerary/PickRecommendation";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { VenueSelectionControls } from "../components/createItinerary/VenueSelectionControls";
+import { Header } from "../components/dashboard/Header";
 
 const steps = [
   "Trip Information",
@@ -37,13 +38,13 @@ const StyledFab = styled(Fab)(({ theme }) => ({
 }));
 
 interface IProps {
-  handleCreateItinerary: () => void;
-  addItem: (item: IItinerary) => void;
+  // handleCreateItinerary: () => void;
+  // addItem: (item: IItinerary) => void;
 }
 
 export const CreateItinerary: React.FC<IProps> = ({
-  handleCreateItinerary,
-  addItem,
+  // handleCreateItinerary,
+  // addItem,
 }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
@@ -64,8 +65,8 @@ export const CreateItinerary: React.FC<IProps> = ({
     setItinerary({ ...itinerary, plan: data });
   };
 
-  const updateItinerary = (data: IItinerary) => {
-    setItinerary(data);
+  const updateItinerary = () => {
+    setCurrentStep(currentStep + 1);
   };
 
   const renderStep = () => {
@@ -77,7 +78,10 @@ export const CreateItinerary: React.FC<IProps> = ({
       case 2:
         return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       case 3:
-        return <ConfirmItineraryItems completed={addItem} data={itinerary} />;
+        return <ConfirmItineraryItems
+          // completed={addItem} 
+          data={itinerary}
+        />;
       default:
         return null;
     }
@@ -87,7 +91,7 @@ export const CreateItinerary: React.FC<IProps> = ({
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     } else {
-      handleCreateItinerary();
+      // handleCreateItinerary();
     }
   };
   const handleNext = () => {
@@ -98,21 +102,10 @@ export const CreateItinerary: React.FC<IProps> = ({
   return (
     <>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={12}>
-          <Paper elevation={3}>
-            <Stepper activeStep={currentStep} sx={{ mx: "auto" }}>
-              {steps.map((label, index) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Paper>
-        </Grid>
         <Grid item xs={12}>
-          <Divider />
+          <Header activeStep={currentStep} steps = {steps}/>
         </Grid>
-        <Grid item xs={12}>
+        {/* <Grid item xs={12}>
           <Grid container>
             <Grid item xs={6}>
               <Button
@@ -137,8 +130,8 @@ export const CreateItinerary: React.FC<IProps> = ({
               </Button>
             </Grid>
           </Grid>
-        </Grid>
-        <Grid item xs={12}>
+        </Grid> */}
+        <Grid item xs={12} style={{padding:'0px'}}>
           {renderStep()}
         </Grid>
       </Grid>

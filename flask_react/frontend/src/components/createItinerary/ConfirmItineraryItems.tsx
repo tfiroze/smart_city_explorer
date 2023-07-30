@@ -57,21 +57,24 @@ const StyledDisclaimer = styled(Typography)(({ theme }) => ({
 
 interface IProps {
   data: IItinerary;
-  completed: (data: IItinerary) => void;
+  // completed: (data: IItinerary) => void;
 }
 
-export const ConfirmItineraryItems: React.FC<IProps> = ({ data, completed }) => {
+export const ConfirmItineraryItems: React.FC<IProps> = ({ 
+  data, 
+  // completed 
+}) => {
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [open, setOpen] = useState(false);
 
   const handleFinish = () => {
     setOpen(true);
-    completed({
-      ...data,
-      comments: note,
-      name: name,
-    });
+    // completed({
+    //   ...data,
+    //   comments: note,
+    //   name: name,
+    // });
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {

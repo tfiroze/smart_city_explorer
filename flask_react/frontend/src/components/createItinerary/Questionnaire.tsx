@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { DesktopDatePicker, DesktopTimePicker } from "@mui/x-date-pickers";
+import { DateCalendar, DesktopDatePicker, DesktopTimePicker, StaticDatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -23,6 +23,10 @@ import StarIcon from "@mui/icons-material/Star";
 import IItinerary from "../../models/IItinerary";
 import zoneData from "../../temp/zone_Grouping.json";
 import L from "leaflet";
+import { DatePicker } from "@mui/lab";
+import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
+import { CButton } from "../common/button";
+
 
 const venueTypes = [
   {
@@ -101,7 +105,7 @@ const blueIcon = new L.Icon({
 });
 
 const QuestionnaireTitle = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(3),
+  marginBottom: theme.spacing(1),
   color: theme.palette.primary.main,
 }));
 
@@ -109,90 +113,24 @@ const QuestionnaireButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(3),
 }));
 
+let todayDate = new Date();
+
+// Create a new Date object for tomorrow
+let tomorrowDate = new Date(todayDate);
+tomorrowDate.setDate(todayDate.getDate() + 1);
+
 interface IProps {
-  updateItinerary: (data: IItinerary) => void;
+  updateItinerary: () => void;
   currentItinerary: IItinerary;
 }
 
 export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [starsSelected, setStarsSelected] = useState<number>(0.0);
-  const [subCategory, setSubCategory] = useState<string[]>([]);
   const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<string[]>([]);
-  const [hovering, setHovering] = useState(false);
-  const [budget, setBudget] = useState(0);
-  const [date, setDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [selectedVenues, setSelectedVenues] = useState([]);
-  const [groupedVenues, setGroupedVenues] = useState({});
   const [mapItems, setMapItems] = useState<any[]>([]);
 
+  const [selectedDate, setSelectedDate] = useState<Object>(dayjs().add(1, 'day'))
 
-
-  const changeTime = (time: Dayjs | null, type: "start" | "end" | "date") => {
-    let date = "";
-    let temp = currentItinerary;
-    switch (type) {
-      case "date":
-        date = `${time?.year()} ${time?.month()} ${time?.day()}`;
-        setDate(date);
-        temp.date = date;
-        break;
-      case "start":
-        date = `${time?.hour()} ${time?.minute()}`;
-        setStartTime(date);
-        temp.startTime = date;
-
-        break;
-      case "end":
-        date = `${time?.hour()} ${time?.minute()}`;
-        setEndTime(date);
-        temp.endTime = date;
-
-        break;
-    }
-    updateItinerary(temp)
-  };
-
-  const handleStarsSelectionChange = (event: React.ChangeEvent<any>) => {
-    setStarsSelected(event.target.value);
-  };
-
-  const handleTagChange = (event: React.ChangeEvent<{}>, value: string[]) => {
-    let listOptions: string[] = [];
-    let listSubSelectionOptions: string[] = [];
-    venueTypes.forEach((item) => {
-      if (value.indexOf(item.tag) > -1) {
-        item.venueTypes.forEach((vt) => {
-          if (listOptions.indexOf(vt) < 0) {
-            listOptions.push(vt);
-          }
-        });
-      }
-
-    });
-
-    setSubCategory([...listOptions]);
-    if (listOptions.length > 0) {
-      selectedSubCategoryTags.forEach((item) => {
-        if (listOptions.indexOf(item) > -1) {
-          listSubSelectionOptions.push(item);
-        }
-      });
-    }
-
-    setSelectedSubCategoryTags([...listSubSelectionOptions]);
-    let tempCordLst: any[] = []
-    zoneData.forEach(item => {
-      if (value.indexOf(item.venue_type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')) != -1) {
-        tempCordLst.push(item)
-
-      }
-    });
-    setMapItems([...tempCordLst])
-    setSelectedTags(value);
-  };
 
   const handleSubTagChange = (
     event: React.ChangeEvent<{}>,
@@ -207,125 +145,200 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
     );
   };
 
-  const interests = zoneData.filter((item) =>
-    !item.venue_mod_type.includes('restaurants')
-  ).map((item) =>
-    item.venue_mod_type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
-  );
+  const dateUpdate = (dateObject: object|null)=>{
+    setSelectedDate(dateObject?dateObject:dayjs().add(1, 'day'))
+  }
 
-  const restaurants = zoneData.filter((item) =>
-    item.venue_mod_type.includes('restaurants')
-  ).map((item) =>
-    item.venue_mod_type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
-  );
-
-  // Group data
-  const groupedOptions = [
-    {
-      title: 'Select Food Choice',
-      options: Array.from(new Set(restaurants)),
-    },
-    {
-      title: 'Interests',
-      options: Array.from(new Set(interests)),
-    },
-  ];
+  const toggleTags = (item: string)=>{
+    let tagArray = [...selectedTags]
+    let index = tagArray.indexOf(item)
+    if (index == -1){
+      tagArray.push(item)
+    }else{
+      tagArray.splice(index, 1)
+    }
+    setSelectedTags(tagArray)
+  }
 
 
+  const toggleCusine = (item: string)=>{
+    let tagArray = [...selectedSubCategoryTags]
+    let index = tagArray.indexOf(item)
+    if (index == -1){
+      tagArray.push(item)
+    }else{
+      tagArray.splice(index, 1)
+    }
+    setSelectedSubCategoryTags(tagArray)
+  }
 
+
+  const finishTripQuestionnaire = ()=>{
+    if (selectedTags.length < 3){
+      alert('Please Select Atleast 3 tags!')
+    }else if (selectedSubCategoryTags.length < 2){
+      alert('Please Select Atleast 2 tags')
+    }else if (Object.keys(selectedDate).length === 0){
+      alert('Please Select a Date')
+    }else{
+      // Call the Api
+      updateItinerary()
+    }
+  }
 
   return (
     <>
-      <Container maxWidth="sm">
-        <Paper>
-          <QuestionnaireTitle variant="h4" align="center">
-            Trip Information
-          </QuestionnaireTitle>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer components={["DesktopDatePicker", "TimePicker"]}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12}>
-                  <DemoItem label="Select Date">
-                    <DesktopDatePicker
-                      onChange={(value) => changeTime(value, "date")}
-                      defaultValue={dayjs()}
-                    />
-                  </DemoItem>
-                </Grid>
-                <Grid item xs={12}>
-                  <DemoItem label="Interests">
-                    <Autocomplete
-                      multiple
-                      id="tags-standard"
-                      options={Array.from(new Set(zoneData.map((item) => (
-                        item.venue_mod_type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
-                      ))))}
-                      value={selectedTags}
-                      onChange={handleTagChange}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          variant="outlined"
-                          label="Select Categories"
-                          placeholder="Tags"
-                        />
-                      )}
-                    />
-
-
-                  </DemoItem>
-                </Grid>
-              </Grid>
-            </DemoContainer>
-          </LocalizationProvider>
-        </Paper>
-      </Container>
-      <MapContainer
-        style={{ height: "100vh", width: "100%" }}
-        zoom={13}
-        center={[40.7831, -73.9712]}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        {mapItems?.map((item) => {
-          let icon;
-          switch (item.zone_group) {
-            case "Upper West Side":
-              icon = redIcon;
-              break;
-            case "Midtown Manhattan":
-              icon = greenIcon;
-              break;
-            case "Upper East Side":
-              icon = blueIcon;
-              break;
-            case "Chelsea/Greenwhich market":
-              icon = yellowIcon;
-              break;
-            case "Upper Manhattan":
-              icon = orangeIcon;
-              break;
-            default:
-              icon = purpleIcon;
-          }
-          return (
-            //@ts-ignore
-            <Marker position={[item.latitude, item.longitude]} icon={icon} riseOnHover>
-              <Popup>
-                <Grid container display='flex' spacing={2}>
+      <Grid container style={{ padding: '0px' }}>
+        <Grid container xs={5} style={{ overflow: 'scroll', height: '92vh' }}>
+          <Container maxWidth="sm">
+          <Grid container xs = {12} style={{display:'flex',alignItems:'center', margin: '10px 0px'}}>
+            <div style={{width: '50px', height:'50px', background:'red', borderRadius: '50px', marginRight:'10px'}}></div>
+          <Typography variant="h5" align="left" color="text.secondary">
+              Create Itienrary
+            </Typography>
+          </Grid>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DateCalendar', 'DateCalendar']}>
+                <Grid container spacing={2} alignItems="center">
                   <Grid item xs={12}>
-                    <Typography variant="h6">
-                      {item.name}
-                    </Typography>
+                    <DemoItem>
+                    <Typography variant="h5" align="left" color="text.secondary">
+                    Date
+                  </Typography>
+                      <DateCalendar 
+                      value={selectedDate}
+                      onChange={(newValue) => dateUpdate(newValue)} 
+                      />
+                    </DemoItem>
                   </Grid>
                 </Grid>
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
+              </DemoContainer>
+
+            </LocalizationProvider>
+            <Typography variant="h5" align="left" color="text.secondary">
+              Attraction Type
+            </Typography>
+            <Grid item xs={12} style={{ margin: '15px 0px', display:'flex', flexWrap:'wrap'}}>
+              {venueTypes?.map((el,ind)=>(
+                  <span 
+                  onClick={()=>toggleTags(el.tag)}
+                  style={selectedTags.indexOf(el.tag) !== -1 ? {padding:'10px', border:'2px solid red', marginRight:'15px', borderRadius:'10px', cursor:'pointer'}:
+                  {padding:'10px', borderColor:'green', border:'2px solid', marginRight:'15px', borderRadius:'10px', cursor:'pointer'}
+                  }>
+                    {el.tag}
+                  </span>
+              ))}
+            </Grid>
+            <Typography variant="h5" align="left" color="text.secondary">
+              Cusine Type
+            </Typography>
+            <Grid item xs={12} style={{ margin: '15px 0px' }}>
+            {venueTypes?.map((el,ind)=>(
+                  <span 
+                  onClick={()=>toggleCusine(el.tag)}
+                  style={selectedSubCategoryTags.indexOf(el.tag) !== -1 ? {padding:'10px', border:'2px solid red', marginRight:'15px', borderRadius:'10px', cursor:'pointer'}:
+                  {padding:'10px', borderColor:'green', border:'2px solid', marginRight:'15px', borderRadius:'10px', cursor:'pointer'}
+                  }>
+                    {el.tag}
+                  </span>
+              ))}
+            </Grid>
+            <Typography variant="h5" align="left" color="text.secondary">
+              Zone Group
+            </Typography>
+            <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+              {thingsTodoDummyData.slice(0, 5).map((item, index) => {
+                return (
+                  <Grid
+                    style={{ cursor: "pointer", padding: '5px', width: '30%' }}
+                    item
+                    className="unselectable"
+                  >
+                    <Grid xs={12} >
+                      <img
+                        src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                        alt=""
+                        style={{ width: '100%', borderRadius: '5px' }}
+                      />
+                    </Grid>
+                    <Grid xs={12}>
+                      <Typography variant="subtitle2">
+                        {item.venue_name}
+                      </Typography>
+                    </Grid>
+
+                  </Grid>
+                );
+              })}
+            </Grid>
+            <CButton
+              title="Next"
+              onClick={()=>finishTripQuestionnaire()}
+              style={{
+                width:'100%',
+                background: '#FFFFFF',
+                color: '#008080',
+                borderRadius: '20px',
+                padding: '10px 30px',
+                fontWeight: 'bold',
+                transition: '0.3s',
+                '&:hover': {
+                  background: '#008080',
+                  color: '#FFFFFF'
+                }
+              }}
+            />
+          </Container>
+        </Grid>
+        <Grid container xs={7}>
+          <MapContainer
+            style={{ height: "92vh", width: "100%" }}
+            zoom={13}
+            center={[40.7831, -73.9712]}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {mapItems?.map((item) => {
+              let icon;
+              switch (item.zone_group) {
+                case "Upper West Side":
+                  icon = redIcon;
+                  break;
+                case "Midtown Manhattan":
+                  icon = greenIcon;
+                  break;
+                case "Upper East Side":
+                  icon = blueIcon;
+                  break;
+                case "Chelsea/Greenwhich market":
+                  icon = yellowIcon;
+                  break;
+                case "Upper Manhattan":
+                  icon = orangeIcon;
+                  break;
+                default:
+                  icon = purpleIcon;
+              }
+              return (
+                //@ts-ignore
+                <Marker position={[item.latitude, item.longitude]} icon={icon} riseOnHover>
+                  <Popup>
+                    <Grid container display='flex' spacing={2}>
+                      <Grid item xs={12}>
+                        <Typography variant="h6">
+                          {item.name}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Popup>
+                </Marker>
+              );
+            })}
+          </MapContainer>
+        </Grid>
+      </Grid>
     </>
   );
 };

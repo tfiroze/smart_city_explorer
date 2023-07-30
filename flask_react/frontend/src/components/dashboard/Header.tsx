@@ -1,19 +1,39 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../utils/ApplicationContext';
 import { AuthContext } from '../../utils/AuthContext';
 import Paper from '@mui/material/Paper';
-import { Avatar, Divider, Menu, MenuItem, Switch, Typography } from '@mui/material';
+import { Avatar, Divider, Menu, MenuItem, Step, StepLabel, Stepper, Switch, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-export const Header = () => {
+import { useLocation } from 'react-router-dom';
+
+interface IProps {
+  activeStep: number | undefined;
+  steps: null | string[];
+}
+
+
+export const Header : React.FC<Partial<IProps>> = ({
+  activeStep,
+  steps
+})=> {
+
+  const pathname = useLocation()
+
   const authContext = useContext(AuthContext);
   const themeContext = useContext(ThemeContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [showTimeline, setShowTimeLine] = useState<boolean>(false)
+
+  useEffect(() => {
+    pathname.pathname == '/createItinerary' ? setShowTimeLine(true) : setShowTimeLine(false)
+  }, [])
 
   const open = Boolean(anchorEl);
+
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -31,8 +51,12 @@ export const Header = () => {
     return themeContext.theme === 'dark' ? '#ffffff' : '#115b4c';
   };
 
+
+
+
+
   return (
-    <div style={{ marginBottom: '20px'}}>
+    <div>
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -57,7 +81,6 @@ export const Header = () => {
         </MenuItem>
       </Menu>
       <Paper
-        // square
         elevation={0}
         style={{
           padding: '10px',
@@ -65,8 +88,22 @@ export const Header = () => {
           color: '#115b4c',
         }}
       >
-        <Grid container alignItems="center" justifyContent="space-between">
-        <Grid item xs={2}>
+        <Grid container alignItems="center" xs={12}>
+          <Grid item xs={3}>
+            <Typography variant="h5" align='left'>
+              Welcome {authContext.userInfo?.first_name}!
+            </Typography>
+          </Grid>
+          <Grid item xs={5}>
+              <Stepper activeStep={activeStep} sx={{ mx: "auto" }}>
+                {steps?.map((label, index) => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+          </Grid>
+          <Grid item xs={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Avatar
               style={{
                 cursor: 'pointer',
@@ -75,12 +112,6 @@ export const Header = () => {
               onClick={handleClick}
             />
           </Grid>
-          <Grid item xs={10}>
-            <Typography variant="h5" align='right'>
-              Welcome {authContext.userInfo?.first_name}!
-            </Typography>
-          </Grid>
-          
         </Grid>
       </Paper>
     </div>
