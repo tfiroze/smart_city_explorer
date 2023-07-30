@@ -27,7 +27,7 @@ with SSHTunnelForwarder(
     )
 
     # Read JSON data from file
-    with open('bestime_scrape/Scrape 4/restaurant_venueid_response4.json', 'r') as json_file:
+    with open('bestime_scrape/Scrape 5/shopping_venueid_response5.json', 'r') as json_file:
         venues_data = json.load(json_file)
 
         # Iterate through each venue in the JSON data
@@ -47,7 +47,7 @@ with SSHTunnelForwarder(
             venue_type = venue_info.get("venue_type")
             venue_name = venue_info.get("venue_name")
 
-            time = datetime(2023, 7, 10, 5, 0)
+            time = datetime(2023, 7, 17, 5, 0)
             analysis_info = venue_data.get("analysis")
 
             # Use context management for cursor
