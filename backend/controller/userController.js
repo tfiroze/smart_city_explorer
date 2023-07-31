@@ -104,8 +104,12 @@ let updateUser = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
-// update user password (Required: new password, user_id)
+// update user password (Required: password, user_id)
 let updatePWD = (req, res) => {
+    let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
+    if (!captchaCheckResult.isValid) {
+        return res.status(400).send({valid: false, message: 'captcha is not valid'})
+    }
     let dbOperation = (conn) => {
         const sqlStr = 'update user_info set password=? WHERE user_id=?'
         conn.query(sqlStr, [md5(req.body.password), req.body.user_id], (err, result) => {

@@ -1,4 +1,7 @@
 const createSSHTunnel = require('../db')
+const jwt = require('jsonwebtoken')
+
+let secretKey = 'This is the smart_city_explorer app'
 
 // get all trip info of one user (Required: user_id)
 let tripsInfo = (req, res) => {
@@ -90,10 +93,44 @@ let deleteTrip = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
+// MiddleWare: get zone_group and execute next controller  (Required: token)
+let getTripInfoQuestionnaireMW = (req, res, next) => {
+    const token = req.headers['token']
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            console.error('Invalid Token:', err.message);
+            return res.status(400).send({
+                valid: false,
+                message: 'Invalid token, need to login before request for this api'
+            })
+        } else {
+            res_json = {}
+            try {
+                let dbOperation = (conn) => {
+                    const sqlStr = 'select distinct zone_group from venue_static where zone_group is not null'
+                    conn.query(sqlStr, [], (err, result) => {
+                        if(err) {
+                            console.log(err.message)
+                            return res.status(400).send(err.message)
+                        }
+                    }).then(([rows]) => {
+                        const zoneArray = rows.map(item => item.zone_group);
+                        res_json.zone_group = zoneArray
+                        req.res_json = res_json
+                        next()
+                    })
+                }
+                createSSHTunnel(dbOperation)
+            }catch(err) {
+                console.log(err)
+            }
+        }
+    })
+    
+}
+
+// Controller: get attraction_type
 let getTripInfoQuestionnaire = (req, res) => {
-    res_json = {
-        'zone_group':['Upper Manhattan','Upper West Side','Upper East Side','Chelsea/Greenwhich market','Lower Manhattan','Midtown Manhattan']
-    }
     try {
         let dbOperation = (conn) => {
             const sqlStr = 'select distinct type_mod from venue_static where type_mod is not null'
@@ -103,6 +140,7 @@ let getTripInfoQuestionnaire = (req, res) => {
                     return res.status(400).send(err.message)
                 }
             }).then(([rows]) => {
+                res_json = req.res_json
                 const typeArray = rows.map(item => item.type_mod);
                 res_json.attraction_type = typeArray
                 return res.status(200).send(res_json)
@@ -114,68 +152,12 @@ let getTripInfoQuestionnaire = (req, res) => {
     }
 }
 
-// let getTripInfoQuestionnaire = (req, res) => {
-//     try {
-//         let dbOperation = (conn) => {
-//             const sqlStr1 = 'select distinct type_mod from venue_static where type_mod is not null';
-//             const sqlStr2 = 'select distinct zone_group from venue_static where zone_group is not null';
-
-//             // 使用Promise.all()来同时执行多个查询
-//             return Promise.all([
-//                 new Promise((resolve, reject) => {
-//                     conn.query(sqlStr1, [], (err, result) => {
-//                         if (err) {
-//                             console.log(err.message);
-//                             reject(err);
-//                         } else {
-//                             resolve(result);
-//                         }
-//                     });
-//                 }),
-//                 new Promise((resolve, reject) => {
-//                     conn.query(sqlStr2, [], (err, result) => {
-//                         if (err) {
-//                             console.log(err.message);
-//                             reject(err);
-//                         } else {
-//                             resolve(result);
-//                         }
-//                     });
-//                 })
-//             ]).then(([result1, result2]) => {
-//                 const typeArray = result1[0].map(item => item.type_mod);
-//                 resJSON = { attraction_type: typeArray };
-
-//                 const zoneArray = result2[0].map(item => item.zone_group);
-//                 resJSON.zone_group = zoneArray;
-
-//                 console.log(resJSON);
-//                 return res.status(200).json(resJSON);
-//             }).catch((err) => {
-//                 console.log(err);
-//                 return res.status(500).send('Internal Server Error');
-//             });
-//         };
-
-//         createSSHTunnel(dbOperation).then(() => {
-//             console.log("All queries are completed and response has been sent.");
-//         }).catch((err) => {
-//             console.log(err);
-//             return res.status(500).send('Internal Server Error');
-//         });
-//     } catch (err) {
-//         console.log(err);
-//         return res.status(500).send('Internal Server Error');
-//     }
-// };
-
-
-
 module.exports = {
     tripsInfo,
     tripInfo,
     updateTrip,
     addTrip,
     deleteTrip,
-    getTripInfoQuestionnaire
+    getTripInfoQuestionnaire,
+    getTripInfoQuestionnaireMW
 }

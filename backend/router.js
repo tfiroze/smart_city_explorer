@@ -10,19 +10,25 @@ router.use(express.urlencoded({ extended:false }))
 router.use(express.json())
 
 // router.get('/connTest', userController.connTest)
+
 router.post('/register', userController.register)
 router.post('/login', userController.login)
 router.get('/users', userController.userInfo)
 router.put('/users', userController.updateUser)
 router.patch('/users', userController.updatePWD)
+
 router.post('/emails', emailVerification.sendCaptcha)
+
 router.get('/trips/all/:user_id', tripController.tripsInfo)
 router.get('/trips/:trip_id', tripController.tripInfo)
 router.post('/trips', tripController.addTrip)
 router.put('/trips', tripController.updateTrip)
 router.delete('/trips', tripController.deleteTrip)
+
 router.post('/fares', fareModel.getFare)
+
 router.post('/venues', distanceModel.getRecommendVenues)
-router.get('/tripinfoquestionnaire', tripController.getTripInfoQuestionnaire)
+
+router.get('/tripinfoquestionnaire', tripController.getTripInfoQuestionnaireMW, tripController.getTripInfoQuestionnaire)
 
 module.exports = router
