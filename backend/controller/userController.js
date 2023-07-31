@@ -51,6 +51,12 @@ let login = (req, res) => {
                 return res.status(400).send({valid: false, message: 'Failed to login'})
             }
         }).then(([rows]) => {
+            if(rows[0] == undefined) {
+                return res.status(400).send({
+                    valid:false,
+                    message: 'wrong email or password'
+                })
+            }
             let user_idStr = rows[0].user_id
             let tokenStr = jwt.sign({user_idStr}, secretKey, {expiresIn: 7*24*60*60})
             return res.status(200).send({
