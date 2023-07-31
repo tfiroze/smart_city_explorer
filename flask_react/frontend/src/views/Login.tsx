@@ -93,6 +93,8 @@ export const Login = () => {
 
 	const handleSubmit = () => {
 		let results = smartApi.login(loginRequest, false);
+		// console.log(results);
+		
 		if (results.valid) {
 			const d = new Date();
 			d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);

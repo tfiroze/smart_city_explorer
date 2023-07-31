@@ -44,6 +44,7 @@ let register = (req, res) => {
 // Login (Required: email, password)
 let login = (req, res) => {
     let dbOperation = (conn) => {
+        console.log(req.body);
         sqlStr = 'select user_id, firstname, surname, email from user_info where email=? and password=?'
         conn.query(sqlStr, [req.body.email, md5(req.body.password)], (err, result) => {
             if(err) {
@@ -58,6 +59,8 @@ let login = (req, res) => {
                 message: 'Succeed to login',
                 token: tokenStr
             })
+        }).catch(err=>{
+            console.log(err);
         })
     }
     createSSHTunnel(dbOperation)
