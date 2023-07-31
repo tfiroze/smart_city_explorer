@@ -6,7 +6,10 @@ let tripsInfo = (req, res) => {
         let dbOperation = (conn) => {
             let sqlStr = 'SELECT * FROM trip_info JOIN trip_user ON trip_info.trip_id=trip_user.trip_id JOIN user_info ON user_info.user_id=trip_user.user_id WHERE user_info.user_id=?'
             conn.query(sqlStr, [req.params.user_id], (err, result) => {
-                if(err) return res.status(400).send(err.message)
+                if(err) {
+                    console.log(err.message)
+                    return res.status(400).send(err.message)
+                }
             }).then(([rows]) => {
                 return res.status(200).send(rows)
             })
@@ -87,10 +90,92 @@ let deleteTrip = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
+let getTripInfoQuestionnaire = (req, res) => {
+    res_json = {
+        'zone_group':['Upper Manhattan','Upper West Side','Upper East Side','Chelsea/Greenwhich market','Lower Manhattan','Midtown Manhattan']
+    }
+    try {
+        let dbOperation = (conn) => {
+            const sqlStr = 'select distinct type_mod from venue_static where type_mod is not null'
+            conn.query(sqlStr, [], (err, result) => {
+                if(err) {
+                    console.log(err.message)
+                    return res.status(400).send(err.message)
+                }
+            }).then(([rows]) => {
+                const typeArray = rows.map(item => item.type_mod);
+                res_json.attraction_type = typeArray
+                return res.status(200).send(res_json)
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err){
+        console.log(err)
+    }
+}
+
+// let getTripInfoQuestionnaire = (req, res) => {
+//     try {
+//         let dbOperation = (conn) => {
+//             const sqlStr1 = 'select distinct type_mod from venue_static where type_mod is not null';
+//             const sqlStr2 = 'select distinct zone_group from venue_static where zone_group is not null';
+
+//             // 使用Promise.all()来同时执行多个查询
+//             return Promise.all([
+//                 new Promise((resolve, reject) => {
+//                     conn.query(sqlStr1, [], (err, result) => {
+//                         if (err) {
+//                             console.log(err.message);
+//                             reject(err);
+//                         } else {
+//                             resolve(result);
+//                         }
+//                     });
+//                 }),
+//                 new Promise((resolve, reject) => {
+//                     conn.query(sqlStr2, [], (err, result) => {
+//                         if (err) {
+//                             console.log(err.message);
+//                             reject(err);
+//                         } else {
+//                             resolve(result);
+//                         }
+//                     });
+//                 })
+//             ]).then(([result1, result2]) => {
+//                 const typeArray = result1[0].map(item => item.type_mod);
+//                 resJSON = { attraction_type: typeArray };
+
+//                 const zoneArray = result2[0].map(item => item.zone_group);
+//                 resJSON.zone_group = zoneArray;
+
+//                 console.log(resJSON);
+//                 return res.status(200).json(resJSON);
+//             }).catch((err) => {
+//                 console.log(err);
+//                 return res.status(500).send('Internal Server Error');
+//             });
+//         };
+
+//         createSSHTunnel(dbOperation).then(() => {
+//             console.log("All queries are completed and response has been sent.");
+//         }).catch((err) => {
+//             console.log(err);
+//             return res.status(500).send('Internal Server Error');
+//         });
+//     } catch (err) {
+//         console.log(err);
+//         return res.status(500).send('Internal Server Error');
+//     }
+// };
+
+
+
 module.exports = {
     tripsInfo,
     tripInfo,
     updateTrip,
     addTrip,
-    deleteTrip
+    deleteTrip,
+    getTripInfoQuestionnaire
 }
