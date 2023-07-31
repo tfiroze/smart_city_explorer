@@ -100,9 +100,8 @@ export const CreateItinerary: React.FC<IProps> = ({
 
 
   return (
-    <>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
+      <Grid container  style={{backgroundColor: '#ffff'}}>
+        <Grid item xs={12}  style={{width:'100%', height:'10vh', display:'flex', alignItems:'center'}}>
           <Header activeStep={currentStep} steps = {steps}/>
         </Grid>
         {/* <Grid item xs={12}>
@@ -131,10 +130,9 @@ export const CreateItinerary: React.FC<IProps> = ({
             </Grid>
           </Grid>
         </Grid> */}
-        <Grid item xs={12} style={{padding:'0px'}}>
+        <Grid item xs={12} style={{padding:'0px', height:'90vh'}}>
           {renderStep()}
         </Grid>
       </Grid>
-    </>
   );
 };

@@ -16,10 +16,10 @@ interface IProps {
 }
 
 
-export const Header : React.FC<Partial<IProps>> = ({
+export const Header: React.FC<Partial<IProps>> = ({
   activeStep,
   steps
-})=> {
+}) => {
 
   const pathname = useLocation()
 
@@ -48,7 +48,7 @@ export const Header : React.FC<Partial<IProps>> = ({
   };
 
   const getAvatarColor = () => {
-    return themeContext.theme === 'dark' ? '#ffffff' : '#115b4c';
+    return themeContext.theme === 'dark' ? '#757de8' : '#757de8';
   };
 
 
@@ -56,7 +56,7 @@ export const Header : React.FC<Partial<IProps>> = ({
 
 
   return (
-    <div>
+    <>
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -82,38 +82,33 @@ export const Header : React.FC<Partial<IProps>> = ({
       </Menu>
       <Paper
         elevation={0}
-        style={{
-          padding: '10px',
-          backgroundColor: '#ffff',
-          color: '#115b4c',
-        }}
       >
         <Grid container alignItems="center" xs={12}>
-          <Grid item xs={3}>
-            <Typography variant="h5" align='left'>
-              Welcome {authContext.userInfo?.first_name}!
-            </Typography>
-          </Grid>
-          <Grid item xs={5}>
-              <Stepper activeStep={activeStep} sx={{ mx: "auto" }}>
-                {steps?.map((label, index) => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-          </Grid>
-          <Grid item xs={3} style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <Grid item xs={7} style={{ display: 'flex', alignItems: 'center' }}>
             <Avatar
               style={{
                 cursor: 'pointer',
                 backgroundColor: getAvatarColor(),
+                marginRight: '10px'
               }}
               onClick={handleClick}
             />
+            <Typography variant="h5" align='left'>
+              Welcome {authContext.userInfo?.first_name}! 👋
+            </Typography>
           </Grid>
+          {steps?.length && <Grid item xs={5}>
+            <Stepper activeStep={activeStep} sx={{ mx: "auto" }}>
+              {steps?.map((label, index) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Grid>}
+
         </Grid>
       </Paper>
-    </div>
+    </>
   );
 };

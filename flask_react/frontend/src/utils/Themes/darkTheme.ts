@@ -5,10 +5,10 @@ export default createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#242D3E', // Update the primary color
+      main: '#757de8', // Update the primary color
     },
     secondary: {
-      main: '#00796b', // Update the secondary color
+      main: '#161616', // Update the secondary color
     },
   },
   components: {
@@ -16,10 +16,26 @@ export default createTheme({
       styleOverrides: {
         root: {
           backgroundColor: '#535C7C', // Update the background color of Paper component
-          padding: '10px', // Increase the padding
+          // padding: '10px', // Increase the padding
         },
       },
     },
+    MuiTypography:{
+      styleOverrides:{
+        root:{
+          color:"#ffff"
+        }
+      }
+    },
+    MuiGrid:{
+      styleOverrides:{
+        root:{
+          backgroundColor:'#000000'
+        }
+      }
+    },
+
+
     MuiSpeedDialAction: {
       styleOverrides: {
         staticTooltipLabel: {
