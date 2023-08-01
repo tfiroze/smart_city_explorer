@@ -11,7 +11,7 @@ router.use(express.json())
 
 // router.get('/connTest', userController.connTest)
 
-router.post('/register', userController.register)
+router.post('/register', userController.verifyEmailUnique, userController.register)
 router.post('/login', userController.login)
 router.get('/users', userController.userInfo)
 router.put('/users', userController.updateUser)

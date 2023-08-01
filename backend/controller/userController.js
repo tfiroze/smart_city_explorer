@@ -17,7 +17,27 @@ let connTest = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
-// Register (Required: firstname, surname, email, captcha, password)
+// verify email unique when user register a new account (Required: firstname, surname, email, captcha, password)
+let verifyEmailUnique = (req, res, next) => {
+    let dbOperation = (conn) => {
+        let sqlStr = 'SELECT COUNT(*) as count FROM user_info WHERE email =?'
+        conn.query(sqlStr, [req.body.email], (err, result) => {
+            if(err) {
+                console.log(err.message)
+                return res.status(400).send({valid: false, message: 'Failed to register'})
+            }
+        }).then(([rows]) => {
+            if(rows[0].count === 0){
+                next()
+            }else {
+                return res.status(400).send({valid: false, message: 'Email has been registered'})
+            }
+        })
+    }
+    createSSHTunnel(dbOperation)
+}
+
+// Register 
 let register = (req, res) => {
     let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
     if (!captchaCheckResult.isValid) {
@@ -131,5 +151,6 @@ module.exports = {
     login,
     userInfo,
     updateUser,
-    updatePWD
+    updatePWD,
+    verifyEmailUnique
 }
