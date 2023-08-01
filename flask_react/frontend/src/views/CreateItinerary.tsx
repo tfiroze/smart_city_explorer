@@ -66,6 +66,8 @@ export const CreateItinerary: React.FC<IProps> = ({
   };
 
   const updateItinerary = () => {
+    console.log(currentStep);
+    
     setCurrentStep(currentStep + 1);
   };
 
@@ -74,7 +76,7 @@ export const CreateItinerary: React.FC<IProps> = ({
       case 0:
         return <Questionnaire updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       case 1:
-        return <PickRecommendation />;
+        return <PickRecommendation updateItinerary={updateItinerary} currentItinerary={itinerary}/>;
       case 2:
         return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       case 3:
@@ -130,7 +132,7 @@ export const CreateItinerary: React.FC<IProps> = ({
             </Grid>
           </Grid>
         </Grid> */}
-        <Grid item xs={12} style={{padding:'0px', height:'90vh'}}>
+        <Grid item xs={12} style={{padding:'0px'}}>
           {renderStep()}
         </Grid>
       </Grid>

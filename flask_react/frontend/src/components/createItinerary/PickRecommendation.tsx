@@ -19,6 +19,7 @@ import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { CButton } from "../common/button";
+import IItinerary from "../../models/IItinerary";
 
 function MapUpdater() {
     const map = useMap();
@@ -56,7 +57,12 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
     marginBottom: theme.spacing(1),
 }));
 
-export const PickRecommendation = () => {
+interface IProps {
+    updateItinerary: () => void;
+    currentItinerary: IItinerary;
+  }
+
+export const PickRecommendation : React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
     const [thingsTodo, setThingsTodo] = useState<any[]>([]);
     const [shoppingTodo, setShoppingTodo] = useState<any[]>([]);
     const [resturantTodo, setResturantTodo] = useState<any[]>([]);
@@ -85,11 +91,15 @@ export const PickRecommendation = () => {
         setResturantTodo([...tempData]);
     };
 
+    const finishRecommendation = ()=>{
+        updateItinerary()
+    }
+
     const currentTheme = useTheme();
 
     return (
         <>
-            <Grid container  style={{ marginTop: '20px', justifyContent:'center' }}>
+            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                 <Grid item xs={12}>
                     <Typography variant="h6" align="center">
                         Things To Do
@@ -105,7 +115,6 @@ export const PickRecommendation = () => {
                             onClick={() => selectThingsTodo(index)}
                         // className="unselectable"
                         >
-
                             <StyledVenueName noWrap>{item.venue_name}</StyledVenueName>
 
                             {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
@@ -171,7 +180,7 @@ export const PickRecommendation = () => {
                     );
                 })}
             </Grid>
-            <Grid container  style={{ marginTop: '20px', justifyContent:'center' }}>
+            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                 <Grid item xs={12}>
                     <Typography variant="h6" align="center">
                         Restaurants
@@ -253,7 +262,7 @@ export const PickRecommendation = () => {
                     );
                 })}
             </Grid>
-            <Grid container  style={{ marginTop: '20px' , justifyContent:'center'}}>
+            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                 <Grid item xs={12}>
                     <Typography variant="h6" align="center">
                         Shopping
@@ -334,6 +343,21 @@ export const PickRecommendation = () => {
                         </Grid>
                     );
                 })}
+            </Grid>
+            <Grid xs={12} style={{justifyContent: 'center', display: 'flex' }}>
+                <CButton
+                    title="Next"
+                    onClick={updateItinerary}
+                    style={{
+                        width: '30%',
+                        background: '#757de8',
+                        color: '#ffffff',
+                        borderRadius: '20px',
+                        padding: '10px 30px',
+                        fontWeight: 'bold',
+                        margin:'20px 0px'
+                    }}
+                />
             </Grid>
         </>
     );
