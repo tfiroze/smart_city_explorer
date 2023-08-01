@@ -18,6 +18,10 @@ app.use(session({
 }));
 app.use('/api', router)
 
+// Adding new Hello World endpoint
+app.get('/api/helloworld', (req, res) => {
+  res.send('Hello, World!');
+});
 
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../flask_react/frontend/build', 'index.html'))
