@@ -16,27 +16,31 @@ function createCode(){
     return newCode = arr
 }
 
+// POST /emails (Required: email)
 let sendCaptcha = (req,res) => {
     let userMail = req.body.email
     createCode()
-    // storeCodeToSession(req, '123456')   // Test: set captcha 123456
     storeCodeToSession(req, newCode)
 
     // create smtp connection
     let transport = nodemailer.createTransport({
-        service: 'Gmail',
+        // service: 'Gmail',
+        service: 'QQ',
         auth: {
-            user : 'a1357924691@gmail.com',
-            pass : 'zzdsoprdlrlxxjfq'
+            // user : 'a1357924691@gmail.com',
+            user : '3037615469@qq.com',
+            // pass : 'zzdsoprdlrlxxjfq'
+            pass: 'shvwybgfyfzudfbd'
         }
     })
 
     // content of email
     let options = {
-        from : 'a1357924691@gmail.com',
+        // from : 'a1357924691@gmail.com',
+        from : '3037615469@qq.com',
         to : userMail,
         subject : 'Welcome to Smart City Explorer',
-        html : `<div style='width:600px;margin:30px auto'><h1 style='text-align:center'>Welcome to Smart City Explorer</h1><p style='font-size:24px'>This is your captcha:</p><strong style='font-size:20px;display:block;text-align:center;color:red'>${newCode}</strong><p>This captcha is only valid in 10 minutes</p><i style='color:#00bfff'>This email is sent automatically by the system. Please do not reply! <br> If you haven't registered, please ignore it.</i></div>`,
+        html : `<div style='width:600px;margin:30px auto'><h1 style='text-align:center'>Welcome to Smart City Explorer</h1><p style='font-size:24px'>This is your captcha:</p><strong style='font-size:20px;display:block;text-align:center;color:red'>${newCode}</strong><p>This captcha is only valid in 10 minutes</p><i style='color:#00bfff'>This email is sent automatically by the system. Please do not reply! <br> If you never used Smart City Explorer, please ignore it.</i></div>`,
     }
     transport.sendMail(options, function(err,msg) {
         if(err){

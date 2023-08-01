@@ -1,4 +1,7 @@
 const createSSHTunnel = require('../db')
+const jwt = require('jsonwebtoken')
+
+let secretKey = 'This is the smart_city_explorer app'
 
 // get all trip info of one user (Required: user_id)
 let tripsInfo = (req, res) => {
@@ -6,7 +9,10 @@ let tripsInfo = (req, res) => {
         let dbOperation = (conn) => {
             let sqlStr = 'SELECT * FROM trip_info JOIN trip_user ON trip_info.trip_id=trip_user.trip_id JOIN user_info ON user_info.user_id=trip_user.user_id WHERE user_info.user_id=?'
             conn.query(sqlStr, [req.params.user_id], (err, result) => {
-                if(err) return res.status(400).send(err.message)
+                if(err) {
+                    console.log(err.message)
+                    return res.status(400).send(err.message)
+                }
             }).then(([rows]) => {
                 return res.status(200).send(rows)
             })
@@ -87,10 +93,71 @@ let deleteTrip = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
+// MiddleWare: get zone_group and execute next controller  (Required: token)
+let getTripInfoQuestionnaireMW = (req, res, next) => {
+    const token = req.headers['token']
+    jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+            console.error('Invalid Token:', err.message);
+            return res.status(400).send({
+                valid: false,
+                message: 'Invalid token, need to login before request for this api'
+            })
+        } else {
+            res_json = {}
+            try {
+                let dbOperation = (conn) => {
+                    const sqlStr = 'select distinct zone_group from venue_static where zone_group is not null'
+                    conn.query(sqlStr, [], (err, result) => {
+                        if(err) {
+                            console.log(err.message)
+                            return res.status(400).send(err.message)
+                        }
+                    }).then(([rows]) => {
+                        const zoneArray = rows.map(item => item.zone_group);
+                        res_json.zone_group = zoneArray
+                        req.res_json = res_json
+                        next()
+                    })
+                }
+                createSSHTunnel(dbOperation)
+            }catch(err) {
+                console.log(err)
+            }
+        }
+    })
+    
+}
+
+// Controller: get attraction_type
+let getTripInfoQuestionnaire = (req, res) => {
+    try {
+        let dbOperation = (conn) => {
+            const sqlStr = 'select distinct type_mod from venue_static where type_mod is not null'
+            conn.query(sqlStr, [], (err, result) => {
+                if(err) {
+                    console.log(err.message)
+                    return res.status(400).send(err.message)
+                }
+            }).then(([rows]) => {
+                res_json = req.res_json
+                const typeArray = rows.map(item => item.type_mod);
+                res_json.attraction_type = typeArray
+                return res.status(200).send(res_json)
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err){
+        console.log(err)
+    }
+}
+
 module.exports = {
     tripsInfo,
     tripInfo,
     updateTrip,
     addTrip,
-    deleteTrip
+    deleteTrip,
+    getTripInfoQuestionnaire,
+    getTripInfoQuestionnaireMW
 }
