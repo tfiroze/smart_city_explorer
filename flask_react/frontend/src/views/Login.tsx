@@ -93,28 +93,28 @@ export const Login = () => {
 
 	const handleSubmit = () => {
 		let results = smartApi.login(loginRequest, false);
-		// console.log(results);
+		console.log(results);
 		
-		if (results.valid) {
-			const d = new Date();
-			d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);
-			let expires = d.toUTCString();
-			setCookie("accessToken", results.token, expires);
-			setCookie("refreshToken", results.refreshToken, expires);
-			console.log("logged In");
+		// if (results.valid) {
+		// 	const d = new Date();
+		// 	d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);
+		// 	let expires = d.toUTCString();
+		// 	setCookie("accessToken", results.token, expires);
+		// 	setCookie("refreshToken", results.refreshToken, expires);
+		// 	console.log("logged In");
 
-			authContext.authenticate(true, {
-				first_name: "string",
-				last_name: "string",
-				userUid: "string",
-				email: "string",
-			});
-			localStorage.setItem("userUid", "string");
-			localStorage.setItem("email", "string");
-			localStorage.setItem("first_name", "string");
-			localStorage.setItem("last_name", "string");
-		} else {
-		}
+		// 	authContext.authenticate(true, {
+		// 		first_name: "string",
+		// 		last_name: "string",
+		// 		userUid: "string",
+		// 		email: "string",
+		// 	});
+		// 	localStorage.setItem("userUid", "string");
+		// 	localStorage.setItem("email", "string");
+		// 	localStorage.setItem("first_name", "string");
+		// 	localStorage.setItem("last_name", "string");
+		// } else {
+		// }
 		navigate("/dashboard");
 	};
 	function setCookie(
