@@ -24,6 +24,13 @@ import { Alert } from "@mui/lab";
 import { Card, CardContent, CardActions, Snackbar } from "@mui/material";
 
 
+const erroDict: { [key: string]: string } = {
+	'0':'',
+	'1': 'Oops! Your Email or password is not ready for the journey. 🌊 Please check and try again!',
+	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.'
+}
+
+
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
 	const authContext = useContext(AuthContext);
@@ -32,6 +39,9 @@ export const Login = () => {
 		email: "",
 		password: "",
 	});
+	const [error, setError] = useState<string>("0")
+	const [loading, setLoading] = useState(false)
+
 
 	const navigate = useNavigate();
 
@@ -41,7 +51,6 @@ export const Login = () => {
 	});
 
 	const formValidator = () => {
-		handleSubmit();
 		if (
 			validateEmail(loginRequest.email) &&
 			validatePassword(loginRequest.password)
@@ -92,31 +101,33 @@ export const Login = () => {
 		});
 
 	const handleSubmit = () => {
-		// let results = smartApi.login(loginRequest, false);
-		// console.log(results);
-		
-		// if (results.valid) {
-		// 	const d = new Date();
-		// 	d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);
-		// 	let expires = d.toUTCString();
-		// 	setCookie("accessToken", results.token, expires);
-		// 	setCookie("refreshToken", results.refreshToken, expires);
-		// 	console.log("logged In");
+		setLoading(true)
+		smartApi.login(loginRequest)
+			.then((results) => {
+				console.log(results);
 
-		// 	authContext.authenticate(true, {
-		// 		first_name: "string",
-		// 		last_name: "string",
-		// 		userUid: "string",
-		// 		email: "string",
-		// 	});
-		// 	localStorage.setItem("userUid", "string");
-		// 	localStorage.setItem("email", "string");
-		// 	localStorage.setItem("first_name", "string");
-		// 	localStorage.setItem("last_name", "string");
-		// } else {
-		// }
-		navigate("/dashboard");
+				if (results?.valid && results?.token) {
+					// const d = new Date();
+					// d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);
+					// let expires = d.toUTCString();
+					// setCookie("token", results.token, expires);
+					nagvigateToDashboard(results.token)
+					// navigate("/dashboard");
+					// setError('0')
+					// setLoading(false)
+				} else {
+					// ... handle the case when results?.valid is falsy ...
+					setError(results.errorType)
+					setLoading(false)
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+				setError('2')
+				setLoading(false)
+			});
 	};
+
 	function setCookie(
 		name: string,
 		value: string | null | undefined,
@@ -125,9 +136,31 @@ export const Login = () => {
 		document.cookie = `${name}=${value}; expires=${expires}; path=/`;
 	}
 
-	const handleAutoLoginChange = () => {
-		setAutoLogin(!autoLogin);
-	};
+	const nagvigateToDashboard = (token: string)=>{
+		smartApi.dashboard(token)
+			.then((results) => {
+				console.log(results);
+
+				// if (results?.valid) {
+				// 	const d = new Date();
+				// 	d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);
+				// 	let expires = d.toUTCString();
+				// 	setCookie("token", results.token, expires);
+				// 	navigate("/dashboard");
+				// 	setError('0')
+				// 	setLoading(false)
+				// } else {
+				// 	// ... handle the case when results?.valid is falsy ...
+				// 	setError(results.errorType)
+				// 	setLoading(false)
+				// }
+			})
+			.catch((error) => {
+				console.log(error);
+				setError('2')
+				setLoading(false)
+			});
+	}
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
 
@@ -176,7 +209,7 @@ export const Login = () => {
 								error={format.email}
 								helperText={
 									format.email
-										? "Looks like your Email decided to take a vacation! Please enter a valid one."
+										? "Your Email is off on a tropical getaway! 🏝️ Please provide a valid email address so we can catch up."
 										: ""
 								}
 							/>
@@ -202,12 +235,15 @@ export const Login = () => {
 								onChange={handleInputOnChange}
 								helperText={
 									format.password
-										? "Oops! Your password needs a vacation from errors. Please enter a valid one."
+										? "Oops! Your password needs a vacation from errors 🏖️. Please enter a valid one."
 										: ""
 								}
 							/>
 						</Box>
-						<FormControlLabel
+						{error!=='0' && <Typography variant="subtitle1" color={'red'}>
+							{erroDict[error.toString()]}
+						</Typography>}
+						{/* <FormControlLabel
 							control={
 								<Checkbox
 									checked={autoLogin}
@@ -215,12 +251,13 @@ export const Login = () => {
 								/>
 							}
 							label="Remember Me?"
-						/>
+						/> */}
 						<Box mt={3}>
 							<Grid container spacing={2}>
 								<Grid item xs={12} sm={6}>
 									<CButton
 										title="LOGIN"
+										loading={loading}
 										onClick={formValidator}
 										style={{
 											background: '#008080', color: 'white'

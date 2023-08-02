@@ -1,21 +1,24 @@
+import { LoadingButton } from "@mui/lab";
 import React from "react"
 
 interface IProps {
 	title: string;
 	onClick: () => void;
   style?:any;
+  loading?: boolean
 }
 
 export const CButton : React.FC<IProps> = ({
 	title,
 	onClick,
-  style
-
+  style,
+  loading=false
 })  => {
 
 return (
-  <button
+  <LoadingButton
     onClick={onClick}
+    loading={loading}
     style={{
       display: 'inline-block',
       outline: 'none',
@@ -34,12 +37,13 @@ return (
       textAlign: 'center',
       padding: '17px 48px',
       height: '48px',
+      margin:'auto 0',
       ...style
     }}
     // onMouseEnter={(e) => e.target.style.backgroundColor = '#21e065'}
     // onMouseLeave={(e) => e.target.style.backgroundColor = '#1ED760'}
   >
-    {title}
-  </button>
+    {!loading && <span>{title}</span>}
+  </LoadingButton>
 );
 }

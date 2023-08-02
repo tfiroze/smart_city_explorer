@@ -14,6 +14,7 @@ import React, { ChangeEvent, useState } from "react";
 import IRegisterRequest from "../../models/IRegisterRequest";
 import { smartApi } from "../../utils/apiCalls";
 import { CButton } from "../common/button";
+import { LoadingButton } from "@mui/lab";
 
 interface IProps {
 	open: boolean;
@@ -184,7 +185,7 @@ export const Register: React.FC<IProps> = ({
 								error={format.firstName}
 								helperText={
 									format.firstName
-										? "Hold on, your first name needs a vacation upgrade! Let's sprinkle some travel excitement into it."
+										? "Upgrade your first name for a travel adventure! 🌟"
 										: ""
 								}
 							/>
@@ -205,7 +206,7 @@ export const Register: React.FC<IProps> = ({
 								error={format.surname}
 								helperText={
 									format.surname
-										? "Surname getaway! Oops, that's not a valid one."
+										? "Your surname is ready for a getaway! 🌊 Enter a valid one to set sail!"
 										: ""
 								}
 							/>
@@ -213,10 +214,40 @@ export const Register: React.FC<IProps> = ({
 					</Grid>
 				</Grid>
 
+				<Grid container xs={12}>
+					<Grid item md={8}>
+						<Box my={2}>
+							<TextField
+								label="Email"
+								placeholder="Please enter your email..."
+								variant="outlined"
+								color="primary"
+								fullWidth
+								type="email"
+								name="email"
+								value={registerRequest.email}
+								onChange={handleInputOnChange}
+								error={format.email}
+								helperText={
+									format.email
+										? "Your Email is off on a tropical getaway! 🏝️ Please provide a valid email address so we can catch up."
+										: ""
+								}
+							/>
+						</Box>
+					</Grid>
+					<Grid item md ={4} style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
+					<LoadingButton loading={false}  variant="outlined">
+						<span>Verfiy</span>
+					</LoadingButton>
+					</Grid>
+				</Grid>
+
+
 				<Box my={2}>
 					<TextField
-						label="Email"
-						placeholder="Please enter your email..."
+						label="Verification Code"
+						placeholder="Please enter the verification code you received in the email..."
 						variant="outlined"
 						color="primary"
 						fullWidth
@@ -227,30 +258,11 @@ export const Register: React.FC<IProps> = ({
 						error={format.email}
 						helperText={
 							format.email
-								? "Looks like your Email decided to take a vacation! Please enter a valid one."
+								? "Oops! It seems our Verification Code is feeling a bit shy today! 🙈 Please enter a valid code to proceed."
 								: ""
 						}
 					/>
 				</Box>
-				{/* <Box my={2}>
-					<TextField
-						label="Captcha"
-						placeholder="Please enter your email..."
-						variant="outlined"
-						color="primary"
-						fullWidth
-						type="email"
-						name="email"
-						value={registerRequest.email}
-						onChange={handleInputOnChange}
-						error={format.email}
-						helperText={
-							format.email
-								? "Looks like your Email decided to take a vacation! Please enter a valid one."
-								: ""
-						}
-					/>
-				</Box> */}
 				<Box my={2}>
 					<TextField
 						label="Password"
@@ -265,7 +277,7 @@ export const Register: React.FC<IProps> = ({
 						error={format.password}
 						helperText={
 							format.password
-								? "Oops! Your password needs a vacation from errors. Please enter a valid one."
+								? "Oops! Your password needs a vacation from errors 🏖️. Please enter a valid one."
 								: ""
 						}
 					/>
@@ -285,7 +297,7 @@ export const Register: React.FC<IProps> = ({
 						error={format.confirmPassword}
 						helperText={
 							format.confirmPassword
-								? "Uh-oh! Your password wants a travel companion for confirmation. Let's make sure they're on the same journey!"
+								? "Uh-oh! Your password wants a travel companion for confirmation. Let's make sure they're on the same journey! 🛂"
 								: ""
 						}
 					/>
