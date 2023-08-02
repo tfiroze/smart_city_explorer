@@ -3,13 +3,15 @@ let cors = require('cors')
 let path = require('path')
 let router = require('./router')
 const session = require('express-session')
+const cookieParser = require('cookie-parser')
 
 let app = express()
 
 app.use(express.static(path.join(__dirname, '../flask_react/frontend/build')))
 app.use(cors())
+app.use(cookieParser('Smart_City_Explorer'))
 app.use(session({
-  secret: 'your_secret_key',
+  secret: 'Smart_City_Explorer',
   resave: false,
   saveUninitialized: false,
   cookie: {

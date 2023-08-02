@@ -16,8 +16,8 @@ function createCode(){
     return newCode = arr
 }
 
-// POST /emails (Required: email)
-let sendCaptcha = (req,res) => {
+// POST /api/emails (Required: email)
+let sendCaptcha = (req, res) => {
     let userMail = req.body.email
     createCode()
     storeCodeToSession(req, newCode)
@@ -44,10 +44,19 @@ let sendCaptcha = (req,res) => {
     }
     transport.sendMail(options, function(err,msg) {
         if(err){
-            res.send(err)
+            res.status(200).send({
+                valid: false,
+                error:err
+            })
             res.end()
         }else{
-            res.send(msg)
+            req.session.captcha = newCode;
+            res.cookie('sessionID', req.sessionID, {
+                maxAge: 600000, // Cookie 的过期时间（以毫秒为单位）
+                httpOnly: true, // 仅允许服务器访问 Cookie
+                secure: true // 仅在使用 HTTPS 连接时发送 Cookie
+            });
+            res.status(200).send({valid: true, 'sessionID': req.sessionID})
             res.end()
             transport.close()
         }
@@ -72,13 +81,13 @@ function verifyCode(req, enteredCode) {
     const currentTime = Date.now();
     // captcha will expire in 10 minutes
     if (currentTime - startTimestamp > 10 * 60 * 1000) {
-        return { isValid: false, message: 'Verification code has expired. Please request a new one.' };
+        return { isValid: false, message: 'Verification code has expired. Please request a new one.' }
     }
   
     if (enteredCode === captcha) {
-        return { isValid: true, message: 'Verification successful!' };
+        return { isValid: true};
     } else {
-        return { isValid: false, message: 'Invalid verification code!' };
+        return { isValid: false, message: 'Invalid captcha' };
     }
 }
 

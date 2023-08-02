@@ -9,7 +9,7 @@ const distanceModel = require('./services/venue_model/exec_venue_model')
 router.use(express.urlencoded({ extended:false }))
 router.use(express.json())
 
-// router.get('/connTest', userController.connTest)
+router.get('/connTest', userController.connTest)
 
 router.post('/register', userController.verifyEmailUnique, userController.register)
 router.post('/login', userController.login)
