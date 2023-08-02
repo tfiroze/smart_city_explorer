@@ -7,14 +7,9 @@ let secretKey = 'This is the smart_city_explorer app'
 
 // Testing Database Connection
 let connTest = (req, res) => {
-    let dbOperation = (conn) => {
-        conn.query('select * from user_info where user_id=1').then(([rows]) => {
-            res.json(rows)
-        }).catch((err) => {
-            console.error(err);
-        })
-    }
-    createSSHTunnel(dbOperation)
+    const sessionID = req.cookies['sessionID'];
+    const captcha = req.session[sessionID].captcha
+    console.log(req.session[sessionID])
 }
 
 // verify email unique when user register a new account (Required: firstname, surname, email, captcha, password)
@@ -46,7 +41,7 @@ let register = (req, res) => {
     let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
     console.log(captchaCheckResult)
     if (!captchaCheckResult.isValid) {
-        return res.status(401).send({valid: false, message: 'captcha is not valid'})
+        return res.status(401).send({valid: false, message: captchaCheckResult.message})
     }
     let dbOperation = (conn) => {
         let sqlStr = 'insert into user_info (firstname, surname, email, password) values (?, ?, ?, ?)'
@@ -86,16 +81,18 @@ let login = (req, res) => {
             }
         }).then(([rows]) => {
             if(rows[0] == undefined) {
-                return res.status(200).send({
-                    valid:false,
-                    message: 'wrong email or password'
-                })
+                return res.status(200).send({valid:false,message: 'wrong email or password'})
             }
             let user_idStr = rows[0].user_id
             let tokenStr = jwt.sign({user_idStr}, secretKey, {expiresIn: 7*24*60*60})
+
+            const decoded = jwt.decode(tokenStr);
+
+            const expirationTime = new Date(decoded.exp * 1000); 
             return res.status(200).send({
                 valid: true,
                 message: 'Succeed to login',
+                tokenExpirationTime: expirationTime, 
                 token: tokenStr
             })
         }).catch(err=>{
@@ -157,7 +154,7 @@ let updateUser = (req, res) => {
 
 // update user password (Required: password, user_id)
 let updatePWD = (req, res) => {
-    let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
+    let captchaCheckResult = captchaCheck.verifyCode(req, res, req.body.captcha)
     if (!captchaCheckResult.isValid) {
         return res.status(401).send({valid: false, message: 'captcha is not valid'})
     }

@@ -16,11 +16,11 @@ function createCode(){
     return newCode = arr
 }
 
-// POST /emails (Required: email)
-let sendCaptcha = (req,res) => {
+// POST /api/emails (Required: email)
+let sendCaptcha = (req, res) => {
     let userMail = req.body.email
     createCode()
-    storeCodeToSession(req, newCode)
+    // storeCodeToSession(req, newCode)
 
     // create smtp connection
     let transport = nodemailer.createTransport({
@@ -44,44 +44,48 @@ let sendCaptcha = (req,res) => {
     }
     transport.sendMail(options, function(err,msg) {
         if(err){
-            res.send(err)
+            res.status(200).send({
+                valid: false,
+                error:err
+            })
             res.end()
         }else{
-            res.send(msg)
+            req.session.captcha = newCode;
+            res.cookie('sessionID', req.sessionID, {
+                maxAge: 60 * 10000,
+                httpOnly: true, 
+                secure: true 
+            });
+            res.status(200).send({valid: true, 'sessionID': req.sessionID})
             res.end()
             transport.close()
         }
     })
 }
-
-// Store the captcha in the Session and expiration time is ten minutes
-function storeCodeToSession(req, code) {
-    req.session.captcha = code
-    req.session.startTimestamp = Date.now()
-
-    console.log(req.session, 'Store Code to session');
-}
   
 // Check if the user-entered captcha is correct or has expired.
 function verifyCode(req, enteredCode) {
-    console.log(req.session, 'Verify Code');
-    let captcha = req.session.captcha
-    let startTimestamp = req.session.startTimestamp
+    if(req.cookies.sessionID){
+        
+        const sessionID = req.cookies['sessionID'];
+        try {
+            const sessionJSON = JSON.parse(req.sessionStore.sessions[sessionID])
+            const captcha = sessionJSON['captcha']
 
-    if (!captcha || !startTimestamp) {
-        return { isValid: false, message: 'Verification code not found. Please request a new one.' }
-    }
-  
-    const currentTime = Date.now();
-    // captcha will expire in 10 minutes
-    if (currentTime - startTimestamp > 10 * 60 * 1000) {
-        return { isValid: false, message: 'Verification code has expired. Please request a new one.' };
-    }
-  
-    if (enteredCode === captcha) {
-        return { isValid: true, message: 'Verification successful!' };
-    } else {
-        return { isValid: false, message: 'Invalid verification code!' };
+            if (!captcha) {
+                return { isValid: false, message: 'Verification code not found. Please request a new one.' }
+            }
+        
+            if (enteredCode === captcha) {
+                return { isValid: true};
+            } else {
+                return { isValid: false, message: 'Invalid captcha' };
+            }
+        }catch(err) {
+            console.error(err)
+            return {isValid: false}
+        }
+        
     }
 }
 
