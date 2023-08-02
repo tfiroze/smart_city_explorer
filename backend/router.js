@@ -19,7 +19,7 @@ router.patch('/users', userController.updatePWD)
 
 router.post('/emails', emailVerification.sendCaptcha)
 
-router.get('/trips/all/:user_id', tripController.tripsInfo)
+router.get('/trips/all/:user_id', tripController.upcomingTripsInfo, tripController.completedTripsInfo)
 router.get('/trips/:trip_id', tripController.tripInfo)
 router.post('/trips', tripController.addTrip)
 router.put('/trips', tripController.updateTrip)

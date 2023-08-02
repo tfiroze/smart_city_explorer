@@ -23,14 +23,18 @@ let verifyEmailUnique = (req, res, next) => {
         let sqlStr = 'SELECT COUNT(*) as count FROM user_info WHERE email =?'
         conn.query(sqlStr, [req.body.email], (err, result) => {
             if(err) {
-                console.log(err.message)
-                return res.status(400).send({valid: false, message: 'Failed to register'})
+                console.error(err)
+                return res.status(500).send({
+                    valid: false,
+                    message: 'Failed to register',
+                    err: err.message
+                })
             }
         }).then(([rows]) => {
             if(rows[0].count === 0){
                 next()
             }else {
-                return res.status(400).send({valid: false, message: 'Email has been registered'})
+                return res.status(200).send({valid: false, message: 'Email has been registered'})
             }
         })
     }
@@ -41,20 +45,24 @@ let verifyEmailUnique = (req, res, next) => {
 let register = (req, res) => {
     let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
     if (!captchaCheckResult.isValid) {
-        return res.status(400).send({valid: false, message: 'captcha is not valid'})
+        return res.status(401).send({valid: false, message: 'captcha is not valid'})
     }
     let dbOperation = (conn) => {
         let sqlStr = 'insert into user_info (firstname, surname, email, password) values (?, ?, ?, ?)'
         conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, md5(req.body.password)], (err, result) => {
             if(err) {
-                console.log(err.message)
-                return res.status(400).send({valid: false, message: 'Failed to register'})
+                console.error(err)
+                return res.status(500).send({
+                    valid: false, 
+                    message: 'Failed to register',
+                    err: err.message
+                })
             }
         }).then(([rows]) => {
             if(rows.affectedRows === 1){
                 return res.status(200).send({valid: true, message: 'Succeed to register'})
             }else {
-                return res.status(400).send({valid: false, message: 'Failed to register'})
+                return res.status(200).send({valid: false, message: 'Failed to register'})
             }
         })
     }
@@ -68,11 +76,15 @@ let login = (req, res) => {
         conn.query(sqlStr, [req.body.email, md5(req.body.password)], (err, result) => {
             if(err) {
                 console.error(err);
-                return res.status(400).send({valid: false, message: 'Failed to login'})
+                return res.status(500).send({
+                    valid: false, 
+                    message: 'Failed to login',
+                    err: err.message
+                })
             }
         }).then(([rows]) => {
             if(rows[0] == undefined) {
-                return res.status(400).send({
+                return res.status(200).send({
                     valid:false,
                     message: 'wrong email or password'
                 })
@@ -97,7 +109,14 @@ let userInfo = (req, res) => {
         let dbOperation = (conn) => {
             let sqlStr = 'select user_id, firstname, surname, email from user_info where user_id=?'
             conn.query(sqlStr, [decode], (err, result) => {
-                if(err) return res.status(400).send(err.message)
+                if(err) {
+                    console.error(err)
+                    return res.status(500).send({
+                        valid: false, 
+                        message: 'Failed to get user information',
+                        err: err.message
+                    })
+                }
             }).then(([rows]) => {
                 return res.status(200).json(rows[0])
             })
@@ -113,12 +132,20 @@ let updateUser = (req, res) => {
     let dbOperation = (conn) => {
         const sqlStr = `update user_info set firstname=?, surname=? ,email=? WHERE user_id=?`
         conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, req.body.user_id], (err, result) => {
-            if(err) return res.status(400).send(err.message)
+            if(err) {
+                console.error(err)
+                return res.status(500).send({
+                    valid: false, 
+                    message: 'Failed to update user information',
+                    err: err.message
+                })
+            }
             }).then(([rows]) => {
-            return res.status(200).send({
-                valid: true,
-                message: 'Succeed to update user information'
-            })
+                if(rows.affectedRows === 1){
+                    return res.status(200).send({valid: true,message: 'Succeed to update user information'})
+                }else {
+                    return res.status(200).send({valid: false, message: 'Failed to update user information'})
+                }
         })
     }
     createSSHTunnel(dbOperation)
@@ -128,17 +155,25 @@ let updateUser = (req, res) => {
 let updatePWD = (req, res) => {
     let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
     if (!captchaCheckResult.isValid) {
-        return res.status(400).send({valid: false, message: 'captcha is not valid'})
+        return res.status(401).send({valid: false, message: 'captcha is not valid'})
     }
     let dbOperation = (conn) => {
         const sqlStr = 'update user_info set password=? WHERE user_id=?'
         conn.query(sqlStr, [md5(req.body.password), req.body.user_id], (err, result) => {
-            if(err) return res.status(400).send(err.message)
+            if(err) {
+                console.error(err)
+                return res.status(500).send({
+                    valid: false, 
+                    message: 'Failed to update user password',
+                    err: err.message
+                })
+            }
         }).then(([rows]) => {
-            return res.status(200).send({
-                valid: true,
-                message: 'Succeed to update password'
-            })
+            if(rows.affectedRows === 1){
+                return res.status(200).send({valid: true,message: 'Succeed to update password'})
+            }else {
+                return res.status(200).send({valid: false, message: 'Failed to update password'})
+            }
         })
     }
     createSSHTunnel(dbOperation)
