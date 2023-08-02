@@ -44,6 +44,7 @@ let verifyEmailUnique = (req, res, next) => {
 // Register 
 let register = (req, res) => {
     let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
+    console.log(captchaCheckResult)
     if (!captchaCheckResult.isValid) {
         return res.status(401).send({valid: false, message: 'captcha is not valid'})
     }

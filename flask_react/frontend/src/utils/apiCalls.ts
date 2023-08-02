@@ -8,17 +8,73 @@ class SmartCityApi {
 	register = function (
 		request: IRegisterRequest,
 		mockFail: Boolean = false
-	): IRegisterResults {
-		if (mockFail) {
-			return {
-				valid: false,
-				errorMessage: "Email already exists",
-			};
-		} else {
-			return {
-				valid: true
-			};
-		}
+	) {
+		// if (mockFail) {
+		// 	return {
+		// 		valid: false,
+		// 		errorMessage: "Email already exists",
+		// 	};
+		// } else {
+		// 	return {
+		// 		valid: true
+		// 	};
+		// }
+
+		// fetch('http://127.0.0.1:5000' + "/api/emails", {
+		// 	method: "POST",
+		// 	body: new URLSearchParams({email: 'manish.salian@ucdconnect.ie'})
+		//   }).then(res => {
+		// 	console.log(res);
+		// 	if (res.status === 200) {
+		// 		res.json().then(data => {
+		// 		  console.log("autodata : ", data)
+		// 		//   return {
+		// 		// 	valid: true,
+		// 		// 	firstName: "Thea",
+		// 		// 	token:"8d40ff0c-6b52-42a8-a25d-6d3d5a6c4ab9",
+		// 		// 	refreshToken:'ce913c45-8ee5-454e-8369-ea38f9009b4b',
+		// 		// 	dashboardData: [
+		// 		// 		{
+		// 		// 			date: new Date(),
+		// 		// 			status: "pending",
+		// 		// 			forecastedWeather: "Rainy",
+		// 		// 			tags: ["Sushi", "Pizza", "Water"],
+		// 		// 			venueId: "ce913c45-8ee5-454e-8369-ea38f9009b4b",
+		// 		// 			venueName:"temp"
+		// 		// 		},
+		// 		// 	],
+		// 		// };
+		// 		});
+		// 	  }
+			
+			
+		//   }).catch(err=>{
+		// 	console.log(err);
+		//   });
+
+		fetch('http://127.0.0.1:5000' + "/api/register", {
+			method: "POST",
+			body: new URLSearchParams({
+				email:'manish.salian@ucdconnect.ie',
+				firstname: 'Manish',
+				surname:'Salian',
+				password:'lets@go',
+				captcha:'ldHy60'
+			})
+		  }).then(res => {
+			console.log(res);
+			if (res.status === 200) {
+				res.json().then(data => {
+				  console.log("autodata : ", data)
+				  
+				});
+			  }
+			
+			
+		  }).catch(err=>{
+			console.log(err);
+		  });
+		 
 	};
 
 	login = function (

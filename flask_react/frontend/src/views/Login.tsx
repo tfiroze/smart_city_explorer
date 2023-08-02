@@ -92,8 +92,8 @@ export const Login = () => {
 		});
 
 	const handleSubmit = () => {
-		let results = smartApi.login(loginRequest, false);
-		console.log(results);
+		// let results = smartApi.login(loginRequest, false);
+		// console.log(results);
 		
 		// if (results.valid) {
 		// 	const d = new Date();
@@ -130,6 +130,8 @@ export const Login = () => {
 	};
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
+
+
 	return (
 		<>
 			<Register

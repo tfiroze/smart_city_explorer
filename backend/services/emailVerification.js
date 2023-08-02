@@ -58,10 +58,13 @@ let sendCaptcha = (req,res) => {
 function storeCodeToSession(req, code) {
     req.session.captcha = code
     req.session.startTimestamp = Date.now()
+
+    console.log(req.session, 'Store Code to session');
 }
   
 // Check if the user-entered captcha is correct or has expired.
 function verifyCode(req, enteredCode) {
+    console.log(req.session, 'Verify Code');
     let captcha = req.session.captcha
     let startTimestamp = req.session.startTimestamp
 

@@ -51,11 +51,13 @@ export const Register: React.FC<IProps> = ({
 
 	const handleSubmit = () => {
 		let results = smartApi.register(registerRequest, true);
-		if (results.valid) {
-			//valid register
-		} else {
-			setErrorMessage(results.errorMessage!);
-		}
+
+		console.log(results)
+		// if (results.valid) {
+		// 	//valid register
+		// } else {
+		// 	setErrorMessage(results.errorMessage!);
+		// }
 	};
 
 	const validateName = (name: string) => {
@@ -142,15 +144,16 @@ export const Register: React.FC<IProps> = ({
 	};
 
 	const formValidator = () => {
-		if (
-			validateName(registerRequest.firstName) &&
-			validateSurname(registerRequest.surname) &&
-			validateEmail(registerRequest.email) &&
-			validatePassword(registerRequest.password) &&
-			validateConfirmPassword(registerRequest.confirmPassword)
-		) {
-			handleSubmit();
-		}
+		handleSubmit();
+		// if (
+		// 	validateName(registerRequest.firstName) &&
+		// 	validateSurname(registerRequest.surname) &&
+		// 	validateEmail(registerRequest.email) &&
+		// 	validatePassword(registerRequest.password) &&
+		// 	validateConfirmPassword(registerRequest.confirmPassword)
+		// ) {
+		// 	handleSubmit();
+		// }
 	};
 
 	return (
@@ -229,6 +232,25 @@ export const Register: React.FC<IProps> = ({
 						}
 					/>
 				</Box>
+				{/* <Box my={2}>
+					<TextField
+						label="Captcha"
+						placeholder="Please enter your email..."
+						variant="outlined"
+						color="primary"
+						fullWidth
+						type="email"
+						name="email"
+						value={registerRequest.email}
+						onChange={handleInputOnChange}
+						error={format.email}
+						helperText={
+							format.email
+								? "Looks like your Email decided to take a vacation! Please enter a valid one."
+								: ""
+						}
+					/>
+				</Box> */}
 				<Box my={2}>
 					<TextField
 						label="Password"
