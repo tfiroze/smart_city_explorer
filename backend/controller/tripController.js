@@ -3,18 +3,43 @@ const jwt = require('jsonwebtoken')
 
 let secretKey = 'This is the smart_city_explorer app'
 
-// get all trip info of one user (Required: user_id)
-let tripsInfo = (req, res) => {
+// get all upcoming trip info of one user (Required: user_id)
+let upcomingTripsInfo = (req, res, next) => {
     try {
         let dbOperation = (conn) => {
-            let sqlStr = 'SELECT * FROM trip_info JOIN trip_user ON trip_info.trip_id=trip_user.trip_id JOIN user_info ON user_info.user_id=trip_user.user_id WHERE user_info.user_id=?'
+            // let sqlStr = 'SELECT * FROM trip_info JOIN trip_user ON trip_info.trip_id=trip_user.trip_id JOIN user_info ON user_info.user_id=trip_user.user_id WHERE user_info.user_id=?'
+            let sqlStr = 'select * from trip_info where trip_owner = ? and trip_date > now()'
             conn.query(sqlStr, [req.params.user_id], (err, result) => {
                 if(err) {
                     console.log(err.message)
                     return res.status(400).send(err.message)
                 }
             }).then(([rows]) => {
-                return res.status(200).send(rows)
+                req.res_json = {'upcomingTrips': rows}
+                // return res.status(200).send(rows)
+                next()
+            })
+        }
+        createSSHTunnel(dbOperation)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+// get all completed trip info of one user (Required: user_id)
+let completedTripsInfo = (req, res) => {
+    try {
+        let dbOperation = (conn) => {
+            // let sqlStr = 'SELECT * FROM trip_info JOIN trip_user ON trip_info.trip_id=trip_user.trip_id JOIN user_info ON user_info.user_id=trip_user.user_id WHERE user_info.user_id=?'
+            let sqlStr = 'select * from trip_info where trip_owner = ? and trip_date < now()'
+            conn.query(sqlStr, [req.params.user_id], (err, result) => {
+                if(err) {
+                    console.log(err.message)
+                    return res.status(400).send(err.message)
+                }
+            }).then(([rows]) => {
+                req.res_json.completedTrips = rows
+                return res.status(200).send(req.res_json)
             })
         }
         createSSHTunnel(dbOperation)
@@ -153,7 +178,8 @@ let getTripInfoQuestionnaire = (req, res) => {
 }
 
 module.exports = {
-    tripsInfo,
+    upcomingTripsInfo,
+    completedTripsInfo,
     tripInfo,
     updateTrip,
     addTrip,
