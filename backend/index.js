@@ -13,10 +13,7 @@ app.use(cookieParser('Smart_City_Explorer'))
 app.use(session({
   secret: 'Smart_City_Explorer',
   resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 7 * 24 * 60 * 60 * 1000,
-  },
+  saveUninitialized: false
 }));
 app.use('/api', router)
 

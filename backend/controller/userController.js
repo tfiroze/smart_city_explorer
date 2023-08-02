@@ -38,9 +38,7 @@ let verifyEmailUnique = (req, res, next) => {
 
 // Register 
 let register = (req, res) => {
-    const sessionID = req.cookies['sessionID'];
-    const captcha = req.session[sessionID].captcha
-    let captchaCheckResult = captchaCheck.verifyCode(req, captcha)
+    let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
     if (!captchaCheckResult.isValid) {
         return res.status(401).send({valid: false, message: captchaCheckResult.message})
     }
@@ -85,9 +83,14 @@ let login = (req, res) => {
             }
             let user_idStr = rows[0].user_id
             let tokenStr = jwt.sign({user_idStr}, secretKey, {expiresIn: 7*24*60*60})
+
+            const decoded = jwt.decode(tokenStr);
+
+            const expirationTime = new Date(decoded.exp * 1000); 
             return res.status(200).send({
                 valid: true,
                 message: 'Succeed to login',
+                tokenExpirationTime: expirationTime, 
                 token: tokenStr
             })
         })
