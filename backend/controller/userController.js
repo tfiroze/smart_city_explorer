@@ -120,7 +120,11 @@ let userInfo = (req, res) => {
         }
         createSSHTunnel(dbOperation)
     } catch (err) {
-        console.log(err)
+        console.error(err)
+        res.status(200).send({
+            valid: false,
+            message: 'Invalid token'
+        })
     }
 }
 

@@ -1,0 +1,321 @@
+{
+  "link": "https://www.weatheronline.co.uk/about/Membership-Terms-of-Use.htm",
+  "modified": "2023-07-29T04:20:01Z",
+  "description": "List of all countries with key definition",
+  "generator": "https://www.weatheronline.co.uk",
+  "location": {
+    "country": "NY",
+    "countryname": "New York",
+    "NumberOfCity": "44"
+  },
+  "Cities": [
+    {
+      "wmo": "72518",
+      "name": "Albany",
+      "latitude": "42.75",
+      "longitude": "286.2",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "72515",
+      "name": "Binghamton",
+      "latitude": "42.2167",
+      "longitude": "284.017",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "72528",
+      "name": "Buffalo",
+      "latitude": "42.9333",
+      "longitude": "281.267",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0130",
+      "name": "Chautauqua",
+      "latitude": "42.15",
+      "longitude": "280.733",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1785",
+      "name": "Cortland",
+      "latitude": "42.6",
+      "longitude": "283.833",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x2340",
+      "name": "Dansville",
+      "latitude": "42.5667",
+      "longitude": "282.3",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1553",
+      "name": "Dunkirk",
+      "latitude": "42.5",
+      "longitude": "280.717",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "y9290",
+      "name": "East Hampton",
+      "latitude": "40.95",
+      "longitude": "287.75",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0253",
+      "name": "Elmira",
+      "latitude": "42.1667",
+      "longitude": "283.1",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0257",
+      "name": "Farmingdale",
+      "latitude": "40.7333",
+      "longitude": "286.583",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "74370",
+      "name": "Fort Drum",
+      "latitude": "44.05",
+      "longitude": "284.267",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0258",
+      "name": "Glen Falls",
+      "latitude": "43.3333",
+      "longitude": "286.383",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0268",
+      "name": "Islip",
+      "latitude": "40.8",
+      "longitude": "286.9",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0269",
+      "name": "Ithaca",
+      "latitude": "42.4833",
+      "longitude": "283.55",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x4165",
+      "name": "Johnstown",
+      "latitude": "42.9833",
+      "longitude": "285.683",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "72506",
+      "name": "Manhattan",
+      "latitude": "40.7667",
+      "longitude": "286.033",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0280",
+      "name": "Messena",
+      "latitude": "44.9333",
+      "longitude": "285.15",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1546",
+      "name": "Montauk",
+      "latitude": "41.0667",
+      "longitude": "288.083",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1547",
+      "name": "Montgomery",
+      "latitude": "41.5167",
+      "longitude": "285.733",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0304",
+      "name": "Newburgh",
+      "latitude": "41.5",
+      "longitude": "285.9",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0285",
+      "name": "New York",
+      "latitude": "40.7667",
+      "longitude": "286.017",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "72503",
+      "name": "New York",
+      "latitude": "40.7667",
+      "longitude": "286.133",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "74486",
+      "name": "New York (JFK)",
+      "latitude": "40.65",
+      "longitude": "286.217",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "72527",
+      "name": "Niagara Falls",
+      "latitude": "43.1",
+      "longitude": "281.05",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "y9289",
+      "name": "Ogdensburg",
+      "latitude": "44.6667",
+      "longitude": "284.55",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "y9291",
+      "name": "Olean",
+      "latitude": "42.2333",
+      "longitude": "281.633",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1786",
+      "name": "Oneonta",
+      "latitude": "42.45",
+      "longitude": "284.95",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1550",
+      "name": "Oswego",
+      "latitude": "43.35",
+      "longitude": "283.617",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x2341",
+      "name": "Penn Yan",
+      "latitude": "42.65",
+      "longitude": "282.95",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1552",
+      "name": "Plattsburgh",
+      "latitude": "44.6833",
+      "longitude": "286.467",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "y9288",
+      "name": "Plattsburgh",
+      "latitude": "44.65",
+      "longitude": "286.533",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0292",
+      "name": "Poughkeepsie",
+      "latitude": "41.6333",
+      "longitude": "286.117",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "72529",
+      "name": "Rochester",
+      "latitude": "43.1167",
+      "longitude": "282.333",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "y9292",
+      "name": "Rome",
+      "latitude": "43.2333",
+      "longitude": "284.6",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0303",
+      "name": "Saranac Lake",
+      "latitude": "44.3833",
+      "longitude": "285.8",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0300",
+      "name": "Schenectady",
+      "latitude": "42.85",
+      "longitude": "286.067",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1548",
+      "name": "Shirley",
+      "latitude": "40.8167",
+      "longitude": "287.133",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0281",
+      "name": "Sullivan",
+      "latitude": "41.7",
+      "longitude": "285.2",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "72519",
+      "name": "Syracuse",
+      "latitude": "43.1167",
+      "longitude": "283.883",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0249",
+      "name": "Watertown",
+      "latitude": "43.9667",
+      "longitude": "284.1",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1551",
+      "name": "Wellsville",
+      "latitude": "42.1",
+      "longitude": "282.017",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x0256",
+      "name": "Westhampton",
+      "latitude": "40.85",
+      "longitude": "287.367",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x1549",
+      "name": "White Plains",
+      "latitude": "41.0667",
+      "longitude": "286.283",
+      "countryCode": "NY"
+    },
+    {
+      "wmo": "x7007",
+      "name": "Yonkers",
+      "latitude": "40.9333",
+      "longitude": "286.133",
+      "countryCode": "NY"
+    }
+  ]
+}

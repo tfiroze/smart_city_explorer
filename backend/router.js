@@ -5,6 +5,7 @@ const tripController = require('./controller/tripController')
 const emailVerification = require('./services/emailVerification')
 const fareModel = require('./services/fare_model/exec_fare_model')
 const distanceModel = require('./services/venue_model/exec_venue_model')
+const weather = require('./services/weather/weather')
 
 router.use(express.urlencoded({ extended:false }))
 router.use(express.json())
@@ -30,5 +31,7 @@ router.post('/fares', fareModel.getFare)
 router.post('/venues', distanceModel.getRecommendVenues)
 
 router.get('/tripinfoquestionnaire', tripController.getTripInfoQuestionnaireMW, tripController.getTripInfoQuestionnaire)
+
+router.get('/weathers', weather.getWeather)
 
 module.exports = router
