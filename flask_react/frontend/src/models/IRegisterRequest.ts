@@ -1,7 +1,8 @@
 export default interface IRegisterRequest {
-    firstName:string;
+    firstname:string;
     surname:string;
     email:string;
     password:string;
     confirmPassword: string;
+    captcha:string;
 }

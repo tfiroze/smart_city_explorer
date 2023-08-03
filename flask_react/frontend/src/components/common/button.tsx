@@ -5,18 +5,21 @@ interface IProps {
 	title: string;
 	onClick: () => void;
   style?:any;
-  loading?: boolean
+  loading?: boolean;
+  disabled?:boolean
 }
 
 export const CButton : React.FC<IProps> = ({
 	title,
 	onClick,
   style,
-  loading=false
+  loading=false,
+  disabled=false
 })  => {
 
 return (
   <LoadingButton
+    disabled={disabled}
     onClick={onClick}
     loading={loading}
     style={{

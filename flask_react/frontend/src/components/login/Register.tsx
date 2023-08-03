@@ -7,18 +7,28 @@ import {
 	DialogContent,
 	DialogTitle,
 	Divider,
+	Fade,
 	Grid,
+	Snackbar,
 	TextField,
+	Typography,
 } from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
 import IRegisterRequest from "../../models/IRegisterRequest";
 import { smartApi } from "../../utils/apiCalls";
 import { CButton } from "../common/button";
 import { LoadingButton } from "@mui/lab";
+import { TransitionProps } from "@mui/material/transitions";
 
 interface IProps {
 	open: boolean;
 	handleRegisterDialogOpen: () => void;
+}
+
+const erroDict: { [key: string]: string } = {
+	'0': '',
+	'1': 'Oops! Email aboard 🚀. Pick another ticket! 🌈',
+	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.'
 }
 
 export const Register: React.FC<IProps> = ({
@@ -27,22 +37,36 @@ export const Register: React.FC<IProps> = ({
 }) => {
 
 	const [registerRequest, setRegisterRequest] = useState<IRegisterRequest>({
-		firstName: "",
+		firstname: "",
 		surname: "",
 		email: "",
 		password: "",
 		confirmPassword: "",
+		captcha: ""
 	});
 
 	const [format, setFormat] = useState({
-		firstName: false,
+		firstname: false,
 		surname: false,
 		email: false,
 		password: false,
 		confirmPassword: false,
+		captcha: false
 	});
 
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+	const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
+
+	const [disableVerify, setDisableVerify] = useState<boolean>(false);
+
+	const [disableEmailInput, setEmailDisableInput] = useState<boolean>(false);
+
+	const [error, setError] = useState<string>("0");
+
+	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
+
+	const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
 
 	const handleInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
 		setRegisterRequest({
@@ -51,27 +75,87 @@ export const Register: React.FC<IProps> = ({
 		});
 
 	const handleSubmit = () => {
-		let results = smartApi.register(registerRequest, true);
+		setDisableSubmit(true)
+		setSubmitLoading(true)
+		smartApi.register(registerRequest).then((results) => {
+			console.log(results);
 
-		console.log(results)
-		// if (results.valid) {
-		// 	//valid register
-		// } else {
-		// 	setErrorMessage(results.errorMessage!);
-		// }
+			if (results?.valid) {
+				setDisableSubmit(true)
+				setSubmitLoading(false)
+				setRegisterRequest({
+					firstname: "",
+					surname: "",
+					email: "",
+					password: "",
+					confirmPassword: "",
+					captcha: ""
+				})
+				setFormat({
+					firstname: false,
+					surname: false,
+					email: false,
+					password: false,
+					confirmPassword: false,
+					captcha: false
+				})
+				handleRegisterDialogOpen()
+			} else {
+				// ... handle the case when results?.valid is falsy ...
+				setError(results.errorType)
+				setDisableVerify(false)
+				setDisableSubmit(false)
+				setSubmitLoading(false)
+			}
+		})
+			.catch((error) => {
+				console.log(error);
+				setError('2')
+				setDisableVerify(false)
+				setDisableSubmit(false)
+				setSubmitLoading(false)
+			});
 	};
+
+	const handleVerifyEmail = () => {
+		setDisableVerify(true)
+		setVerifyLoading(true)
+		smartApi.verifyEmail(registerRequest?.email).then((results) => {
+			console.log(results);
+
+			if (results?.valid) {
+				setDisableSubmit(false)
+				setEmailDisableInput(true)
+				setVerifyLoading(false)
+				handleSnackClick()
+			} else {
+				// ... handle the case when results?.valid is falsy ...
+				setError(results.errorType)
+				setDisableVerify(false)
+				setVerifyLoading(false)
+				// setLoading(false)
+			}
+		})
+			.catch((error) => {
+				console.log(error);
+				setError('2')
+				setDisableVerify(false)
+				setVerifyLoading(false)
+				// setLoading(false)
+			});
+	}
 
 	const validateName = (name: string) => {
 		if (name === "" || !/^[a-zA-Z\s'-]+$/.test(name)) {
 			setFormat({
 				...format,
-				firstName: true,
+				firstname: true,
 			});
 			return false;
 		} else {
 			setFormat({
 				...format,
-				firstName: false,
+				firstname: false,
 			});
 			return true;
 		}
@@ -144,17 +228,68 @@ export const Register: React.FC<IProps> = ({
 		}
 	};
 
+	const validateCode = (captcha: string) => {
+		if (captcha === "") {
+			setFormat((prevFormat) => ({
+				...prevFormat,
+				captcha: true,
+			}));
+			return false;
+		} else {
+			setFormat((prevFormat) => ({
+				...prevFormat,
+				captcha: false,
+			}));
+			return true;
+		}
+	}
+
 	const formValidator = () => {
-		handleSubmit();
-		// if (
-		// 	validateName(registerRequest.firstName) &&
-		// 	validateSurname(registerRequest.surname) &&
-		// 	validateEmail(registerRequest.email) &&
-		// 	validatePassword(registerRequest.password) &&
-		// 	validateConfirmPassword(registerRequest.confirmPassword)
-		// ) {
-		// 	handleSubmit();
-		// }
+		// handleSubmit();
+		if (
+			validateName(registerRequest.firstname) &&
+			validateSurname(registerRequest.surname) &&
+			validateEmail(registerRequest.email) &&
+			validatePassword(registerRequest.password) &&
+			validateConfirmPassword(registerRequest.confirmPassword) &&
+			validateCode(registerRequest.captcha)
+		) {
+			handleSubmit();
+		}
+	};
+
+	const emailFormValidator = () => {
+		if (validateEmail(registerRequest.email)) {
+			handleVerifyEmail()
+		}
+	}
+
+	const [snackState, setSnackState] = React.useState<{
+		open: boolean;
+		Transition: React.ComponentType<
+			TransitionProps & {
+				children: React.ReactElement<any, any>;
+			}
+		>;
+	}>({
+		open: false,
+		Transition: Fade
+	});
+
+	const handleSnackClick = (
+	) => () => {
+		console.log('called snack bar')
+		setSnackState({
+			open: true,
+			Transition: Fade
+		});
+	};
+
+	const handleSnackClose = () => {
+		setSnackState({
+			...snackState,
+			open: false
+		});
 	};
 
 	return (
@@ -166,6 +301,14 @@ export const Register: React.FC<IProps> = ({
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
+			<Snackbar
+				style={{ width: "50%" }}
+				open={snackState.open}
+				onClose={handleSnackClose}
+				TransitionComponent={snackState.Transition}
+				message="Email Sent"
+				key={snackState.Transition.name}
+			/>
 			<DialogTitle id="alert-dialog-title">{"Let's Create Your Free Account"}</DialogTitle>
 			<Divider />
 			<DialogContent>
@@ -179,12 +322,12 @@ export const Register: React.FC<IProps> = ({
 								color="primary"
 								fullWidth
 								type="text"
-								name="firstName"
-								value={registerRequest.firstName}
+								name="firstname"
+								value={registerRequest.firstname}
 								onChange={handleInputOnChange}
-								error={format.firstName}
+								error={format.firstname}
 								helperText={
-									format.firstName
+									format.firstname
 										? "Upgrade your first name for a travel adventure! 🌟"
 										: ""
 								}
@@ -218,6 +361,7 @@ export const Register: React.FC<IProps> = ({
 					<Grid item md={8}>
 						<Box my={2}>
 							<TextField
+								disabled={disableEmailInput}
 								label="Email"
 								placeholder="Please enter your email..."
 								variant="outlined"
@@ -236,10 +380,16 @@ export const Register: React.FC<IProps> = ({
 							/>
 						</Box>
 					</Grid>
-					<Grid item md ={4} style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-					<LoadingButton loading={false}  variant="outlined">
-						<span>Verfiy</span>
-					</LoadingButton>
+					<Grid item md={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+						<LoadingButton
+							loading={false}
+							variant="outlined"
+							onClick={emailFormValidator}
+							disabled={disableVerify}
+							loadingIndicator={verifyLoading}
+						>
+							<span>Verfiy</span>
+						</LoadingButton>
 					</Grid>
 				</Grid>
 
@@ -251,13 +401,13 @@ export const Register: React.FC<IProps> = ({
 						variant="outlined"
 						color="primary"
 						fullWidth
-						type="email"
-						name="email"
-						value={registerRequest.email}
+						type="captcha"
+						name="captcha"
+						value={registerRequest.captcha}
 						onChange={handleInputOnChange}
-						error={format.email}
+						error={format.captcha}
 						helperText={
-							format.email
+							format.captcha
 								? "Oops! It seems our Verification Code is feeling a bit shy today! 🙈 Please enter a valid code to proceed."
 								: ""
 						}
@@ -302,7 +452,9 @@ export const Register: React.FC<IProps> = ({
 						}
 					/>
 				</Box>
-				{errorMessage != null && <Alert severity="error">{errorMessage}</Alert>}
+				{error !== '0' && <Typography variant="subtitle1" color={'red'}>
+					{erroDict[error.toString()]}
+				</Typography>}
 			</DialogContent>
 			<DialogActions>
 				<CButton
@@ -315,9 +467,11 @@ export const Register: React.FC<IProps> = ({
 				<CButton
 					title="REGISTER"
 					onClick={formValidator}
+					loading={submitLoading}
 					style={{
 						background: '#008080', color: 'white'
 					}}
+					disabled={disableSubmit}
 				/>
 			</DialogActions>
 		</Dialog>

@@ -2,6 +2,7 @@
 // a1357924691@gmail.com    zzdsoprdlrlxxjfq
 // 3037615469@qq.com    shvwybgfyfzudfbd
 
+const session = require('express-session')
 const nodemailer = require('nodemailer')
 
 let newCode
@@ -51,14 +52,19 @@ let sendCaptcha = (req, res) => {
             res.end()
         }else{
             req.session.captcha = newCode;
+            console.log(req.session.id, 'SESSION ID');
             res.cookie('sessionID', req.sessionID, {
                 maxAge: 60 * 10000,
-                httpOnly: true, 
-                secure: true 
+                httpOnly: false, 
+                secure: true, 
+                sameSite: 'none'
             });
-            res.status(200).send({valid: true, 'sessionID': req.sessionID})
+            res.status(200).send({valid: true, sessionID: req.sessionID})
             res.end()
             transport.close()
+
+            console.log(req.session,'REQUEST SESSION');
+            console.log( res.cookie, 'REQUEST COOKIE')
         }
     })
 }

@@ -106,15 +106,8 @@ export const Login = () => {
 			.then((results) => {
 				console.log(results);
 
-				if (results?.valid && results?.token) {
-					// const d = new Date();
-					// d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);
-					// let expires = d.toUTCString();
-					// setCookie("token", results.token, expires);
-					nagvigateToDashboard(results.token)
-					// navigate("/dashboard");
-					// setError('0')
-					// setLoading(false)
+				if (results?.valid && results?.token && results?.tokenExpirationTime) {
+					nagvigateToDashboard(results.token, results.tokenExpirationTime)
 				} else {
 					// ... handle the case when results?.valid is falsy ...
 					setError(results.errorType)
@@ -136,24 +129,35 @@ export const Login = () => {
 		document.cookie = `${name}=${value}; expires=${expires}; path=/`;
 	}
 
-	const nagvigateToDashboard = (token: string)=>{
+	const nagvigateToDashboard = (token: string, tokenExpirationTime:string)=>{
 		smartApi.dashboard(token)
 			.then((results) => {
 				console.log(results);
 
-				// if (results?.valid) {
-				// 	const d = new Date();
-				// 	d.setTime(d.getTime() + 360 * 24 * 60 * 60 * 1000);
-				// 	let expires = d.toUTCString();
-				// 	setCookie("token", results.token, expires);
-				// 	navigate("/dashboard");
-				// 	setError('0')
-				// 	setLoading(false)
-				// } else {
-				// 	// ... handle the case when results?.valid is falsy ...
-				// 	setError(results.errorType)
-				// 	setLoading(false)
-				// }
+				if (results?.valid) {
+					const d = new Date(tokenExpirationTime);
+					d.setTime(d.getTime());
+					let expires = d.toUTCString();
+					
+					setCookie("token", results.token, expires);
+					authContext.authenticate(true, {
+						first_name: results.firstname,
+						surname: results.surname,
+						user_id: results.user_id,
+						email: results.email,
+					});
+					localStorage.setItem("user_id", results.user_id);
+					localStorage.setItem("email", results.email);
+					localStorage.setItem("first_name", results.firstname);
+					localStorage.setItem("surname", results.surname);
+					setError('0')
+					setLoading(false)
+					navigate("/dashboard");
+				} else {
+					// ... handle the case when results?.valid is falsy ...
+					setError(results.errorType)
+					setLoading(false)
+				}
 			})
 			.catch((error) => {
 				console.log(error);
