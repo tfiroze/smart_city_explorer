@@ -1,0 +1,12 @@
+{
+    "venuebusyness_features": [
+        "hour",
+        "weekday",
+        "temperature_2m",
+        "apparent_temperature",
+        "precipitation",
+        "weathercode",
+        "visibility",
+        "windspeed_10m"
+    ]
+}

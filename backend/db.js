@@ -3,8 +3,6 @@
     // password: root_pwd
 
 const mysql = require('mysql2/promise');
-const express = require('express');
-const app = express();
 const Client = require('ssh2').Client;
 
 const createSSHTunnel  = async (dbOperation) => {
