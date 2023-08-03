@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Header } from "../components/dashboard/Header";
 import {
   Button,
@@ -14,7 +14,8 @@ import {
   DialogContent,
   DialogActions,
   DialogTitle,
-  styled
+  styled,
+  useTheme
 } from "@mui/material";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { CreateItinerary } from "./CreateItinerary";
@@ -27,7 +28,8 @@ import Choropleth from "../components/map/Choropleth";
 import { MapContainer, TileLayer, Popup, Marker, useMap } from 'react-leaflet';
 
 import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
-
+import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
+import { toTitleCase } from "../utils/utility_func";
 
 
 export const Dashboard = () => {
@@ -44,8 +46,7 @@ export const Dashboard = () => {
 
   const [tab, setTab] = useState(0)
 
-
-
+  const currentTheme = useTheme();
   const markAsCompleted = (itemIndex: number) => {
     const updatedItems = itineraryItems.filter((_, index) => index !== itemIndex);
     const completedItem = itineraryItems[itemIndex];
@@ -61,9 +62,10 @@ export const Dashboard = () => {
     setFirstTime(true)
   }
 
-  const handleCreateItinerary =()=>{
+  const handleCreateItinerary = () => {
     navigate('/createItinerary')
   }
+
 
   return (
     <>
@@ -80,54 +82,96 @@ export const Dashboard = () => {
       {/* Questionair screen End  */}
 
 
-      <Grid container style={{ backgroundColor: '#ffff' }}>
-        <Grid container xs={5} style={{ padding: '15px' }}>
-          <Grid item xs={12}>
+      <Grid container style={{ backgroundColor: '#ffff', height:'100vh' }}>
+        <Grid container xs={6} style={{ padding: '15px', overflow:'scroll', height:'100%' }}>
+          <div style={{ width:'100%', height:'10%', marginBottom:'10px'}}>
             <Header />
-          </Grid>
-          <Grid item xs={12}>
-            {firstTime && <>
-              <Typography
-                variant="h5"
-                align="center"
-                color="text.secondary"
-                sx={{ mb: 4 }}
-                style={{ marginBottom: 0 }}
-              >
-                Unleash the magic of Manhattan in just one day! Plan your perfect itinerary 🗽
-              </Typography>
-              <Box display="flex" justifyContent="center" mt={2}>
-                <Button
-                  onClick={handleCreateItinerary}
-                  variant="contained"
-                  color="secondary"
-                  startIcon={<AddIcon />}
-                >
-                  CREATE
-                </Button>
-              </Box>
-            </>}
-          </Grid>
-          {
-            (itineraryItems?.length > 0 && pastItems?.length > 0) &&
-          <>
-            <Grid item xs={12} md={12} style={{ margin: "15px" }}>
-            <Typography variant="h5" align="left" color="text.secondary">
-            My Manhattan Itinerary!
-            </Typography>
-              <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                <div style={{ width: '20%', padding: '10px', cursor: 'pointer', borderBottom: tab == 0 ? '2px solid #115b4c' : 'transparent' }} onClick={() => setTab(0)}>
-                  Upcoming
-                </div>
-                <div style={{ width: '20%', padding: '10px', cursor: 'pointer', borderBottom: tab == 1 ? '2px solid #115b4c' : 'transparent' }} onClick={() => setTab(1)}>
-                  Completed
-                </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }}>
+              <Grid item xs={12} style={{
+                backgroundPosition: 'center', // Center the background image
+                backgroundSize: 'cover', // Ensure the image covers the entire container
+                backgroundRepeat: 'no-repeat', // Prevent image repetition
+                backgroundImage: `url(${manhattanDarkImage})`,
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                borderRadius: '10px',
+                padding: '30px'
+              }}>
+                {firstTime && <>
+                  <Typography
+                    variant="h5"
+                    align="center"
+                    color="#ffffff"
+                    sx={{ mb: 4 }}
+                    style={{ marginBottom: 0 }}
+                  >
+                    Unleash the magic of <span style={{ color: "#FFC93A" }}>Manhattan</span> in just one day!
+                  </Typography>
+                  <Typography
+                    variant="h6"
+                    align="center"
+                    color="#ffffff"
+                    sx={{ mb: 4 }}
+                    style={{ marginBottom: 0 }}
+                  >
+                    Plan your perfect itinerary 🗽
+                  </Typography>
+                  <Box display="flex" justifyContent="center" mt={2}>
+                    <Button
+                      onClick={handleCreateItinerary}
+                      variant="contained"
+                      color="primary"
+                      startIcon={<AddIcon />}
+                    >
+                      CREATE
+                    </Button>
+                  </Box>
+                </>}
               </Grid>
-              <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                {thingsTodo.slice(0, 3).map((item, index) => {
+            
+            {
+              (itineraryItems?.length >= 0 && pastItems?.length >= 0) &&
+              <>
+                <Grid item xs={12} md={12} style={{ margin: "15px 0px" }}>
+                  <Typography variant="h6" align="left">
+                    My Manhattan Itinerary
+                  </Typography>
+                  <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin:'10px 0px' }}>
+                    <div style={{
+                      width: '20%',
+                      padding: '8px',
+                      cursor: 'pointer',
+                      backgroundColor: tab == 0 ? '#757de8' : 'transparent',
+                      border: tab == 0? '2px solid transparent' : '2px solid #757de8',
+                      marginRight:'20px',
+                      textAlign:'center',
+                      borderRadius:'20px',
+                      color: tab == 0 ? '#ffff': '#757de8'
+                    }}
+                      onClick={() => setTab(0)}>
+                      Upcoming
+                    </div>
+                    <div style={{
+                      width: '20%',
+                      padding: '8px',
+                      cursor: 'pointer',
+                      backgroundColor: tab == 1 ? '#757de8' : 'transparent',
+                      border: tab == 1? '2px solid transparent' : '2px solid #757de8',
+                      textAlign:'center',
+                      borderRadius:'20px',
+                      color: tab == 1 ? '#ffff': '#757de8'
+                    }}
+                      onClick={() => setTab(1)}>
+                      Completed
+                    </div>
+                  </Grid>
+                  <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                  {thingsTodo.slice(0, 3).map((item, index) => {
                   return (
                     <Grid
-                      style={{ cursor: "pointer", padding: '5px', width: '35%' }}
+                      style={{ cursor: "pointer", padding: '15px', width: '35%', backgroundColor:currentTheme?.palette?.secondary?.main, marginRight:'5px', borderRadius:'10px' }}
                       item
                       className="unselectable"
                     >
@@ -139,8 +183,40 @@ export const Dashboard = () => {
                         />
                       </Grid>
                       <Grid xs={12}>
-                        <Typography variant="subtitle2">
-                          {item.venue_name}
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          {toTitleCase(item.venue_name)}
+                        </Typography>
+                      </Grid>
+
+                    </Grid>
+                  );
+                })}
+                  </Grid>
+                </Grid>
+              </>
+            }
+            <div style={{ width: '100%' }}>
+              <Typography variant="h6" align="left">
+                Explore Popular Destination
+              </Typography>
+              <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
+                {thingsTodo.slice(0, 3).map((item, index) => {
+                  return (
+                    <Grid
+                      style={{ cursor: "pointer", padding: '15px', width: '35%', backgroundColor:currentTheme?.palette?.secondary?.main, marginRight:'5px', borderRadius:'10px' }}
+                      item
+                      className="unselectable"
+                    >
+                      <Grid xs={12} >
+                        <img
+                          src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                          alt=""
+                          style={{ width: '100%', borderRadius: '5px' }}
+                        />
+                      </Grid>
+                      <Grid xs={12}>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          {toTitleCase(item.venue_name)}
                         </Typography>
                       </Grid>
 
@@ -148,42 +224,11 @@ export const Dashboard = () => {
                   );
                 })}
               </Grid>
-            </Grid>
-          </>
-          }
-          <Grid item xs={12}>
-            <Typography variant="h5" align="left" color="text.secondary">
-              Explore Popular Destination!
-            </Typography>
-            <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
-              {thingsTodo.slice(0, 3).map((item, index) => {
-                return (
-                  <Grid
-                    style={{ cursor: "pointer", padding: '5px', width: '35%' }}
-                    item
-                    className="unselectable"
-                  >
-                    <Grid xs={12} >
-                      <img
-                        src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                        alt=""
-                        style={{ width: '100%', borderRadius: '5px' }}
-                      />
-                    </Grid>
-                    <Grid xs={12}>
-                      <Typography variant="subtitle2">
-                        {item.venue_name}
-                      </Typography>
-                    </Grid>
 
-                  </Grid>
-                );
-              })}
-            </Grid>
-
-          </Grid>
+            </div>
+          </div>
         </Grid>
-        <Grid container xs={7} style={{ overflow: 'hidden' }}>
+        <Grid container xs={6}>
           <MapContainer
             style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
             zoom={13}

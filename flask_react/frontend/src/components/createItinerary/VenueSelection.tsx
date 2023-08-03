@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
-import { Typography, Tooltip } from "@mui/material";
+import { Typography, Tooltip, useTheme } from "@mui/material";
 import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
-
-
 import {
   Button,
   Grid,
@@ -47,7 +45,7 @@ import { VenueSelectionControls } from "./VenueSelectionControls";
 import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
 import PaymentIcon from "@mui/icons-material/Payment";
 import IItinerary from "../../models/IItinerary";
-//#region styled crap
+import { CButton } from "../common/button";
 
 const slideInAnimation = keyframes`
   0% {
@@ -82,11 +80,12 @@ const StyledScheduleIcon = styled(ScheduleIcon)`
 `;
 
 const StyledLocationOnIcon = styled(LocationOnIcon)`
-	color: #008080;
+	color: #757de8;
 	margin-right: 2px;
 	animation: ${slideInAnimation} 0.5s ease-in-out;
 	position: relative;
 	top: 2px;
+  
 `;
 
 const StyledPeopleIcon = styled(PeopleIcon)`
@@ -205,7 +204,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
     const identifiedConflicts = identifyConflicts(sortedData);
     let temp = currentItinerary;
     temp.plan = identifiedConflicts
-    updateItinerary(temp)
+    // updateItinerary(temp)
     setItinerary(identifiedConflicts);
   }, []);
 
@@ -268,8 +267,10 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
     setIntrovertMode((prevMode) => !prevMode);
   };
 
+  const currentTheme = useTheme();
+
   return (
-    <Grid container justifyContent="center">
+    <Grid container justifyContent="center" style={{position:'relative'}}>
       {viewVenueItem && (
         <ViewVenueItem
           close={closeViewItem}
@@ -277,6 +278,11 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
           open={viewVenue}
         />
       )}
+      <VenueSelectionControls
+        addItem={addItinerary}
+        changeOpenState={handleControlsToggle}
+        open={controlsOpen}
+      />
       <Dialog
         open={errorDialogOpen}
         onClose={handleCloseErrorDialog}
@@ -297,142 +303,134 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
           </Button>
         </DialogActions>
       </Dialog>
-      <Grid item xs={12} style={{ maxHeight: "70vh", overflowY: "scroll" }}>
+      <Grid item xs={12} style={{ overflowY: "scroll" }}>
         <Timeline position="alternate-reverse">
           {itinerary.map((item, index) => (
-            <TimelineItem key={index}>
-              <TimelineOppositeContent>
-                <StyledTimelineWrapper>
-                  <StyledTimeLabel variant="subtitle2" color="textSecondary">
-                    From
-                  </StyledTimeLabel>
-                  <StyledTime variant="subtitle2">{item.timeFrom}</StyledTime>
-                  <StyledArrowForwardIcon />
-                  <StyledTimeLabel variant="subtitle2" color="textSecondary">
-                    To
-                  </StyledTimeLabel>
-                  <StyledTime variant="subtitle2">{item.timeTo}</StyledTime>
-                </StyledTimelineWrapper>
-
-              </TimelineOppositeContent>
-
-              <TimelineSeparator>
-                <TimelineDot color="primary" variant="outlined">
-                  <StyledLocationOnIcon />
-                </TimelineDot>
-                {index !== itinerary.length - 1 && <TimelineConnector />}
-              </TimelineSeparator>
-
-
-              <TimelineContent>
-                <StyledDurationTypography>
-
-                  <Tooltip title="Estimated duration of trip">
-                    <StyledLocalTaxiIcon style={{ marginRight: '5px' }} />
-                  </Tooltip>
-                  <StyledDivider />
-                  {item.duration} minutes
-                </StyledDurationTypography>
-
-                <StyledTaxiFareTypography>
-                  <Tooltip title="Estimated taxi fare">
-                    <StyledPaymentIcon style={{ marginRight: '5px' }} />
-                  </Tooltip>
-                  ${item.taxiFare}
-                </StyledTaxiFareTypography>
-                <Card
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    maxWidth: 400,
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                  }}
+            <>
+              <TimelineItem key={index} >
+                <TimelineOppositeContent
+                  sx={{ m: 'auto 0' }}
+                  align="right"
+                  variant="body2"
+                  color="text.secondary"
                 >
-
-                  <CardContent>
-                    <Typography variant="h6" component="div" gutterBottom>
-                      {item.title}
-                    </Typography>
-                  </CardContent>
-                  <CardMedia
-                    component="img"
-                    alt="times square"
-                    image={item.imgLink}
-                    sx={{
-                      height: 200,
-                      objectFit: "cover",
-                      borderTopLeftRadius: "4px",
-                      borderTopRightRadius: "4px",
-                    }}
-                  />
-                  <CardContent sx={{ textAlign: "justify" }}>
-                    <Typography variant="body2" color="textSecondary">
-                      {item.description}
-                    </Typography>
-                  </CardContent>
-                  <Divider />
-
-                  <CardContent>
-                    <Grid container alignItems="center" spacing={1}>
-                      <Grid item>
-                        <StyledPeopleIcon />
-                      </Grid>
-                      <Grid item>
-                        <Typography variant="subtitle2" component="span">
-                          <strong>Invited: </strong>
-                        </Typography>
-                        <Typography variant="body2" component="span">
-                          {item.invitedParticipant?.length
-                            ? item.invitedParticipant?.length
-                            : 0}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                    <Grid container alignItems="center" spacing={1}>
-                      <Grid item>
-                        <StyledScheduleIcon />
-                      </Grid>
-                      <Grid item>
-                        <Typography variant="subtitle2" component="span">
-                          <strong> Busyness: </strong>
-                        </Typography>
-                        {item.busyness === "high" ? (
-                          <Tooltip title="Wow, that's brave! Are you sure you want to be around that many people?">
-                            <Typography variant="body2" component="span">
-                              {item.busyness}
-                            </Typography>
-                          </Tooltip>
-                        ) : (
-                          <Typography variant="body2" component="span">
-                            {item.busyness}
-                          </Typography>
-                        )}
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                  <CenteredCardActions>
-                    <Button
-                      size="small"
-                      variant="outlined"
-                      onClick={() => {
-                        setViewVenueItem(item);
-                        setViewVenue(true);
+                  Time To Visit: Between 9am to 11am
+                </TimelineOppositeContent>
+                <TimelineSeparator>
+                  <TimelineDot sx={{backgroundColor: currentTheme.palette.secondary.main}}>
+                    <StyledLocationOnIcon />
+                  </TimelineDot>
+                  {<TimelineConnector />}
+                </TimelineSeparator>
+                <TimelineContent style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Card
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        width:'50%',
+                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                        padding:'15px',
+                        borderRadius:'10px',
+                        backgroundColor: currentTheme.palette.secondary.main 
                       }}
                     >
-                      View
-                    </Button>
-                  </CenteredCardActions>
-                </Card>
+                      <Typography variant="h6" align="left">
+                        {item.title}
+                      </Typography>
+                      <CardMedia
+                        component="img"
+                        alt="times square"
+                        image={item.imgLink}
+                        sx={{
+                          height: 200,
+                          aspectRatio:16/9,
+                          objectFit: "cover",
+                          borderTopLeftRadius: "4px",
+                          borderRadius:'10px',
+                          marginBottom:'10px'
+                        }}
+                      />
+                      <Typography variant="subtitle2" 
+                      sx={{
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        display: '-webkit-box',
+                        WebkitLineClamp: '3',
+                        WebkitBoxOrient: 'vertical',
+                        
+                      }}
+                      align="left"
+                      >
+                        Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
+                      </Typography>
+                      <Divider sx={{ margin: '10px 0' }} />
+                      <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                        <Typography>
+                          Rating: <span>4</span>
+                        </Typography>
 
+                        <Typography>
+                          Busyness: <span>Moderate</span>
+                        </Typography>
+                      </Grid>
+                      <Divider sx={{ margin: '10px 0' }} />
+                      <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main}}>
+                        {/* <CButton
+                          title="Select"
+                          onClick={() => { }}
+                          style={{
+                            width: '30%',
+                            background: '#757de8',
+                            color: '#ffffff',
+                            borderRadius: '20px',
+                            padding: '10px 20px',
+                            fontWeight: 'bold',
+                          }}
+                        /> */}
+                        <CButton
+                          title="View"
+                          onClick={() => { }}
+                          style={{
+                            width: '30%',
+                            background: '#757de8',
+                            color: '#ffffff',
+                            borderRadius: '20px',
+                            padding: '10px 30px',
+                            fontWeight: 'bold',
+                          }}
+                        />
+                      </Grid>
+                    </Card>
+                </TimelineContent>
+              </TimelineItem>
+              <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
+                <div style={{ width: '48%'}}>
+                  <Typography variant="h6" align="right">
+                    Estimated Fare
+                  </Typography>
+                  <Typography align="right">40 Dollors</Typography>
 
-              </TimelineContent>
-            </TimelineItem>
+                </div>
+                <div style={{ width: '4%', display:'flex', justifyContent:'center', alignItems:'center' }}>
+                    <div style={{width:'20px',height:'20px',padding:'10px',  borderRadius:'50%', backgroundColor: currentTheme.palette.secondary.main,display:'flex', justifyContent:'center', alignItems:'center'}}>
+                    <LocalTaxiIcon sx={{color:' #757de8'}}/>
+                    </div>
+                </div>
+                <div style={{ width: '48%'}}>
+                  <Typography variant="h6" component="span">
+                    Drive For
+                  </Typography>
+                  <Typography>30mins</Typography>
+                </div>
+
+              </div>
+            </>
           ))}
         </Timeline>
       </Grid>
       <SpeedDial
         ariaLabel="Still Blind"
-        sx={{ position: "absolute", bottom: 16, right: 16 }}
+        sx={{ bottom: 20, right: 10, position:'absolute' }}
         icon={<CreateSharpIcon />}
       >
         <SpeedDialAction
@@ -463,11 +461,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
           onClick={handleIntrovertModeToggle}
         />
       </SpeedDial>
-      <VenueSelectionControls
-        addItem={addItinerary}
-        changeOpenState={handleControlsToggle}
-        open={controlsOpen}
-      />
+      
     </Grid>
   );
 };

@@ -6,6 +6,7 @@ import {
     Divider,
     Alert,
     styled,
+    useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
@@ -17,6 +18,8 @@ import "leaflet/dist/leaflet.css";
 import icon from "leaflet/dist/images/marker-icon.png";
 import L from "leaflet";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import { CButton } from "../common/button";
+import IItinerary from "../../models/IItinerary";
 
 function MapUpdater() {
     const map = useMap();
@@ -54,7 +57,12 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
     marginBottom: theme.spacing(1),
 }));
 
-export const PickRecommendation = () => {
+interface IProps {
+    updateItinerary: () => void;
+    currentItinerary: IItinerary;
+  }
+
+export const PickRecommendation : React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
     const [thingsTodo, setThingsTodo] = useState<any[]>([]);
     const [shoppingTodo, setShoppingTodo] = useState<any[]>([]);
     const [resturantTodo, setResturantTodo] = useState<any[]>([]);
@@ -83,229 +91,273 @@ export const PickRecommendation = () => {
         setResturantTodo([...tempData]);
     };
 
+    const finishRecommendation = ()=>{
+        updateItinerary()
+    }
+
+    const currentTheme = useTheme();
+
     return (
         <>
-            <Grid container spacing={2} rowGap={1} style={{ marginTop: '20px' }}>
+            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                 <Grid item xs={12}>
-                    <Alert severity="info">Things to do</Alert>
+                    <Typography variant="h6" align="center">
+                        Things To Do
+                    </Typography>
                 </Grid>
-                {thingsTodo.map((item, index) => {
+                {thingsTodo?.slice(0, 3)?.map((item, index) => {
                     return (
                         <Grid
-                            style={{ cursor: "pointer" }}
+                            style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
                             item
                             xs={12}
                             md={3}
                             onClick={() => selectThingsTodo(index)}
-                            className="unselectable"
+                        // className="unselectable"
                         >
-                            <StyledPaper elevation={item.selected ? 5 : 1}>
-                                <Grid container>
-                                    <Grid item xs={11}>
-                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
-                                    </Grid>
-                                    <Grid item xs={1} display="flex" justifyContent="flex-end">
-                                        <Checkbox checked={item.selected} />
-                                    </Grid>
-                                    <Grid xs={12}>
-                                        <Divider />
-                                    </Grid>
+                            <StyledVenueName noWrap>{item.venue_name}</StyledVenueName>
 
-                                    <Grid xs={12} item style={{ height: "300px" }}>
-                                        <MapContainer
-                                            center={{ lat: item.venue_lat, lng: item.venue_lon }}
-                                            zoom={20}
-                                            scrollWheelZoom={false}
-                                            style={{
-                                                height: "100%",
-                                                width: "100%",
-                                                pointerEvents: "none",
-                                            }}
-                                        >
-                                            <TileLayer
-                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                            />
-                                            {item.lat !== undefined && item.lon !== undefined && (
-                                                <Marker
-                                                    position={{
-                                                        lat: item.venue_lat,
-                                                        lng: item.venue_lon,
-                                                    }}
-                                                >
-                                                    <Popup>
-                                                        <strong>Directions:</strong>
-                                                        <br />
-                                                        <span>
-                                                            Lat: {item.lat}, Lon: {item.lon}
-                                                        </span>
-                                                        <br />
-                                                        <a
-                                                            href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            Open in Google Maps
-                                                        </a>
-                                                    </Popup>
-                                                </Marker>
-                                            )}
-                                            <MapUpdater />
-                                        </MapContainer>
-                                    </Grid>
-                                </Grid>
-                            </StyledPaper>
+                            {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
+                                        <Checkbox checked={item.selected} />
+                                    </Grid> */}
+
+                            <Grid xs={12} item >
+                                <img
+                                    src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                                    alt=""
+                                    style={{ width: '100%', borderRadius: '5px' }}
+
+                                />
+                            </Grid>
+                            <Typography variant="subtitle2" sx={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                display: '-webkit-box',
+                                WebkitLineClamp: '3',
+                                WebkitBoxOrient: 'vertical',
+                            }}>
+                                Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
+                            </Typography>
+                            <Divider sx={{ margin: '10px 0' }} />
+                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                                <Typography>
+                                    Rating: <span>4</span>
+                                </Typography>
+
+                                <Typography>
+                                    Busyness: <span>Moderate</span>
+                                </Typography>
+                            </Grid>
+                            <Divider sx={{ margin: '10px 0' }} />
+                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                                <CButton
+                                    title="Select"
+                                    onClick={() => { }}
+                                    style={{
+                                        width: '30%',
+                                        background: '#757de8',
+                                        color: '#ffffff',
+                                        borderRadius: '20px',
+                                        padding: '10px 20px',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                                <CButton
+                                    title="View"
+                                    onClick={() => { }}
+                                    style={{
+                                        width: '30%',
+                                        background: '#757de8',
+                                        color: '#ffffff',
+                                        borderRadius: '20px',
+                                        padding: '10px 30px',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                            </Grid>
+
                         </Grid>
                     );
                 })}
             </Grid>
-            <Grid container spacing={2} rowGap={1} style={{ marginTop: '20px' }}>
+            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                 <Grid item xs={12}>
-                    <Alert severity="info">Restaurants</Alert>
+                    <Typography variant="h6" align="center">
+                        Restaurants
+                    </Typography>
                 </Grid>
-                {resturantTodo.map((item, index) => {
+                {resturantTodo?.slice(0, 3)?.map((item, index) => {
                     return (
                         <Grid
-                            style={{ cursor: "pointer" }}
+                            style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
                             item
                             xs={12}
                             md={3}
-                            onClick={() => selectResturantTodo(index)}
-                            className="unselectable"
+                            onClick={() => selectThingsTodo(index)}
+                        // className="unselectable"
                         >
-                            <StyledPaper elevation={item.selected ? 5 : 1}>
-                                <Grid container>
-                                    <Grid item xs={11}>
-                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
-                                    </Grid>
-                                    <Grid item xs={1} display="flex" justifyContent="flex-end">
-                                        <Checkbox checked={item.selected} />
-                                    </Grid>
-                                    <Grid xs={12}>
-                                        <Divider />
-                                    </Grid>
 
-                                    <Grid xs={12} item style={{ height: "300px" }}>
-                                        <MapContainer
-                                            center={{ lat: item.venue_lat, lng: item.venue_lon }}
-                                            zoom={20}
-                                            scrollWheelZoom={false}
-                                            style={{
-                                                height: "100%",
-                                                width: "100%",
-                                                pointerEvents: "none",
-                                            }}
-                                        >
-                                            <TileLayer
-                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                            />
-                                            {item.lat !== undefined && item.lon !== undefined && (
-                                                <Marker
-                                                    position={{
-                                                        lat: item.venue_lat,
-                                                        lng: item.venue_lon,
-                                                    }}
-                                                >
-                                                    <Popup>
-                                                        <strong>Directions:</strong>
-                                                        <br />
-                                                        <span>
-                                                            Lat: {item.lat}, Lon: {item.lon}
-                                                        </span>
-                                                        <br />
-                                                        <a
-                                                            href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            Open in Google Maps
-                                                        </a>
-                                                    </Popup>
-                                                </Marker>
-                                            )}
-                                            <MapUpdater />
-                                        </MapContainer>
-                                    </Grid>
-                                </Grid>
-                            </StyledPaper>
+                            <StyledVenueName noWrap>{item.venue_name}</StyledVenueName>
+
+                            {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
+                                        <Checkbox checked={item.selected} />
+                                    </Grid> */}
+
+                            <Grid xs={12} item >
+                                <img
+                                    src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                                    alt=""
+                                    style={{ width: '100%', borderRadius: '5px' }}
+
+                                />
+                            </Grid>
+                            <Typography variant="subtitle2" sx={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                display: '-webkit-box',
+                                WebkitLineClamp: '3',
+                                WebkitBoxOrient: 'vertical',
+                            }}>
+                                Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
+                            </Typography>
+                            <Divider sx={{ margin: '10px 0' }} />
+                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                                <Typography>
+                                    Rating: <span>4</span>
+                                </Typography>
+
+                                <Typography>
+                                    Busyness: <span>Moderate</span>
+                                </Typography>
+                            </Grid>
+                            <Divider sx={{ margin: '10px 0' }} />
+                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                                <CButton
+                                    title="Select"
+                                    onClick={() => { }}
+                                    style={{
+                                        width: '30%',
+                                        background: '#757de8',
+                                        color: '#ffffff',
+                                        borderRadius: '20px',
+                                        padding: '10px 20px',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                                <CButton
+                                    title="View"
+                                    onClick={() => { }}
+                                    style={{
+                                        width: '30%',
+                                        background: '#757de8',
+                                        color: '#ffffff',
+                                        borderRadius: '20px',
+                                        padding: '10px 30px',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                            </Grid>
+
                         </Grid>
                     );
                 })}
             </Grid>
-            <Grid container spacing={2} rowGap={1} style={{ marginTop: '20px' }}>
+            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                 <Grid item xs={12}>
-                    <Alert severity="info">Shopping</Alert>
+                    <Typography variant="h6" align="center">
+                        Shopping
+                    </Typography>
                 </Grid>
-                {shoppingTodo.map((item, index) => {
+                {shoppingTodo?.slice(0, 3)?.map((item, index) => {
                     return (
                         <Grid
-                            style={{ cursor: "pointer" }}
+                            style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
                             item
                             xs={12}
                             md={3}
-                            onClick={() => selectShoppingTodo(index)}
-                            className="unselectable"
+                            onClick={() => selectThingsTodo(index)}
+                        // className="unselectable"
                         >
-                            <StyledPaper elevation={item.selected ? 5 : 1}>
-                                <Grid container>
-                                    <Grid item xs={11}>
-                                        <StyledVenueName>{item.venue_name}</StyledVenueName>
-                                    </Grid>
-                                    <Grid item xs={1} display="flex" justifyContent="flex-end">
-                                        <Checkbox checked={item.selected} />
-                                    </Grid>
-                                    <Grid xs={12}>
-                                        <Divider />
-                                    </Grid>
 
-                                    <Grid xs={12} item style={{ height: "300px" }}>
-                                        <MapContainer
-                                            center={{ lat: item.venue_lat, lng: item.venue_lon }}
-                                            zoom={20}
-                                            scrollWheelZoom={false}
-                                            style={{
-                                                height: "100%",
-                                                width: "100%",
-                                                pointerEvents: "none",
-                                            }}
-                                        >
-                                            <TileLayer
-                                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                                            />
-                                            {item.lat !== undefined && item.lon !== undefined && (
-                                                <Marker
-                                                    position={{
-                                                        lat: item.venue_lat,
-                                                        lng: item.venue_lon,
-                                                    }}
-                                                >
-                                                    <Popup>
-                                                        <strong>Directions:</strong>
-                                                        <br />
-                                                        <span>
-                                                            Lat: {item.lat}, Lon: {item.lon}
-                                                        </span>
-                                                        <br />
-                                                        <a
-                                                            href={`https://www.google.com/maps/dir/?api=1&destination=${item.lat},${item.lon}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            Open in Google Maps
-                                                        </a>
-                                                    </Popup>
-                                                </Marker>
-                                            )}
-                                            <MapUpdater />
-                                        </MapContainer>
-                                    </Grid>
-                                </Grid>
-                            </StyledPaper>
+                            <StyledVenueName noWrap>{item.venue_name}</StyledVenueName>
+
+                            {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
+                                        <Checkbox checked={item.selected} />
+                                    </Grid> */}
+
+                            <Grid xs={12} item >
+                                <img
+                                    src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                                    alt=""
+                                    style={{ width: '100%', borderRadius: '5px' }}
+
+                                />
+                            </Grid>
+                            <Typography variant="subtitle2" sx={{
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                display: '-webkit-box',
+                                WebkitLineClamp: '3',
+                                WebkitBoxOrient: 'vertical',
+                            }}>
+                                Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
+                            </Typography>
+                            <Divider sx={{ margin: '10px 0' }} />
+                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                                <Typography>
+                                    Rating: <span>4</span>
+                                </Typography>
+
+                                <Typography>
+                                    Busyness: <span>Moderate</span>
+                                </Typography>
+                            </Grid>
+                            <Divider sx={{ margin: '10px 0' }} />
+                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                                <CButton
+                                    title="Select"
+                                    onClick={() => { }}
+                                    style={{
+                                        width: '30%',
+                                        background: '#757de8',
+                                        color: '#ffffff',
+                                        borderRadius: '20px',
+                                        padding: '10px 20px',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                                <CButton
+                                    title="View"
+                                    onClick={() => { }}
+                                    style={{
+                                        width: '30%',
+                                        background: '#757de8',
+                                        color: '#ffffff',
+                                        borderRadius: '20px',
+                                        padding: '10px 30px',
+                                        fontWeight: 'bold',
+                                    }}
+                                />
+                            </Grid>
+
                         </Grid>
                     );
                 })}
+            </Grid>
+            <Grid xs={12} style={{justifyContent: 'center', display: 'flex' }}>
+                <CButton
+                    title="Next"
+                    onClick={updateItinerary}
+                    style={{
+                        width: '30%',
+                        background: '#757de8',
+                        color: '#ffffff',
+                        borderRadius: '20px',
+                        padding: '10px 30px',
+                        fontWeight: 'bold',
+                        margin:'20px 0px'
+                    }}
+                />
             </Grid>
         </>
     );

@@ -10,6 +10,7 @@ import {
   styled,
   InputLabel,
   Rating,
+  useTheme,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -26,6 +27,7 @@ import L from "leaflet";
 import { DatePicker } from "@mui/lab";
 import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
 import { CButton } from "../common/button";
+import { toTitleCase } from "../../utils/utility_func";
 
 
 const venueTypes = [
@@ -145,112 +147,145 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
     );
   };
 
-  const dateUpdate = (dateObject: object|null)=>{
-    setSelectedDate(dateObject?dateObject:dayjs().add(1, 'day'))
+  const dateUpdate = (dateObject: object | null) => {
+    setSelectedDate(dateObject ? dateObject : dayjs().add(1, 'day'))
   }
 
-  const toggleTags = (item: string)=>{
+  const toggleTags = (item: string) => {
     let tagArray = [...selectedTags]
     let index = tagArray.indexOf(item)
-    if (index == -1){
+    if (index == -1) {
       tagArray.push(item)
-    }else{
+    } else {
       tagArray.splice(index, 1)
     }
     setSelectedTags(tagArray)
   }
 
 
-  const toggleCusine = (item: string)=>{
+  const toggleCusine = (item: string) => {
     let tagArray = [...selectedSubCategoryTags]
     let index = tagArray.indexOf(item)
-    if (index == -1){
+    if (index == -1) {
       tagArray.push(item)
-    }else{
+    } else {
       tagArray.splice(index, 1)
     }
     setSelectedSubCategoryTags(tagArray)
   }
 
 
-  const finishTripQuestionnaire = ()=>{
-    if (selectedTags.length < 3){
+  const finishTripQuestionnaire = () => {
+    if (selectedTags.length < 3) {
       alert('Please Select Atleast 3 tags!')
-    }else if (selectedSubCategoryTags.length < 2){
+    } else if (selectedSubCategoryTags.length < 2) {
       alert('Please Select Atleast 2 tags')
-    }else if (Object.keys(selectedDate).length === 0){
+    } else if (Object.keys(selectedDate).length === 0) {
       alert('Please Select a Date')
-    }else{
+    } else {
       // Call the Api
       updateItinerary()
     }
   }
 
+  const currentTheme = useTheme();
+
   return (
-    <>
-      <Grid container style={{ padding: '0px' }}>
-        <Grid container xs={5} style={{ overflow: 'scroll', height: '92vh' }}>
-          <Container maxWidth="sm">
-          <Grid container xs = {12} style={{display:'flex',alignItems:'center', margin: '10px 0px'}}>
-            <div style={{width: '50px', height:'50px', background:'red', borderRadius: '50px', marginRight:'10px'}}></div>
-          <Typography variant="h5" align="left" color="text.secondary">
+    <Grid container>
+      <Grid item xs={6} style={{ overflow: 'scroll', height: '90vh', padding:'10px' }}>
+        <Container>
+          <Grid container xs={12} style={{ display: 'flex', alignItems: 'center', margin: '10px 0px' }}>
+            <div style={{ width: '50px', height: '50px', background: 'red', borderRadius: '50px', marginRight: '10px' }}></div>
+            <Typography variant="h5" align="center" width={'80%'}>
               Create Itienrary
             </Typography>
           </Grid>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DemoContainer components={['DateCalendar', 'DateCalendar']}>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item xs={12}>
-                    <DemoItem>
-                    <Typography variant="h5" align="left" color="text.secondary">
-                    Date
-                  </Typography>
-                      <DateCalendar 
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={['DateCalendar', 'DateCalendar']}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12}>
+                  <DemoItem>
+                    <Typography variant="h6" align="left">
+                      Date
+                    </Typography>
+                    <DateCalendar
                       value={selectedDate}
-                      onChange={(newValue) => dateUpdate(newValue)} 
-                      />
-                    </DemoItem>
-                  </Grid>
+                      onChange={(newValue) => dateUpdate(newValue)}
+                      sx={{
+                        backgroundColor: currentTheme.palette.secondary.main,
+                        borderRadius: '15px'
+                      }}
+                    />
+                  </DemoItem>
                 </Grid>
-              </DemoContainer>
+              </Grid>
+            </DemoContainer>
 
-            </LocalizationProvider>
-            <Typography variant="h5" align="left" color="text.secondary">
+          </LocalizationProvider>
+          <div style={{ width: '100%', marginTop: '20px' }}>
+            <Typography variant="h6" align="left">
               Attraction Type
             </Typography>
-            <Grid item xs={12} style={{ margin: '15px 0px', display:'flex', flexWrap:'wrap'}}>
-              {venueTypes?.map((el,ind)=>(
-                  <span 
-                  onClick={()=>toggleTags(el.tag)}
-                  style={selectedTags.indexOf(el.tag) !== -1 ? {padding:'10px', border:'2px solid red', marginRight:'15px', borderRadius:'10px', cursor:'pointer'}:
-                  {padding:'10px', borderColor:'green', border:'2px solid', marginRight:'15px', borderRadius:'10px', cursor:'pointer'}
-                  }>
-                    {el.tag}
-                  </span>
+            <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
+              {venueTypes?.map((el, ind) => (
+                <span
+                  onClick={() => toggleTags(el.tag)}
+                  style={{
+                    padding: '10px',
+                    border: '2px solid',
+                    borderColor: '#757de8',
+                    marginRight: '15px',
+                    borderRadius: '25px',
+                    cursor: 'pointer',
+                    backgroundColor: selectedTags.indexOf(el.tag) !== -1 ? '#757de8' : 'transparent',
+                    color: selectedTags.indexOf(el.tag) !== -1 ? '#fff' : '#757de8'
+                  }}
+                >
+                  {el.tag}
+                </span>
               ))}
             </Grid>
-            <Typography variant="h5" align="left" color="text.secondary">
+          </div>
+          <div style={{ width: '100%', marginTop: '20px' }}>
+            <Typography variant="h6" align="left">
               Cusine Type
             </Typography>
-            <Grid item xs={12} style={{ margin: '15px 0px' }}>
-            {venueTypes?.map((el,ind)=>(
-                  <span 
-                  onClick={()=>toggleCusine(el.tag)}
-                  style={selectedSubCategoryTags.indexOf(el.tag) !== -1 ? {padding:'10px', border:'2px solid red', marginRight:'15px', borderRadius:'10px', cursor:'pointer'}:
-                  {padding:'10px', borderColor:'green', border:'2px solid', marginRight:'15px', borderRadius:'10px', cursor:'pointer'}
-                  }>
-                    {el.tag}
-                  </span>
+            <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
+              {venueTypes?.map((el, ind) => (
+                <span
+                  onClick={() => toggleCusine(el.tag)}
+                  style={{
+                    padding: '10px',
+                    border: '2px solid',
+                    borderColor: '#757de8',
+                    marginRight: '15px',
+                    borderRadius: '25px',
+                    cursor: 'pointer',
+                    backgroundColor: selectedSubCategoryTags.indexOf(el.tag) !== -1 ? '#757de8' : 'transparent',
+                    color: selectedSubCategoryTags.indexOf(el.tag) !== -1 ? '#fff' : '#757de8'
+                  }}>
+                  {el.tag}
+                </span>
               ))}
             </Grid>
-            <Typography variant="h5" align="left" color="text.secondary">
+          </div>
+          <div style={{ width: '100%', marginTop: '20px' }}>
+            <Typography variant="h6" align="left">
               Zone Group
             </Typography>
             <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
               {thingsTodoDummyData.slice(0, 5).map((item, index) => {
                 return (
                   <Grid
-                    style={{ cursor: "pointer", padding: '5px', width: '30%' }}
+                    style={{ 
+                      cursor: "pointer", 
+                      padding: '15px', 
+                      width: '30%', 
+                      backgroundColor: currentTheme?.palette?.secondary?.main, 
+                      marginRight: '5px', 
+                      borderRadius: '10px',
+                      marginBottom:'10px' 
+                    }}
                     item
                     className="unselectable"
                   >
@@ -262,83 +297,80 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
                       />
                     </Grid>
                     <Grid xs={12}>
-                      <Typography variant="subtitle2">
-                        {item.venue_name}
+                      <Typography variant="subtitle2" fontWeight={600}>
+                        {toTitleCase(item.venue_name)}
                       </Typography>
                     </Grid>
-
                   </Grid>
                 );
               })}
             </Grid>
-            <CButton
-              title="Next"
-              onClick={()=>finishTripQuestionnaire()}
-              style={{
-                width:'100%',
-                background: '#FFFFFF',
-                color: '#008080',
-                borderRadius: '20px',
-                padding: '10px 30px',
-                fontWeight: 'bold',
-                transition: '0.3s',
-                '&:hover': {
-                  background: '#008080',
-                  color: '#FFFFFF'
-                }
-              }}
-            />
-          </Container>
-        </Grid>
-        <Grid container xs={7}>
-          <MapContainer
-            style={{ height: "92vh", width: "100%" }}
-            zoom={13}
-            center={[40.7831, -73.9712]}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {mapItems?.map((item) => {
-              let icon;
-              switch (item.zone_group) {
-                case "Upper West Side":
-                  icon = redIcon;
-                  break;
-                case "Midtown Manhattan":
-                  icon = greenIcon;
-                  break;
-                case "Upper East Side":
-                  icon = blueIcon;
-                  break;
-                case "Chelsea/Greenwhich market":
-                  icon = yellowIcon;
-                  break;
-                case "Upper Manhattan":
-                  icon = orangeIcon;
-                  break;
-                default:
-                  icon = purpleIcon;
-              }
-              return (
-                //@ts-ignore
-                <Marker position={[item.latitude, item.longitude]} icon={icon} riseOnHover>
-                  <Popup>
-                    <Grid container display='flex' spacing={2}>
-                      <Grid item xs={12}>
-                        <Typography variant="h6">
-                          {item.name}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </Popup>
-                </Marker>
-              );
-            })}
-          </MapContainer>
-        </Grid>
+          </div>
+          <div style={{width:'100%', justifyContent:'center', display:'flex'}}>
+          <CButton
+            title="Next"
+            onClick={() => finishTripQuestionnaire()}
+            style={{
+              width: '50%',
+              background: '#757de8',
+              color: '#ffffff',
+              borderRadius: '20px',
+              padding: '10px 30px',
+              fontWeight: 'bold',
+            }}
+          />
+          </div>
+        </Container>
       </Grid>
-    </>
+      <Grid item xs={6}>
+        <MapContainer
+          style={{ height: "100%", width: "100%", borderTopLeftRadius: '30px', borderBottomLeftRadius: '30px' }}
+          zoom={13}
+          center={[40.7831, -73.9712]}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          {mapItems?.map((item) => {
+            let icon;
+            switch (item.zone_group) {
+              case "Upper West Side":
+                icon = redIcon;
+                break;
+              case "Midtown Manhattan":
+                icon = greenIcon;
+                break;
+              case "Upper East Side":
+                icon = blueIcon;
+                break;
+              case "Chelsea/Greenwhich market":
+                icon = yellowIcon;
+                break;
+              case "Upper Manhattan":
+                icon = orangeIcon;
+                break;
+              default:
+                icon = purpleIcon;
+            }
+            return (
+              //@ts-ignore
+              <Marker position={[item.latitude, item.longitude]} icon={icon} riseOnHover>
+                <Popup>
+                  <Grid container display='flex' spacing={2}>
+                    <Grid item xs={12}>
+                      <Typography variant="h6">
+                        {item.name}
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      </Grid>
+    </Grid>
+
   );
 };
