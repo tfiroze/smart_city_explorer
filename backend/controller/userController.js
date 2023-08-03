@@ -38,9 +38,14 @@ let verifyEmailUnique = (req, res, next) => {
 
 // Register (Required: firstname, surname, email, captcha, password)
 let register = (req, res) => {
-    let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
-    if (!captchaCheckResult.isValid) {
-        return res.status(401).send({valid: false, message: captchaCheckResult.message})
+    try {
+        let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
+        if (!captchaCheckResult.isValid) {
+            return res.status(401).send({valid: false, message: captchaCheckResult.message})
+        }
+    }catch(err) {
+        console.error(err)
+        return res.status(200).send({valid: false, message: 'Invalid captcha'})
     }
     let dbOperation = (conn) => {
         let sqlStr = 'insert into user_info (firstname, surname, email, password) values (?, ?, ?, ?)'

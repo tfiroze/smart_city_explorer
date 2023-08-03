@@ -26,7 +26,7 @@ def load_parameters(json_file):
     return parameters
 
 # Ask for JSON file path
-json_file = input("test.json")
+json_file = 'test.json'
 parameters = load_parameters(json_file)
 
 # Print prediction
