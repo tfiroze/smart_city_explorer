@@ -27,8 +27,9 @@ const options = {
 
 const filePath = path.join(__dirname, 'weather_forcast.json')
 
-const getWeather = (req, res) => {
-  
+
+// Required: selectedDate
+const getWeather = (req, res) => {  
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
       console.error('Error reading the JSON file:', err);

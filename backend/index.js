@@ -7,14 +7,22 @@ const cookieParser = require('cookie-parser')
 
 let app = express()
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true
+}
+
 app.use(express.static(path.join(__dirname, '../flask_react/frontend/build')))
 app.use(cors())
 app.use(cookieParser('Smart_City_Explorer'))
 app.use(session({
   secret: 'Smart_City_Explorer',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  secure: false // Set this to true if using HTTPS
+  // httpOnly: true
 }));
+app.use(cors(corsOptions));
 app.use('/api', router)
 
 // Adding new Hello World endpoint

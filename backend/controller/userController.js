@@ -12,7 +12,7 @@ let connTest = (req, res) => {
     console.log(req.session[sessionID])
 }
 
-// verify email unique when user register a new account (Required: firstname, surname, email, captcha, password)
+// verify email unique (Required: email)
 let verifyEmailUnique = (req, res, next) => {
     let dbOperation = (conn) => {
         let sqlStr = 'SELECT COUNT(*) as count FROM user_info WHERE email =?'
@@ -36,7 +36,7 @@ let verifyEmailUnique = (req, res, next) => {
     createSSHTunnel(dbOperation)
 }
 
-// Register 
+// Register (Required: firstname, surname, email, captcha, password)
 let register = (req, res) => {
     let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
     if (!captchaCheckResult.isValid) {
@@ -55,6 +55,12 @@ let register = (req, res) => {
             }
         }).then(([rows]) => {
             if(rows.affectedRows === 1){
+                req.session.destroy((err) => {
+                    if (err) {
+                      console.error('Error destroying session:', err);
+                      return res.status(500).send({ message: 'Error destroying session' });
+                    }
+                });
                 return res.status(200).send({valid: true, message: 'Succeed to register'})
             }else {
                 return res.status(200).send({valid: false, message: 'Failed to register'})
