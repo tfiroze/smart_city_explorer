@@ -7,7 +7,7 @@ def load_model(model_path):
     model = joblib.load(model_path)
     return model
 
-lgbm_model_fare = load_model('./lgbm_model_fare.joblib')
+lgbm_model_fare = load_model('lgbm_model_fare.joblib')
 
 # Define function that takes in parameters, uses the model to make a prediction, and returns the output
 def predict_with_model(model, parameters):
@@ -17,7 +17,7 @@ def predict_with_model(model, parameters):
     # using model to predict based on parameters
     prediction = model.predict(df)
     
-    return prediction[0]
+    return prediction
 
 # Load parameters from JSON
 def load_parameters(json_file):
@@ -26,7 +26,7 @@ def load_parameters(json_file):
     return parameters
 
 # Ask for JSON file path
-json_file = input("./fare_features.json")
+json_file = 'test.json'
 parameters = load_parameters(json_file)
 
 # Print prediction

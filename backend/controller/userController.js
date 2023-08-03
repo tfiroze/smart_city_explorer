@@ -12,7 +12,7 @@ let connTest = (req, res) => {
     console.log(req.session[sessionID])
 }
 
-// verify email unique when user register a new account (Required: firstname, surname, email, captcha, password)
+// verify email unique (Required: email)
 let verifyEmailUnique = (req, res, next) => {
     let dbOperation = (conn) => {
         let sqlStr = 'SELECT COUNT(*) as count FROM user_info WHERE email =?'
@@ -36,12 +36,16 @@ let verifyEmailUnique = (req, res, next) => {
     createSSHTunnel(dbOperation)
 }
 
-// Register 
+// Register (Required: firstname, surname, email, captcha, password)
 let register = (req, res) => {
-    let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
-    console.log(captchaCheckResult)
-    if (!captchaCheckResult.isValid) {
-        return res.status(401).send({valid: false, message: captchaCheckResult.message})
+    try {
+        let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
+        if (!captchaCheckResult.isValid) {
+            return res.status(401).send({valid: false, message: captchaCheckResult.message})
+        }
+    }catch(err) {
+        console.error(err)
+        return res.status(200).send({valid: false, message: 'Invalid captcha'})
     }
     let dbOperation = (conn) => {
         let sqlStr = 'insert into user_info (firstname, surname, email, password) values (?, ?, ?, ?)'
@@ -56,6 +60,12 @@ let register = (req, res) => {
             }
         }).then(([rows]) => {
             if(rows.affectedRows === 1){
+                req.session.destroy((err) => {
+                    if (err) {
+                      console.error('Error destroying session:', err);
+                      return res.status(500).send({ message: 'Error destroying session' });
+                    }
+                });
                 return res.status(200).send({valid: true, message: 'Succeed to register'})
             }else {
                 return res.status(200).send({valid: false, message: 'Failed to register'})
@@ -124,7 +134,11 @@ let userInfo = (req, res) => {
         }
         createSSHTunnel(dbOperation)
     } catch (err) {
-        console.log(err)
+        console.error(err)
+        res.status(200).send({
+            valid: false,
+            message: 'Invalid token'
+        })
     }
 }
 

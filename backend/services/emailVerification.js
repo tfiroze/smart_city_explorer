@@ -17,13 +17,11 @@ function createCode(){
     return newCode = arr
 }
 
-// POST /api/emails (Required: email)
+// send captcha (Required: email)
 let sendCaptcha = (req, res) => {
     let userMail = req.body.email
     createCode()
-    // storeCodeToSession(req, newCode)
 
-    // create smtp connection
     let transport = nodemailer.createTransport({
         // service: 'Gmail',
         service: 'QQ',
@@ -35,7 +33,6 @@ let sendCaptcha = (req, res) => {
         }
     })
 
-    // content of email
     let options = {
         // from : 'a1357924691@gmail.com',
         from : '3037615469@qq.com',
