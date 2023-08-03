@@ -178,10 +178,11 @@ export const Login = () => {
 			<Paper
 				elevation={0}
 				style={{
-					background: '#f7f7f7'
+					background: '#f7f7f7',
+					
 				}}
 			>
-				<Grid container>
+				<Grid container style={{padding:'20px'}}>
 					<Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
 						<Typography
 							variant="h4"
@@ -264,7 +265,7 @@ export const Login = () => {
 										loading={loading}
 										onClick={formValidator}
 										style={{
-											background: '#008080', color: 'white'
+											background: '#757de8', color: 'white'
 										}}
 									/>
 								</Grid>

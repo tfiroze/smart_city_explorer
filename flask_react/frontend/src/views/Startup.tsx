@@ -78,11 +78,11 @@ export const Startup = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <Typography variant="h2" component="div" gutterBottom>
+          <Typography variant="h2" component="div" style={{color:'white'}}>
             SMART CITY EXPLORER
           </Typography>
         </motion.div>
-        <Typography variant="subtitle1" gutterBottom style={{ fontStyle: 'italic', marginTop: '20px' }}>
+        <Typography variant="subtitle1"  style={{ fontStyle: 'italic', marginTop: '20px', color:'white' }}>
           Because life's too short to get lost in a city!
         </Typography>
         <Box mt={4}>

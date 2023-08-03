@@ -456,11 +456,11 @@ export const Register: React.FC<IProps> = ({
 					{erroDict[error.toString()]}
 				</Typography>}
 			</DialogContent>
-			<DialogActions>
+			<DialogActions style={{display:'flex', justifyContent:'space-evenly'}}>
 				<CButton
 					title="Cancel"
 					style={{
-						border: '1px solid #008080', color: '#008080', background: 'white'
+						border: '1px solid #757de8', color: '#757de8', background: 'white'
 					}}
 					onClick={handleRegisterDialogOpen} />
 
@@ -469,7 +469,7 @@ export const Register: React.FC<IProps> = ({
 					onClick={formValidator}
 					loading={submitLoading}
 					style={{
-						background: '#008080', color: 'white'
+						background: '#757de8', color: 'white'
 					}}
 					disabled={disableSubmit}
 				/>
