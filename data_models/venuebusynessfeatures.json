@@ -1,12 +1,10 @@
 {
-    "venuebusyness_features": [
-        "hour",
-        "weekday",
-        "temperature_2m",
-        "apparent_temperature",
-        "precipitation",
-        "weathercode",
-        "visibility",
-        "windspeed_10m"
-    ]
+    "hour": 11,
+    "weekday": 0,
+    "temperature_2m": 23.8,
+    "apparent_temperature": 24.9,
+    "precipitation":0,
+    "weathercode": 3,
+    "visibility": 12000,
+    "windspeed_10m": 6.0
 }

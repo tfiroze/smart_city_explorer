@@ -62,7 +62,7 @@ let sendCaptcha = (req, res) => {
 }
   
 // Check if the user-entered captcha is correct or has expired.
-function verifyCode(req, enteredCode) {
+function verifyCode(req) {
     if(req.cookies.sessionID){
         
         const sessionID = req.cookies['sessionID'];
@@ -74,7 +74,7 @@ function verifyCode(req, enteredCode) {
                 return { isValid: false, message: 'Verification code not found. Please request a new one.' }
             }
         
-            if (enteredCode === captcha) {
+            if (req.body.captcha == captcha) {
                 return { isValid: true};
             } else {
                 return { isValid: false, message: 'Invalid captcha' };

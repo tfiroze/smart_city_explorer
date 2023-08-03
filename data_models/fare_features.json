@@ -1,11 +1,9 @@
 {
-    "fare_features": [
-        "trip_distance",
-        "pickup_zone",
-        "dropoff_zone",
-        "temp",
-        "pickup_hour",
-        "pickup_weekday_num",
-        "weather_description"
-    ]
+    "trip_distance":3.0,
+    "pickup_zone":12,
+    "dropoff_zone":24,
+    "temp":24.9,
+    "pickup_hour":11,
+    "pickup_weekday_num":0,
+    "weather_description":2
 }

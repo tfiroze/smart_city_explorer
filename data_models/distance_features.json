@@ -1,13 +1,11 @@
 {
-    "distance_features": [
-        "trip_distance",
-        "pickup_zone",
-        "dropoff_zone",
-        "temp",
-        "rain_3h",
-        "snow_3h",
-        "pickup_hour",
-        "pickup_weekday_num",
-        "weather_description"
-    ]
+    "trip_distance": 3.0,
+    "pickup_zone":12,
+    "dropoff_zone":24,
+    "temp":24.9,
+    "rain_3h":0.0,
+    "snow_3h":0.0,
+    "pickup_hour":11,
+    "pickup_weekday_num":0,
+    "weather_description":2
 }
