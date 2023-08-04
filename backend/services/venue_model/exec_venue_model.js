@@ -29,12 +29,12 @@ let getRecommendVenues = (req, res) => {
   // user_input_attractions: 
   //    Nature_Attractions, Shopping_Center, Tourist_Destination, Cultural_Heritage, Neighborhood_Market, Fashion_Convenience, Library, Scenic_Landmarks, Art, Religious, Park, Gifts_&_Souvenirs
   
+
   // For example of input: 
   // let user_zone_input = ["Upper_West_Side", "Upper_East_Side"]
   // let user_input_attractions = ["Neighborhood_Market"]
-
-  user_zone_input = req.body.user_zone_input.replace(/'/g, '"'); 
-  user_input_attractions = req.body.user_input_attractions.replace(/'/g, '"'); 
+  user_zone_input = req.body.zoneGroup.replace(/'/g, '"'); 
+  user_input_attractions = req.body.attractions.replace(/'/g, '"'); 
 
   const parameters = [JSON.parse(user_zone_input), JSON.parse(user_input_attractions)];
 
@@ -42,7 +42,7 @@ let getRecommendVenues = (req, res) => {
   const result = executeIPythonNotebook(ipynbFileName, parameters);
   const str_res = result.replace(/'/g, '"').replace(/\(/g, '[').replace(/\)/g, ']')
   let json_res = JSON.parse(str_res)
-  console.log(json_res)
+  return res.status(200).send(json_res)
 }
 
 module.exports = {

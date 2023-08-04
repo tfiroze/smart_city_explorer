@@ -8,7 +8,7 @@ def load_model(model_path):
     model = joblib.load(model_path)
     return model
 
-model = load_model('lgbm_model_fare.joblib')
+model = load_model('data_models/lgbm_model_fare.joblib')
 
 
 # Load parameters from JSON
@@ -29,7 +29,7 @@ def load_parameters(json_file):
     return input_data
 
 # Ask for JSON file path
-json_file = "fare_features.json"
+json_file = "data_models/input_data/fare_features.json"
 parameters = load_parameters(json_file)
 
 # Print prediction
