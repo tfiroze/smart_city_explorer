@@ -30,7 +30,7 @@ router.delete('/trips', tripController.deleteTrip)
 
 router.post('/venues', distanceModel.getRecommendVenues)
 
-router.get('/tripinfoquestionnaire', tripController.getTripInfoQuestionnaireMW, tripController.getTripInfoQuestionnaire)
+router.get('/tripinfoquestionnaire', tripController.getTripInfoQuestionnaireMW,tripController.getTripInfoQuestionnaireMW2, tripController.getTripInfoQuestionnaire)
 
 router.get('/weathers', weather.getWeather)
 
