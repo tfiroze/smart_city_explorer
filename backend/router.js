@@ -6,6 +6,7 @@ const emailVerification = require('./services/emailVerification')
 const distanceModel = require('./services/venue_model/exec_venue_model')
 const weather = require('./services/weather/weather')
 const fareModel = require('./services/exec_fare')
+const durationModel = require('./services/exec_duration')
 
 router.use(express.urlencoded({ extended:false }))
 router.use(express.json())
@@ -35,5 +36,6 @@ router.get('/tripinfoquestionnaire', tripController.getTripInfoQuestionnaireMW,t
 router.get('/weathers', weather.getWeather)
 
 router.post('/fare', fareModel.getFare)
+router.post('/duration', durationModel.getDuration)
 
 module.exports = router
