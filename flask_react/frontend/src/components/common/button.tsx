@@ -33,7 +33,7 @@ return (
       transitionDuration: '.3s',
       border: '1px solid transparent',
       letterSpacing: '2px',
-      minWidth: '160px',
+      // minWidth: '160px',
       textTransform: 'uppercase',
       whiteSpace: 'normal',
       fontWeight: '700',

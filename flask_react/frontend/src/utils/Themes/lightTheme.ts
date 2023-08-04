@@ -19,7 +19,7 @@ export default createTheme({
     MuiTypography:{
       styleOverrides:{
         root:{
-          color:"#333333"
+          color:"#333333",
         }
       }
     },

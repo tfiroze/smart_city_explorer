@@ -83,7 +83,7 @@ export const Startup = () => {
           </Typography>
         </motion.div>
         <Typography variant="subtitle1"  style={{ fontStyle: 'italic', marginTop: '20px', color:'white' }}>
-          Because life's too short to get lost in a city!
+        Amidst Manhattan's buzz, let's seize every moment!
         </Typography>
         <Box mt={4}>
           <Tooltip title="Don't be shy, click me!">

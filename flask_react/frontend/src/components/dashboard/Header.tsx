@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../utils/ApplicationContext';
 import { AuthContext } from '../../utils/AuthContext';
+import Logo from '../../resources/images/SCE_Logo.png'
 import Paper from '@mui/material/Paper';
 import { Avatar, Divider, Menu, MenuItem, Step, StepLabel, Stepper, Switch, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -56,6 +57,7 @@ export const Header: React.FC<Partial<IProps>> = ({
 
 
   return (
+
     <>
       <Menu
         anchorEl={anchorEl}
@@ -80,35 +82,40 @@ export const Header: React.FC<Partial<IProps>> = ({
           <Typography variant="subtitle1">Log Out</Typography>
         </MenuItem>
       </Menu>
-      <Paper
+      {/* <Paper
         elevation={0}
-      >
-        <Grid container alignItems="center" xs={12}>
-          <Grid item xs={7} style={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar
-              style={{
-                cursor: 'pointer',
-                backgroundColor: getAvatarColor(),
-                marginRight: '10px'
-              }}
-              onClick={handleClick}
-            />
-            <Typography variant="h5" align='left'>
-              Welcome {authContext.userInfo?.first_name}! 👋
-            </Typography>
-          </Grid>
-          {steps?.length && <Grid item xs={5}>
-            <Stepper activeStep={activeStep} sx={{ mx: "auto" }}>
-              {steps?.map((label, index) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </Grid>}
 
+      > */}
+      <Grid container alignItems="center" xs={12}>
+        <Grid item xs={2} style={{justifyContent: 'center', display: 'flex' }}>
+          <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '60px' }} />
         </Grid>
-      </Paper>
+
+        {steps?.length && <Grid item xs={6} >
+          <Stepper activeStep={activeStep} sx={{ mx: "auto" }}>
+            {steps?.map((label, index) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Grid>}
+        <Grid item xs={steps?.length ? 4 : 10} style={{ display: 'flex', alignItems: 'center', justifyContent:'flex-end' }}>
+          <Typography variant="h5" align='left'>
+            Welcome {authContext.userInfo?.first_name}! 👋
+          </Typography>
+          <Avatar
+            style={{
+              cursor: 'pointer',
+              backgroundColor: getAvatarColor(),
+              marginRight: '10px'
+            }}
+            onClick={handleClick}
+          />
+        </Grid>
+
+      </Grid>
+      {/* </Paper> */}
     </>
   );
 };

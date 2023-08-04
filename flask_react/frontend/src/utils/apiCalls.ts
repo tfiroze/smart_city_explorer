@@ -159,6 +159,34 @@ class SmartCityApi {
 		}
 	}
 
+	getQuestionnaire = async function (token: string) {
+		try {
+			const response = await fetch('http://127.0.0.1:5000' + "/api/tripinfoquestionnaire", {
+				method: "GET",
+				headers: {
+					"token": token, // Add the token in the headers with the key "token"
+				},
+			});
+			if (response.status === 200) {
+				const data = await response.json();
+				console.log('User Dashbord Request Response: ', data)
+					return {
+					  valid: true,
+					  ...data
+					};
+			} else {
+				  return {
+					valid: false
+				  };
+			}
+		} catch (error) {
+			console.log(error);
+			return {
+			  valid: false,
+			};
+		}
+	}
+
 
 };
 

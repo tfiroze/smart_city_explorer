@@ -28,6 +28,7 @@ import { DatePicker } from "@mui/lab";
 import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
 import { CButton } from "../common/button";
 import { toTitleCase } from "../../utils/utility_func";
+import { smartApi } from "../../utils/apiCalls";
 
 
 const venueTypes = [
@@ -127,11 +128,54 @@ interface IProps {
 }
 
 export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
+  const [tags, setTags] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  const [subCategory, setSubCategory] = useState<string[]>([]);
   const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<string[]>([]);
+
+  const [zoneGroup, setZoneGroup] = useState<string[]>([]);
+
+
   const [mapItems, setMapItems] = useState<any[]>([]);
 
   const [selectedDate, setSelectedDate] = useState<Object>(dayjs().add(1, 'day'))
+
+  useEffect(() => {
+    const token = getCookieValue('token')
+    token && questionnaire(token)
+  }, [])
+
+  function getCookieValue(cookieName: string) {
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === cookieName) {
+        return decodeURIComponent(value);
+      }
+    }
+    return null; // Cookie not found
+  }
+
+  function questionnaire(token: string) {
+    smartApi.getQuestionnaire(token)
+      .then((results) => {
+        console.log(results);
+
+        if (results?.valid) {
+          setTags([...results.attraction_type])
+          setZoneGroup([...results.zone_group])
+          // setSelectedSubCategoryTags
+        } else {
+          // ... handle the case when results?.valid is falsy ...
+
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+
+      });
+  }
 
 
   const handleSubTagChange = (
@@ -192,7 +236,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
 
   return (
     <Grid container>
-      <Grid item xs={6} style={{ overflow: 'scroll', height: '90vh', padding:'10px' }}>
+      <Grid item xs={6} style={{ overflow: 'scroll', height: '90vh', padding: '10px' }}>
         <Container>
           <Grid container xs={12} style={{ display: 'flex', alignItems: 'center', margin: '10px 0px' }}>
             <div style={{ width: '50px', height: '50px', background: 'red', borderRadius: '50px', marginRight: '10px' }}></div>
@@ -227,21 +271,22 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
               Attraction Type
             </Typography>
             <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
-              {venueTypes?.map((el, ind) => (
+              {tags?.map((el, ind) => (
                 <span
-                  onClick={() => toggleTags(el.tag)}
+                  onClick={() => toggleTags(el)}
                   style={{
                     padding: '10px',
                     border: '2px solid',
                     borderColor: '#757de8',
                     marginRight: '15px',
+                    marginBottom: '10px',
                     borderRadius: '25px',
                     cursor: 'pointer',
-                    backgroundColor: selectedTags.indexOf(el.tag) !== -1 ? '#757de8' : 'transparent',
-                    color: selectedTags.indexOf(el.tag) !== -1 ? '#fff' : '#757de8'
+                    backgroundColor: selectedTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
+                    color: selectedTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
                   }}
                 >
-                  {el.tag}
+                  {el}
                 </span>
               ))}
             </Grid>
@@ -274,17 +319,17 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
               Zone Group
             </Typography>
             <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-              {thingsTodoDummyData.slice(0, 5).map((item, index) => {
+              {zoneGroup?.map((item, index) => {
                 return (
                   <Grid
-                    style={{ 
-                      cursor: "pointer", 
-                      padding: '15px', 
-                      width: '30%', 
-                      backgroundColor: currentTheme?.palette?.secondary?.main, 
-                      marginRight: '5px', 
+                    style={{
+                      cursor: "pointer",
+                      padding: '15px',
+                      width: '30%',
+                      backgroundColor: currentTheme?.palette?.secondary?.main,
+                      marginRight: '5px',
                       borderRadius: '10px',
-                      marginBottom:'10px' 
+                      marginBottom: '10px'
                     }}
                     item
                     className="unselectable"
@@ -297,28 +342,58 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
                       />
                     </Grid>
                     <Grid xs={12}>
-                      <Typography variant="subtitle2" fontWeight={600}>
-                        {toTitleCase(item.venue_name)}
+                      <Typography variant="subtitle2" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom:'10px' }}>
+                        {toTitleCase(item)}
                       </Typography>
+                    </Grid>
+                    <Grid xs={12} style={{display:'flex', justifyContent:'space-between', background: currentTheme.palette.secondary.main}}>
+                      <CButton
+                        title="Select"
+                        onClick={() => finishTripQuestionnaire()}
+                        style={{
+                          width: '45%',
+                          background: '#757de8',
+                          color: '#ffffff',
+                          borderRadius: '20px',
+                          padding: '10px',
+                          fontWeight: 'bold',
+                          height:'30px',
+                          fontSize: '10px',
+                        }}
+                      />
+                     <CButton
+                        title="View"
+                        onClick={() => finishTripQuestionnaire()}
+                        style={{
+                          width: '45%',
+                          background: '#757de8',
+                          color: '#ffffff',
+                          borderRadius: '20px',
+                          padding: '10px',
+                          fontWeight: 'bold',
+                          height:'30px',
+                          fontSize: '10px',
+                        }}
+                      />
                     </Grid>
                   </Grid>
                 );
               })}
             </Grid>
           </div>
-          <div style={{width:'100%', justifyContent:'center', display:'flex'}}>
-          <CButton
-            title="Next"
-            onClick={() => finishTripQuestionnaire()}
-            style={{
-              width: '50%',
-              background: '#757de8',
-              color: '#ffffff',
-              borderRadius: '20px',
-              padding: '10px 30px',
-              fontWeight: 'bold',
-            }}
-          />
+          <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
+            <CButton
+              title="Next"
+              onClick={() => finishTripQuestionnaire()}
+              style={{
+                width: '50%',
+                background: '#757de8',
+                color: '#ffffff',
+                borderRadius: '20px',
+                padding: '10px 30px',
+                fontWeight: 'bold',
+              }}
+            />
           </div>
         </Container>
       </Grid>
