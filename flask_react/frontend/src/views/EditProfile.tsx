@@ -1,146 +1,93 @@
-import React from "react";
-import Profile from "../components/profile/Profile";
-import { AuthContext } from "../utils/AuthContext";
-import { Header } from "../components/dashboard/Header";
-import {
-    Button,
-    Grid,
-    Paper,
-    Typography,
-    styled,
-    Divider,
-    Avatar,
-    TextField,
-} from "@mui/material";
+import React from 'react';
+import { Grid, Paper, Typography, styled, Divider, Avatar, TextField, Box, Button } from "@mui/material";
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ImageUploader from 'react-images-upload';
+import { useTheme } from '@mui/material/styles';
 
-const BackgroundLessGrid = styled(Grid)(({ theme }) => ({
-    background: "none",
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    padding: theme.spacing(3),
+    margin: 'auto',
+    marginTop: theme.spacing(3),
+    maxWidth: 800,
+    backgroundColor: theme.palette.background.default,
+}));
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+    backgroundColor: theme.palette.background.paper,
+}));
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+    width: 150,
+    height: 150,
+    margin: theme.spacing(2, 'auto'),
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+    margin: theme.spacing(2, 'auto'),
+}));
+
+const StyledReturnButton = styled(Button)(({ theme }) => ({
+    marginBottom: theme.spacing(2),
+}));
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+    margin: theme.spacing(1, 0),
 }));
 
 const EditProfile = () => {
+    const theme = useTheme();
     return (
-        <>
-            <Paper style={{ padding: "10px" }}>
-                <Button variant="outlined"> Return To Dashboard</Button>
-            </Paper>
+        <StyledPaper elevation={3}>
+            <StyledReturnButton variant="outlined" size="small">Return To Dashboard</StyledReturnButton>
+            <Typography variant="h5" align="center" gutterBottom>Your Information</Typography>
+            <StyledGrid container spacing={3}>
+                <StyledGrid item xs={12} sm={4} md={4}>
+                    <StyledAvatar />
+                    <ImageUploader
+                        buttonText='Upload Image'
+                        imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                        maxFileSize={5242880}
+                    />
+                    <StyledButton variant="contained" color="primary">Edit Picture</StyledButton>
+                </StyledGrid>
+                {/* <StyledGrid item xs={12} sm={8} md={8}>
+                    <Box display="flex" alignItems="center">
+                        <AccountCircleIcon fontSize="large" />
+                        <Box ml={2}>
+                            <Typography variant="h6">Jane Doe</Typography>
+                            <Typography variant="subtitle2">Personal Account</Typography>
+                        </Box>
+                    </Box>
+                </StyledGrid> */}
+            </StyledGrid>
+            <Divider variant="middle" />
+            {/* <Typography variant="h5" align="center" gutterBottom>Security Information</Typography> */}
 
-            <div style={{ marginLeft: "15%", marginRight: "15%", marginTop: "30px" }}>
-                <BackgroundLessGrid container style={{ background: "none" }}>
-                    <BackgroundLessGrid style={{ background: "none" }} item xs={12}>
-                        <Typography variant="h5">Your Information</Typography>
-                    </BackgroundLessGrid>
-                    <BackgroundLessGrid style={{ background: "none" }} item xs={12}>
-                        <Paper style={{ padding: "10px" }}>
-                            <BackgroundLessGrid container>
-                                <BackgroundLessGrid xs={12}>
-                                    <BackgroundLessGrid xs={4} md={4}>
-                                        <Typography variant="h6">
-                                            {/* {authContext.userInfo?.first_name} */}
-                                            Thea mothaf... Jaeger
-                                        </Typography>
-                                    </BackgroundLessGrid>
-                                </BackgroundLessGrid>
-                                <BackgroundLessGrid
-                                    style={{ marginTop: "5px", marginBottom: "5px" }}
-                                    xs={12}
-                                >
-                                    <Divider />
-                                </BackgroundLessGrid>
-                                <BackgroundLessGrid xs={12}>
-                                    <BackgroundLessGrid container>
-                                        <BackgroundLessGrid
-                                            xs={12}
-                                            md={3}
-                                            display="flex"
-                                            justifyContent="center"
-                                            alignContent="center"
-                                        >
-                                            <Avatar sx={{ width: 150, height: 150 }} />
-                                        </BackgroundLessGrid>
-                                        <BackgroundLessGrid xs={12} md={9}>
-                                            <Typography variant="caption">
-                                                Personalize your account with a photo. Your profile
-                                                photo will appear on apps and devices that use your{" "}
-                                                <span
-                                                    style={{
-                                                        backgroundColor: "black",
-                                                        color: "white",
-                                                        padding: "2px",
-                                                    }}
-                                                >
-                                                    Corn
-                                                </span>
-                                                <span
-                                                    style={{
-                                                        color: "black",
-                                                        backgroundColor: "orange",
-                                                        padding: "2px",
-                                                    }}
-                                                >
-                                                    Hub
-                                                </span>
-                                                account
-                                            </Typography>
-                                            <br />
-                                            <Button variant="contained">
-                                                <b />
-                                                Edit Picture
-                                            </Button>
-                                        </BackgroundLessGrid>
-                                    </BackgroundLessGrid>
-                                </BackgroundLessGrid>
-                            </BackgroundLessGrid>
-                        </Paper>
-                    </BackgroundLessGrid>
-                </BackgroundLessGrid>
-            </div>
-
-            <div style={{ marginLeft: "15%", marginRight: "15%", marginTop: "30px" }}>
-                <BackgroundLessGrid container style={{ background: "none" }}>
-                    <BackgroundLessGrid style={{ background: "none" }} item xs={12}>
-                        <Typography variant="h5">Security Information</Typography>
-                    </BackgroundLessGrid>
-                    <BackgroundLessGrid style={{ background: "none" }} item xs={12}>
-                        <Paper style={{ padding: "10px" }}>
-                            <BackgroundLessGrid container>
-                                <BackgroundLessGrid xs={12}>
-                                    <BackgroundLessGrid xs={4} md={4}>
-                                        <Typography variant="h6">Update Password</Typography>
-                                        <BackgroundLessGrid container>
-                                            <BackgroundLessGrid xs={6}>
-                                                <TextField
-                                                    type="password"
-                                                    style={{ marginTop: "10px" }}
-                                                    fullWidth
-                                                    label="Old Password"
-                                                    id="fullWidth"
-                                                />
-                                            </BackgroundLessGrid>
-                                            <BackgroundLessGrid xs={6}>
-                                                <TextField
-                                                    type="password"
-                                                    style={{ marginTop: "10px", width: '100%' }}
-                                                    fullWidth
-                                                    label="New Password"
-                                                    id="fullWidth"
-                                                />
-                                            </BackgroundLessGrid>
-                                        </BackgroundLessGrid>
-                                        <TextField
-                                            type="password"
-                                            style={{ marginTop: "10px" }}
-                                            fullWidth
-                                            label="Confirm New Password"
-                                            id="fullWidth"
-                                        />
-                                    </BackgroundLessGrid>
-                                </BackgroundLessGrid>
-                            </BackgroundLessGrid>
-                        </Paper>
-                    </BackgroundLessGrid>
-                </BackgroundLessGrid>
-            </div>
-        </>
+            <StyledGrid container spacing={3}>
+                <StyledGrid item xs={12} md={6}>
+                    <Divider></Divider>
+                    <Typography variant="h6" gutterBottom>Update Password</Typography>
+                    <StyledTextField
+                        type="password"
+                        fullWidth
+                        label="Old Password"
+                        variant="outlined"
+                    />
+                    <StyledTextField
+                        type="password"
+                        fullWidth
+                        label="New Password"
+                        variant="outlined"
+                    />
+                    <StyledTextField
+                        type="password"
+                        fullWidth
+                        label="Confirm New Password"
+                        variant="outlined"
+                    />
+                </StyledGrid>
+            </StyledGrid>
+        </StyledPaper>
     );
 };
 

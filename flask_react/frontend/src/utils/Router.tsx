@@ -5,7 +5,7 @@ import { Dashboard } from "../views/Dashboard";
 import { Startup } from "../views/Startup";
 import ChoroplethMap from "../views/MapTest";
 import { CreateItinerary } from "../views/CreateItinerary";
-import Profile from "../components/profile/Profile";
+// import Profile from "../components/profile/Profile";
 import { useState } from "react";
 import EditProfile from "../views/EditProfile";
 

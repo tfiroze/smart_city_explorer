@@ -31,7 +31,7 @@ import Slider from "../components/navigation/SliderNav"
 import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
 import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
 import { toTitleCase } from "../utils/utility_func";
-import Profile from "../components/profile/Profile"
+// import Profile from "../components/profile/Profile"
 import { ProfileDrawer } from "../components/navigation/ProfileDrawer";
 
 
