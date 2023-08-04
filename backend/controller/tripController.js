@@ -22,7 +22,8 @@ let upcomingTripsInfo = (req, res, next) => {
         }
         createSSHTunnel(dbOperation)
     } catch (err) {
-        console.log(err)
+        console.error(err)
+        return res.status(200).send({valid: false, message:'Failed to get trip info'})
     }
 }
 
@@ -44,7 +45,8 @@ let completedTripsInfo = (req, res) => {
         }
         createSSHTunnel(dbOperation)
     } catch (err) {
-        console.log(err)
+        console.error(err)
+        return res.status(200).send({valid: false, message:'Failed to get trip info'})
     }
 }
 
@@ -56,7 +58,6 @@ let tripInfo = (req, res) => {
             conn.query(sqlStr, [req.params.trip_id], (err, result) => {
                 if(err) return res.status(400).send(err.message)
             }).then(([rows]) => {
-                console.log(rows[0])
                 return res.status(200).json(rows[0])
             })
         }

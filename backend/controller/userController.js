@@ -185,12 +185,12 @@ let checkRegisteredEmail = (req, res, next) => {
                     req.body.user_id = rows[0].user_id
                     next()
                 }else {
-                    return res.status(200).send({valid: false, message: 'Email has not registered'}) 
+                    return res.status(200).send({valid: false, message: 'Email has not found'}) 
                 }
             })
         }catch (err) {
             console.error(err)
-            return res.status(200).send({valid: false, message: 'Email has not registered'})   
+            return res.status(200).send({valid: false, message: 'Email has not found'})   
         }  
     }
     createSSHTunnel(dbOperation)
