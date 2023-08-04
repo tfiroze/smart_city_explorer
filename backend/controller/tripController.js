@@ -155,11 +155,35 @@ let getTripInfoQuestionnaireMW = (req, res, next) => {
     
 }
 
+// Controller: get cusine_type
+let getTripInfoQuestionnaireMW2 = (req, res, next) => {
+    try {
+        let dbOperation = (conn) => {
+            const sqlStr = "SELECT DISTINCT type_mod FROM venue_static WHERE type_mod IS NOT NULL AND type_mod LIKE '%Restaurant'";
+            conn.query(sqlStr, [], (err, result) => {
+                if(err) {
+                    console.log(err.message)
+                    return res.status(400).send(err.message)
+                }
+            }).then(([rows]) => {
+                const cusineArray = rows.map(item => item.type_mod);
+                res_json.cusine_type = cusineArray
+                req.res_json = res_json
+                next()
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err) {
+        console.log(err)
+    }
+}
+
+
 // Controller: get attraction_type
 let getTripInfoQuestionnaire = (req, res) => {
     try {
         let dbOperation = (conn) => {
-            const sqlStr = 'select distinct type_mod from venue_static where type_mod is not null'
+            const sqlStr = "SELECT DISTINCT type_mod FROM venue_static WHERE type_mod IS NOT NULL AND type_mod NOT LIKE '%Restaurant'";
             conn.query(sqlStr, [], (err, result) => {
                 if(err) {
                     console.log(err.message)
@@ -186,5 +210,6 @@ module.exports = {
     addTrip,
     deleteTrip,
     getTripInfoQuestionnaire,
+    getTripInfoQuestionnaireMW2,
     getTripInfoQuestionnaireMW
 }
