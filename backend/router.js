@@ -16,9 +16,11 @@ router.post('/register', userController.verifyEmailUnique, userController.regist
 router.post('/login', userController.login)
 router.get('/users', userController.userInfo)
 router.put('/users', userController.updateUser)
-router.patch('/users', userController.updatePWD)
+router.post('/users', userController.checkRegisteredEmail, userController.forgetPWD)
+router.patch('/users', userController.checkPWD, userController.updatePWD)
 
 router.post('/emails', userController.verifyEmailUnique, emailVerification.sendCaptcha)
+router.post('/captcha', emailVerification.sendCaptcha)
 
 router.get('/trips/all/:user_id', tripController.upcomingTripsInfo, tripController.completedTripsInfo)
 router.get('/trips/:trip_id', tripController.tripInfo)
