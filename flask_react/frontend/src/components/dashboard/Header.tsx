@@ -8,19 +8,21 @@ import Grid from '@mui/material/Grid';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useLocation } from 'react-router-dom';
 
 interface IProps {
   activeStep: number | undefined;
   steps: null | string[];
+  openProfile: () => void;
 }
-
 
 export const Header: React.FC<Partial<IProps>> = ({
   activeStep,
-  steps
+  steps,
+  openProfile
 }) => {
+
 
   const pathname = useLocation()
 
@@ -38,7 +40,15 @@ export const Header: React.FC<Partial<IProps>> = ({
 
   const handleClose = () => {
     setAnchorEl(null);
+
   };
+
+  const handleProfileOpen = () => {
+    setAnchorEl(null);
+    //@ts-ignore
+    openProfile();
+  };
+
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -57,7 +67,6 @@ export const Header: React.FC<Partial<IProps>> = ({
 
 
   return (
-
     <>
       <Menu
         anchorEl={anchorEl}
@@ -66,6 +75,10 @@ export const Header: React.FC<Partial<IProps>> = ({
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
+        <MenuItem onClick={handleProfileOpen}>
+          <AccountCircleIcon />
+          <Typography variant="subtitle1" >Profile</Typography>
+        </MenuItem>
         <MenuItem>
           <SettingsIcon />
           <Typography variant="subtitle1">User Settings</Typography>
@@ -87,7 +100,7 @@ export const Header: React.FC<Partial<IProps>> = ({
 
       > */}
       <Grid container alignItems="center" xs={12}>
-        <Grid item xs={2} style={{justifyContent: 'center', display: 'flex' }}>
+        <Grid item xs={2} style={{ justifyContent: 'center', display: 'flex' }}>
           <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '60px' }} />
         </Grid>
 
@@ -100,7 +113,7 @@ export const Header: React.FC<Partial<IProps>> = ({
             ))}
           </Stepper>
         </Grid>}
-        <Grid item xs={steps?.length ? 4 : 10} style={{ display: 'flex', alignItems: 'center', justifyContent:'flex-end' }}>
+        <Grid item xs={steps?.length ? 4 : 10} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
           <Typography variant="h5" align='left'>
             Welcome {authContext.userInfo?.first_name}! 👋
           </Typography>
@@ -115,7 +128,6 @@ export const Header: React.FC<Partial<IProps>> = ({
         </Grid>
 
       </Grid>
-      {/* </Paper> */}
     </>
   );
 };

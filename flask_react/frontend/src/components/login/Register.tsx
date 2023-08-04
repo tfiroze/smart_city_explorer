@@ -440,7 +440,7 @@ export const Register: React.FC<IProps> = ({
 						variant="outlined"
 						color="primary"
 						fullWidth
-						type="confirmPassword"
+						type="password"
 						name="confirmPassword"
 						value={registerRequest.confirmPassword}
 						onChange={handleInputOnChange}
@@ -456,7 +456,7 @@ export const Register: React.FC<IProps> = ({
 					{erroDict[error.toString()]}
 				</Typography>}
 			</DialogContent>
-			<DialogActions style={{display:'flex', justifyContent:'space-evenly'}}>
+			<DialogActions style={{ display: 'flex', justifyContent: 'space-evenly' }}>
 				<CButton
 					title="Cancel"
 					style={{

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { Card, CardContent, CardMedia, CardActions } from '@mui/material';
 import {
   Grid,
   Paper,
@@ -106,6 +107,21 @@ const blueIcon = new L.Icon({
   popupAnchor: [1, -34],
   shadowSize: [41, 41]
 });
+const StyledCard = styled(Card)(({ theme }) => ({
+  borderRadius: 15,
+  boxShadow: theme.shadows[1],
+  margin: theme.spacing(2),
+}));
+
+const StyledCardContent = styled(CardContent)(({ theme }) => ({
+  paddingBottom: theme.spacing(2),
+}));
+
+const StyledCardMedia = styled(CardMedia)({
+  height: 0,
+  paddingTop: '56.25%', // 16:9
+});
+
 
 const QuestionnaireTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
@@ -221,9 +237,9 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
 
   const finishTripQuestionnaire = () => {
     if (selectedTags.length < 3) {
-      alert('Please Select Atleast 3 tags!')
+      alert('Please Select at least 3 tags')
     } else if (selectedSubCategoryTags.length < 2) {
-      alert('Please Select Atleast 2 tags')
+      alert('Please Select at least 2 tags')
     } else if (Object.keys(selectedDate).length === 0) {
       alert('Please Select a Date')
     } else {
@@ -241,7 +257,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
           <Grid container xs={12} style={{ display: 'flex', alignItems: 'center', margin: '10px 0px' }}>
             <div style={{ width: '50px', height: '50px', background: 'red', borderRadius: '50px', marginRight: '10px' }}></div>
             <Typography variant="h5" align="center" width={'80%'}>
-              Create Itienrary
+              Create Itinerary
             </Typography>
           </Grid>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -334,48 +350,48 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
                     item
                     className="unselectable"
                   >
-                    <Grid xs={12} >
-                      <img
-                        src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                        alt=""
-                        style={{ width: '100%', borderRadius: '5px' }}
+                    <StyledCard>
+                      <StyledCardMedia
+
+                        image="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+
                       />
-                    </Grid>
-                    <Grid xs={12}>
-                      <Typography variant="subtitle2" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom:'10px' }}>
-                        {toTitleCase(item)}
-                      </Typography>
-                    </Grid>
-                    <Grid xs={12} style={{display:'flex', justifyContent:'space-between', background: currentTheme.palette.secondary.main}}>
-                      <CButton
-                        title="Select"
-                        onClick={() => finishTripQuestionnaire()}
-                        style={{
-                          width: '45%',
-                          background: '#757de8',
-                          color: '#ffffff',
-                          borderRadius: '20px',
-                          padding: '10px',
-                          fontWeight: 'bold',
-                          height:'30px',
-                          fontSize: '10px',
-                        }}
-                      />
-                     <CButton
-                        title="View"
-                        onClick={() => finishTripQuestionnaire()}
-                        style={{
-                          width: '45%',
-                          background: '#757de8',
-                          color: '#ffffff',
-                          borderRadius: '20px',
-                          padding: '10px',
-                          fontWeight: 'bold',
-                          height:'30px',
-                          fontSize: '10px',
-                        }}
-                      />
-                    </Grid>
+                      <StyledCardContent>
+                        <Typography variant="subtitle2" fontWeight={600}>
+                          {toTitleCase(item)}
+                        </Typography>
+                      </StyledCardContent>
+                      <CardActions>
+                        <CButton
+                          title="Select"
+                          onClick={() => finishTripQuestionnaire()}
+                          style={{
+                            width: '45%',
+                            background: '#757de8',
+                            color: '#ffffff',
+                            borderRadius: '20px',
+                            padding: '10px',
+                            fontWeight: 'bold',
+                            height: '30px',
+                            fontSize: '10px',
+                          }}
+                        />
+                        <CButton
+                          title="View"
+                          onClick={() => finishTripQuestionnaire()}
+                          style={{
+                            width: '45%',
+                            background: '#757de8',
+                            color: '#ffffff',
+                            borderRadius: '20px',
+                            padding: '10px',
+                            fontWeight: 'bold',
+                            height: '30px',
+                            fontSize: '10px',
+                          }}
+                        />
+                      </CardActions>
+                    </StyledCard>
                   </Grid>
                 );
               })}
