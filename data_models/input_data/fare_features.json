@@ -1,9 +1,0 @@
-{
-    "trip_distance":3.0,
-    "pickup_zone":12,
-    "dropoff_zone":24,
-    "temp":24.9,
-    "pickup_hour":11,
-    "pickup_weekday_num":0,
-    "weather_description":2
-}

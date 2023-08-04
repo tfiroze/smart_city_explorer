@@ -3,47 +3,53 @@
 const { spawn } = require('child_process');
 const path = require('path')
 const createSSHTunnel = require('../db');
-const { all } = require('axios');
-const fs = require('fs')
+const fs = require('fs').promises;
 
-const pythonScriptPath = path.join(__dirname, '../../', 'data_models', 'trip_fare_prediction.py')
-const reqBodyVenueId = ['ven_344c563654744266547349526b6f7733506f68442d65734a496843', 'ven_30365f61684a68514c7730526b6f775a6c6b7a707255624a496843', 'ven_3075502d337278736a3952526b6f775a4a72674a66616c4a496843', 'ven_307063396f374b4b4e6b71526b6f7759564a316c35656e4a496843', 'ven_3039793356676f745a3570526b6f775974496c6d7378524a496843','ven_344c49766b705544393465526b6f77327244307a4159434a496843']
-const reqBodyDate = '2023-08-14'
+// const reqBodyVenueId = ['ven_344c563654744266547349526b6f7733506f68442d65734a496843', 'ven_30365f61684a68514c7730526b6f775a6c6b7a707255624a496843', 'ven_3075502d337278736a3952526b6f775a4a72674a66616c4a496843', 'ven_307063396f374b4b4e6b71526b6f7759564a316c35656e4a496843', 'ven_3039793356676f745a3570526b6f775974496c6d7378524a496843','ven_344c49766b705544393465526b6f77327244307a4159434a496843']
+// const reqBodyDate = '2023-08-15'
 
 
 // prepare input data for fare model
-let zoneIdArray = [] // 6 items
-let venueLocArray = [] // 6 items
-let all_trip_distance = [] // 5 items
-let all_pickup_zone = [] // 5 items
-let all_dropoff_zone = [] // 5 items
+let zoneIdArray = []
+let venueLocArray = []
+
+let all_trip_distance = []
+let all_pickup_zone = []
+let all_dropoff_zone = []
 let temp = 24
 let all_pickup_hour = [11, 13, 15, 17, 19]
-let pickup_weekday_num = new Date(reqBodyDate).getDay()
+let pickup_weekday_num = 0
+let weather_description = 0
 
-function getVenueInfo() {
+let fareArray = []
+
+function start(req, res) {
   try {
     let dbOperation = (conn) => {
         let sqlStr = 'SELECT original_ven_id, zone_id, latitude, longitude FROM venue_static WHERE original_ven_id IN (?)'
-        conn.query(sqlStr, [reqBodyVenueId], (err, result) => {
+        conn.query(sqlStr, [req.body.venue_id], (err, result) => {
             if(err) {
                 console.log(err.message)
                 return res.status(400).send(err.message)
             }
         }).then(([rows]) => {
           // Stores venue info into zoneIdArray and venueLocArray
-          for(let i=0; i<reqBodyVenueId.length; i++) {
+          for(let i=0; i<req.body.venue_id.length; i++) {
             rows.forEach((row) => {
-              if(row.original_ven_id == reqBodyVenueId[i]) {
+              if(row.original_ven_id == req.body.venue_id[i]) {
                 zoneIdArray.push(row.zone_id)
                 venueLocArray.push([row.latitude, row.longitude])
+                pickup_weekday_num = new Date(req.body.date).getDay()
               }
             })
           }
           // run functions here
           getDistance()
           getZones()
-          getTemp()
+          getWeather(req)
+
+          // prepare JSON data and execute model, return res
+          prepareJSON(res)
         })
     }
     createSSHTunnel(dbOperation)
@@ -71,14 +77,12 @@ function getZones() {
   for(let i=1; i<zoneIdArray.length; i++){
     all_dropoff_zone.push(zoneIdArray[i])
   }
-  console.log(all_pickup_zone)
-  console.log(all_dropoff_zone)
-  console.log(all_trip_distance)
+
 }
 
-function getTemp() {
+function getWeather(req) {
   const filePath = path.join(__dirname, 'weather', 'weather_forcast.json')
-  const newDate = reqBodyDate + 'T12:00:00Z'
+  const newDate = req.body.date + 'T12:00:00Z'
 
   fs.readFile(filePath, 'utf8', (err, data) => {
     try {
@@ -88,10 +92,9 @@ function getTemp() {
           symbolText = weatherData['6_hourly_forecast'][i]['symbol_text']
           temp = weatherData['6_hourly_forecast'][i]['temp']
 
-          // handle symbolText to weathercode
-
-
-          console.log(symbol, temp)
+          // convert symbolText to weathercode
+          let last8 = symbolText.slice(-8);
+          weather_description = getWeatherCode(last8)
           break;
         }
       }
@@ -100,6 +103,20 @@ function getTemp() {
       return
     }
   })
+}
+
+function getWeatherCode(last8) {
+  if (last8.includes("sunny")) {
+    return 0;
+  } else if (last8.includes("rain")) {
+    return 2;
+  } else if (last8.includes("fog")) {
+    return 3;
+  } else if (last8.includes("cloud") || last8.includes("overcast")) {
+    return 51;
+  } else {
+    return 0;
+  }
 }
 
 // calculate the distance between two venues
@@ -124,22 +141,62 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return distance;
 }
 
-function exec_py() {
-  const args = [1, 2];
-  const pythonProcess = spawn('python', [pythonScriptPath, ...args]);
+async function prepareJSON(res) {
+  const fareArray = [];
 
-  pythonProcess.stdout.on('data', (data) => {
-    const output = data.toString();
-    console.log(output);
-  });
+  for (let i = 0; i < 5; i++) {
+    const dataToSend = {
+      trip_distance: all_trip_distance[i],
+      pickup_zone: all_pickup_zone[i],
+      dropoff_zone: all_dropoff_zone[i],
+      temp: temp,
+      pickup_hour: all_pickup_hour[i],
+      pickup_weekday_num: pickup_weekday_num,
+      weather_description: weather_description
+    };
+    const dataToSendString = JSON.stringify(dataToSend);
 
-  pythonProcess.stderr.on('data', (data) => {
-    const error = data.toString();
-    console.error('ERROR:', error);
+    try {
+      const result = await exec_py(dataToSendString);
+      fareArray.push(result);
+    } catch (error) {
+      console.error('Error from Python:', error);
+    }
+  }
+  for (let i = 0; i < fareArray.length; i++) {
+    fareArray[i] = fareArray[i].replace(/\r?\n|\r/g, ''); 
+  }
+  return res.status(200).send(fareArray); 
+}
+
+function exec_py(dataToSendString) {
+  return new Promise((resolve, reject) => {
+    const pythonProcess = spawn('python', [path.join(__dirname, '../../data_models', 'trip_fare_prediction.py'), dataToSendString]);
+    let result = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+      result += data.toString();
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+      reject(data.toString());
+    });
+
+    pythonProcess.on('close', (code) => {
+      if (code === 0) {
+        resolve(result);
+      } else {
+        reject(`Python script exited with code ${code}`);
+      }
+    });
   });
 }
 
-getVenueInfo()
+let getFare = (req, res) => {
+  req.body.venue_id = JSON.parse(req.body.venue_id.replace(/'/g, '"'));
+  start(req, res)
+}
 
-// prepareJSON()
-// exec_py()
+module.exports = {
+  getFare
+}
