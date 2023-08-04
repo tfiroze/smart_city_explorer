@@ -3,7 +3,6 @@ import SCELogo from "../../resources/images/SCE_Logo.png";
 import { Link } from "react-router-dom";
 import { styled, useTheme, Theme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import { Header } from '../dashboard/Header';
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
@@ -26,8 +25,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ClickAwayListener from "@mui/base/ClickAwayListener";
-import { grey } from "@mui/material/colors";
+import { Avatar, Grid } from "@mui/material";
+import { useContext } from "react";
+import { AuthContext } from '../../utils/AuthContext';
 
 const drawerWidth = 240;
 
@@ -55,10 +55,11 @@ const Drawer = styled(MuiDrawer, {
     whiteSpace: 'nowrap',
 }));
 
-export default function MiniDrawer() {
+export default function SliderNav() {
     const [open, setOpen] = React.useState(false);
     const theme = useTheme();
     const navigate = useNavigate();
+    const authContext = useContext(AuthContext);
 
     const handleDrawerOpen = () => {
         setOpen(true);
@@ -66,6 +67,15 @@ export default function MiniDrawer() {
 
     const handleDrawerClose = () => {
         setOpen(false);
+    };
+
+    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+        //esh
+    };
+
+    // theme thingy
+    const getAvatarColor = () => {
+        return theme.palette.mode === 'dark' ? '#757de8' : '#757de8';
     };
 
     return (
@@ -88,11 +98,35 @@ export default function MiniDrawer() {
                 >
                     <MenuIcon />
                 </IconButton>
-                <Typography variant="h6" noWrap component="div">
-                    <Link to="/">
-                        <img src={SCELogo} alt="sce-logo" style={{ height: "50px" }} />
-                    </Link>
-                </Typography>
+                <Grid container alignItems="center" justifyContent="space-between">
+                    <Grid item>
+                        <Typography variant="h6" noWrap component="div">
+                            <Link to="/">
+                                <img src={SCELogo} alt="sce-logo" style={{ height: "50px" }} />
+                            </Link>
+                        </Typography>
+                    </Grid>
+                    <Grid item>
+                        <Typography variant="h5" align='left' style={{ fontFamily: "Georgia, serif", fontWeight: 600, marginRight: '10px', color: "#757de8" }}>
+                            Welcome {authContext.userInfo?.first_name}! 👋
+                        </Typography>
+                        <Avatar
+                            style={{
+                                cursor: 'pointer',
+                                backgroundColor: getAvatarColor(),
+                                marginRight: '10px',
+                                boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+                                width: '40px',
+                                height: '40px',
+                                border: '2px solid #757de8',
+                                transition: 'transform 0.3s'
+                            }}
+                            onClick={handleClick}
+                            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.1)'}
+                            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        />
+                    </Grid>
+                </Grid>
             </AppBar>
             <Drawer variant="permanent" sx={{
                 transition: theme.transitions.create('width', {
@@ -103,18 +137,26 @@ export default function MiniDrawer() {
                 overflowX: 'hidden',
             }}>
                 <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                    </IconButton>
+                    {open ? (
+                        <>
+                            <IconButton onClick={handleDrawerClose}>
+                                {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                            </IconButton>
+                        </>
+                    ) : (
+                        <IconButton onClick={handleDrawerOpen}>
+                            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                        </IconButton>
+                    )}
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['Home', 'Update User Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Weather'].map((text, index) => (
+                    {['Home', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Weather'].map((text, index) => (
                         <ListItem button key={text}>
                             <ListItemIcon>
                                 {index === 0 ? <HomeIcon /> : index === 1 ? <LockOpenIcon /> : index === 2 ? <ListAltIcon /> : index === 3 ? <HistoryIcon /> : index === 4 ? <LuggageIcon /> : <WbSunnyIcon />}
                             </ListItemIcon>
-                            <ListItemText primary={text} />
+                            {open && <ListItemText primary={text} />}
                         </ListItem>
                     ))}
                 </List>
@@ -125,11 +167,12 @@ export default function MiniDrawer() {
                             <ListItemIcon>
                                 {index === 0 ? <AccountCircleIcon /> : null}
                             </ListItemIcon>
-                            <ListItemText primary={text} />
+                            {open && <ListItemText primary={text} />}
                         </ListItem>
                     ))}
                 </List>
             </Drawer>
+
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />
             </Box>

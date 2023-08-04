@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { CircularProgress } from '@mui/material';
 import { Card, CardContent, CardMedia, CardActions } from '@mui/material';
 import {
   Grid,
@@ -146,7 +147,7 @@ interface IProps {
 export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
   const [tags, setTags] = useState<string[]>([])
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
+  const [loading, setLoading] = useState(false);
   const [subCategory, setSubCategory] = useState<string[]>([]);
   const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<string[]>([]);
 
@@ -248,6 +249,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
     }
   }
 
+
   const currentTheme = useTheme();
 
   return (
@@ -255,7 +257,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
       <Grid item xs={6} style={{ overflow: 'scroll', height: '90vh', padding: '10px' }}>
         <Container>
           <Grid container xs={12} style={{ display: 'flex', alignItems: 'center', margin: '10px 0px' }}>
-            <div style={{ width: '50px', height: '50px', background: 'red', borderRadius: '50px', marginRight: '10px' }}></div>
+            {/* <div style={{ width: '50px', height: '50px', background: 'red', borderRadius: '50px', marginRight: '10px' }}></div> */}
             <Typography variant="h5" align="center" width={'80%'}>
               Create Itinerary
             </Typography>
@@ -330,6 +332,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
               ))}
             </Grid>
           </div>
+
           <div style={{ width: '100%', marginTop: '20px' }}>
             <Typography variant="h6" align="left">
               Zone Group
@@ -350,6 +353,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
                     item
                     className="unselectable"
                   >
+
                     <StyledCard>
                       <StyledCardMedia
 

@@ -41,13 +41,14 @@
 		"react": "^18.2.0",
 		"react-device-detect": "^2.2.3",
 		"react-dom": "^18.2.0",
+		"react-images-upload": "^1.2.8",
 		"react-leaflet": "^4.2.1",
 		"react-leaflet-choropleth": "^2.0.1",
 		"react-leaflet-heatmap-layer": "^2.0.0",
 		"react-map-gl": "^7.1.2",
 		"react-mapbox-gl": "^5.1.1",
 		"react-player": "^2.12.0",
-		"react-router-dom": "^6.14.0",
+		"react-router-dom": "^6.14.2",
 		"react-scripts": "^5.0.1",
 		"react-spring": "^9.7.2",
 		"react-transition-group": "^4.4.5",
@@ -86,6 +87,7 @@
 		"@babel/plugin-proposal-private-property-in-object": "^7.21.11",
 		"@babel/preset-env": "^7.22.5",
 		"@types/leaflet": "^1.9.3",
+		"@types/react-router-dom": "^5.3.3",
 		"@types/styled-components": "^5.1.26"
 	},
 	"resolutions": {

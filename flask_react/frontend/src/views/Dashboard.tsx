@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import AttractionsIcon from '@mui/icons-material/Attractions';
 import { Header } from "../components/dashboard/Header";
 import {
   Button,
@@ -26,7 +27,7 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import ChoroplethMap from "./MapTest";
 import Choropleth from "../components/map/Choropleth";
 import { MapContainer, TileLayer, Popup, Marker, useMap } from 'react-leaflet';
-import Slider from "../../src/components/navigation/Slider"
+import Slider from "../components/navigation/SliderNav"
 import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
 import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
 import { toTitleCase } from "../utils/utility_func";
@@ -80,9 +81,9 @@ export const Dashboard = () => {
 
   return (
     <>
+
       <ProfileDrawer open={profileDrawerOpen} handleClose={handleClose} />
       <Dialog open={dialogOpen} maxWidth='xl' fullWidth>
-
         <DialogTitle>{dialogItineraryItem?.name}</DialogTitle>
         <DialogContent>
           <ChoroplethMap data={dialogItineraryItem} />
@@ -91,13 +92,10 @@ export const Dashboard = () => {
           <Button variant="contained" onClick={() => setDialogOpen(false)}>Close</Button>
         </DialogActions>
       </Dialog>
-      {/* Questionair screen End  */}
-
-
       <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
         <Grid container xs={6} style={{ padding: '15px', overflow: 'scroll', height: '100%' }}>
           <div style={{ width: '100%', height: '10%', marginBottom: '10px' }}>
-            <Header openProfile={handleProfileOpen} />
+            <Header />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }}>
             <Grid item xs={12} style={{
@@ -209,7 +207,7 @@ export const Dashboard = () => {
             }
             <div style={{ width: '100%' }}>
               <Typography variant="h6" align="left">
-                Explore Popular Destination
+                Explore Popular Destinations
               </Typography>
               <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
                 {thingsTodo.slice(0, 3).map((item, index) => {
@@ -253,6 +251,7 @@ export const Dashboard = () => {
           </MapContainer>
         </Grid>
       </Grid>
+
     </>
   );
 };

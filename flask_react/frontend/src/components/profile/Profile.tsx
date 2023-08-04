@@ -1,7 +1,7 @@
 import React from "react";
-import Slider from "../../components/navigation/Slider";
+import Slider from "../navigation/SliderNav";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
+import ImageUploader from 'react-images-upload';
 import Tooltip from '@mui/material/Tooltip';
 import SCELogo from "../../resources/images/SCE_Logo.png";
 import { useNavigate } from "react-router-dom";
@@ -10,8 +10,17 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import LuggageRoundedIcon from "@mui/icons-material/LuggageRounded";
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import SliderNav from "../navigation/SliderNav";
 
-const Profile = () => { //props: ProfileProps
+const theme = createTheme({
+    palette: {
+        mode: 'dark',
+    },
+});
+
+
+const Profile = () => {
     const navigate = useNavigate();
 
     const handleOnClick = () => {
@@ -19,20 +28,23 @@ const Profile = () => { //props: ProfileProps
     };
 
     return (
-        <>
-            <Slider />
-            <Box display={{ xs: 'block', md: 'flex' }} flexDirection="row" alignItems="center" p={2}>
+
+        <ThemeProvider theme={theme}>
+            <Box display={{ xs: 'block', md: 'flex' }} flexDirection="row" alignItems="center" p={2} sx={{ bgcolor: theme.palette.background.default }}>
                 <Box pr={2}>
                     <AccountCircleIcon fontSize="large" />
                 </Box>
+                {/* <SliderNav /> */}
                 <Box pr={2}>
-                    <Typography variant="h6">Busy Beaver</Typography>
-                    <Typography variant="subtitle2">Workaholic Account</Typography>
+                    <Typography variant="h6">Jane Doe</Typography>
+                    <Typography variant="subtitle2">Personal Account</Typography>
                 </Box>
                 <Box pr={2}>
-                    <Button variant="outlined" startIcon={<UploadFileIcon />} >
-                        Upload Image
-                    </Button>
+                    <ImageUploader
+                        buttonText='Upload Image'
+                        imgExtension={['.jpg', '.gif', '.png', '.gif']}
+                        maxFileSize={5242880}
+                    />
                 </Box>
             </Box>
 
@@ -49,7 +61,8 @@ const Profile = () => { //props: ProfileProps
                         m: 1,
                         ml: 5,
                         mr: 5,
-                        borderRadius: '20px'
+                        borderRadius: '20px',
+                        bgcolor: theme.palette.background.paper
                     }}
                 >
                     <Box
@@ -84,7 +97,7 @@ const Profile = () => { //props: ProfileProps
                     <img src={SCELogo} alt="sce-logo" style={{ height: "100px" }} />
                 </Box>
             </Box>
-        </>
+        </ThemeProvider>
     );
 };
 
