@@ -22,10 +22,11 @@ import { CButton } from "../components/common/button";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "@mui/lab";
 import { Card, CardContent, CardActions, Snackbar } from "@mui/material";
+import { ForgotPassword } from "../components/login/ForgotPassword";
 
 
 const erroDict: { [key: string]: string } = {
-	'0':'',
+	'0': '',
 	'1': 'Oops! Your Email or password is not ready for the journey. 🌊 Please check and try again!',
 	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.'
 }
@@ -49,6 +50,8 @@ export const Login = () => {
 		email: false,
 		password: false,
 	});
+
+	const [forgotPasswordOpen, setForgotPasswordOpen] = useState<boolean>(false)
 
 	const formValidator = () => {
 		if (
@@ -129,7 +132,7 @@ export const Login = () => {
 		document.cookie = `${name}=${value}; expires=${expires}; path=/`;
 	}
 
-	const nagvigateToDashboard = (token: string, tokenExpirationTime:string)=>{
+	const nagvigateToDashboard = (token: string, tokenExpirationTime: string) => {
 		smartApi.dashboard(token)
 			.then((results) => {
 				console.log(results);
@@ -138,7 +141,7 @@ export const Login = () => {
 					const d = new Date(tokenExpirationTime);
 					d.setTime(d.getTime());
 					let expires = d.toUTCString();
-					
+
 					setCookie("token", results.token, expires);
 					authContext.authenticate(true, {
 						first_name: results.firstname,
@@ -167,6 +170,7 @@ export const Login = () => {
 	}
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
+	const handleForgotPasswordDialogOpen = () => setForgotPasswordOpen(!forgotPasswordOpen)
 
 
 	return (
@@ -175,14 +179,19 @@ export const Login = () => {
 				open={registerOpen}
 				handleRegisterDialogOpen={handleRegisterDialogOpen}
 			/>
+
+			<ForgotPassword
+				open={forgotPasswordOpen}
+				handleForgotPasswordDialogOpen={handleForgotPasswordDialogOpen}
+			/>
 			<Paper
 				elevation={0}
 				style={{
 					background: '#f7f7f7',
-					
+
 				}}
 			>
-				<Grid container style={{padding:'20px'}}>
+				<Grid container style={{ padding: '20px' }}>
 					<Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
 						<Typography
 							variant="h4"
@@ -245,7 +254,12 @@ export const Login = () => {
 								}
 							/>
 						</Box>
-						{error!=='0' && <Typography variant="subtitle1" color={'red'}>
+						<span onClick={() => {handleForgotPasswordDialogOpen()}} style={{ cursor: 'pointer' }}>
+							<Typography variant="subtitle1" >
+								Password lost? Let's reset it! 🗝️
+							</Typography>
+						</span>
+						{error !== '0' && <Typography variant="subtitle1" color={'red'}>
 							{erroDict[error.toString()]}
 						</Typography>}
 						{/* <FormControlLabel

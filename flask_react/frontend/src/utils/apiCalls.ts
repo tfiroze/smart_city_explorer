@@ -3,6 +3,7 @@ import ILoginRequest from "../models/ILoginRequest";
 import ILoginResults from "../models/ILoginResults";
 import IRegisterRequest from "../models/IRegisterRequest";
 import IRegisterResults from "../models/IRegisterResults";
+import IForgotPasswordRequest from "../models/IForgotPasswordRequest";
 
 class SmartCityApi {
 	register = async function (
@@ -186,6 +187,82 @@ class SmartCityApi {
 			};
 		}
 	}
+
+	verifyForgotPasswordEmail = async function(email: string){
+		try {
+		  const response = await fetch('http://127.0.0.1:5000' + "/api/captcha", {
+			  method: "POST",
+			  body: new URLSearchParams({email: email}),
+			  credentials: 'include'
+			});
+
+		  if (response.status === 200) {
+			  const data = await response.json();
+			  console.log('Verify Forgot Password Captcha Request Response: ', data)
+			  if (data?.valid) {
+				  return {
+					  valid: true,
+					  errorType: "0"
+				  };
+			  } else {
+				  return {
+					  valid: false,
+					  errorType: '1'
+				  };
+			  }
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '2'
+			  };
+		  }
+	  } catch (error) {
+		  console.log(error);
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  };
+
+  forgotPassword = async function(request: IForgotPasswordRequest){
+	console.log(request);
+	
+	try {
+	  const response = await fetch('http://127.0.0.1:5000' + "/api/password", {
+		  method: "POST",
+		  body: new URLSearchParams({...request}),
+		  credentials: 'include'
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Forgot Password Request Response: ', data)
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0"
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1'
+			  };
+		  }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  } catch (error) {
+	  console.log(error);
+	  return {
+		  valid: false,
+		  errorType: '2'
+	  };
+  }
+};
 
 
 };
