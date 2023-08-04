@@ -29,6 +29,7 @@ import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
 import { CButton } from "../common/button";
 import { toTitleCase } from "../../utils/utility_func";
 import { smartApi } from "../../utils/apiCalls";
+import { Loader } from "../common/loader";
 
 
 const venueTypes = [
@@ -141,7 +142,10 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
 
   const [selectedDate, setSelectedDate] = useState<Object>(dayjs().add(1, 'day'))
 
+  const [showLoader, setShowLoader] = useState<boolean>(true)
+
   useEffect(() => {
+    
     const token = getCookieValue('token')
     token && questionnaire(token)
   }, [])
@@ -160,7 +164,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
   function questionnaire(token: string) {
     smartApi.getQuestionnaire(token)
       .then((results) => {
-        console.log(results);
+        setShowLoader(false)
 
         if (results?.valid) {
           setTags([...results.attraction_type])
@@ -236,6 +240,10 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
 
   return (
     <Grid container>
+      {showLoader ? 
+      <Loader/>
+      :
+      <>
       <Grid item xs={6} style={{ overflow: 'scroll', height: '90vh', padding: '10px' }}>
         <Container>
           <Grid container xs={12} style={{ display: 'flex', alignItems: 'center', margin: '10px 0px' }}>
@@ -444,7 +452,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
             );
           })}
         </MapContainer>
-      </Grid>
+      </Grid></>}
     </Grid>
 
   );

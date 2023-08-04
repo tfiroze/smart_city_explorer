@@ -44,6 +44,7 @@
 		"react-leaflet": "^4.2.1",
 		"react-leaflet-choropleth": "^2.0.1",
 		"react-leaflet-heatmap-layer": "^2.0.0",
+		"react-lottie": "^1.2.3",
 		"react-map-gl": "^7.1.2",
 		"react-mapbox-gl": "^5.1.1",
 		"react-player": "^2.12.0",
@@ -86,6 +87,7 @@
 		"@babel/plugin-proposal-private-property-in-object": "^7.21.11",
 		"@babel/preset-env": "^7.22.5",
 		"@types/leaflet": "^1.9.3",
+		"@types/react-lottie": "^1.2.6",
 		"@types/styled-components": "^5.1.26"
 	},
 	"resolutions": {
