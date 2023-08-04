@@ -167,8 +167,9 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
         setShowLoader(false)
 
         if (results?.valid) {
-          setTags([...results.attraction_type])
-          setZoneGroup([...results.zone_group])
+          setTags([...results?.attraction_type])
+          setZoneGroup([...results?.zone_group])
+          setSubCategory([...results?.cusine_type])
           // setSelectedSubCategoryTags
         } else {
           // ... handle the case when results?.valid is falsy ...
@@ -304,9 +305,9 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
               Cusine Type
             </Typography>
             <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
-              {venueTypes?.map((el, ind) => (
+              {subCategory?.map((el, ind) => (
                 <span
-                  onClick={() => toggleCusine(el.tag)}
+                  onClick={() => toggleCusine(el)}
                   style={{
                     padding: '10px',
                     border: '2px solid',
@@ -314,10 +315,11 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
                     marginRight: '15px',
                     borderRadius: '25px',
                     cursor: 'pointer',
-                    backgroundColor: selectedSubCategoryTags.indexOf(el.tag) !== -1 ? '#757de8' : 'transparent',
-                    color: selectedSubCategoryTags.indexOf(el.tag) !== -1 ? '#fff' : '#757de8'
+                    marginBottom: '10px',
+                    backgroundColor: selectedSubCategoryTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
+                    color: selectedSubCategoryTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
                   }}>
-                  {el.tag}
+                  {el}
                 </span>
               ))}
             </Grid>
@@ -414,6 +416,7 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            
           />
           {mapItems?.map((item) => {
             let icon;
