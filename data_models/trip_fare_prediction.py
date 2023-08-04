@@ -8,10 +8,8 @@ import sys
 
 model = joblib.load('../data_models/lgbm_model_fare.joblib')
 
-# 从Node.js接收传递的参数
 data_received = sys.argv[1]
 
-# 将接收到的JSON字符串转换为Python对象
 parameters = json.loads(data_received)
 
 trip_distance = parameters['trip_distance']
