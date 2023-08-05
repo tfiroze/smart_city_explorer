@@ -20,38 +20,6 @@ import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import HistoryIcon from '@mui/icons-material/History';
 
-const LeftNavigation = () => {
-    const [drawerOpen, setDrawerOpen] = useState(false);
-
-    const toggleDrawer = (open: boolean) => () => {
-        setDrawerOpen(open);
-    };
-
-    return (
-        <div>
-            <Divider>
-                <Button onClick={toggleDrawer(true)}>Open Menu</Button>
-            </Divider>
-            <Drawer open={drawerOpen} onClose={toggleDrawer(false)}>
-                <List>
-                    {['Home', 'Update User Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Weather'].map((text, index) => (
-                        <ListItem button key={text}>
-                            <ListItemIcon>
-                                {index === 0 ? <HomeIcon /> :
-                                    index === 1 ? <LockOpenIcon /> :
-                                        index === 2 ? <ListAltIcon /> :
-                                            index === 3 ? <HistoryIcon /> :
-                                                index === 4 ? <LuggageIcon /> :
-                                                    <WbSunnyIcon />}
-                            </ListItemIcon>
-                            <ListItemText primary={text} />
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
-        </div>
-    );
-}
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -96,49 +64,73 @@ const Profile = () => {
         return <Avatar>{getUserInitials("Jane Doe")}</Avatar>;
     };
 
+
     return (
         <Container>
+
             <Header />
-            <LeftNavigation />
-            <Box display="flex" flexDirection="column" alignItems="center" m={3}>
-                <Box display="flex" flexDirection="row" alignItems="center" p={2} >
-                    {renderAvatar()}
-                    <input type="file" onChange={handleImageUpload} style={{ display: 'none' }} id="imageUpload" />
-                    <Box ml={2}>
-                        <Typography variant="h6" sx={{ fontWeight: 500 }}>Jane Doe</Typography>
-                        <Typography variant="subtitle2" color="textSecondary">Personal Account</Typography>
-                    </Box>
+
+            <Box display="flex" flexDirection="row" mt={4}>
+                <Box width={240} mr={4} p={2} bgcolor="background.paper" borderRadius={2} boxShadow={3}>
+                    <Typography variant="h6" sx={{ marginBottom: 2, marginLeft: 1 }}>Navigation</Typography>
+                    <Divider />
+                    <List>
+                        {['Home', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Weather'].map((text, index) => (
+                            <ListItem button key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }}>
+                                <ListItemIcon>
+                                    {index === 0 ? <HomeIcon /> :
+                                        index === 1 ? <LockOpenIcon /> :
+                                            index === 2 ? <ListAltIcon /> :
+                                                index === 3 ? <HistoryIcon /> :
+                                                    index === 4 ? <LuggageIcon /> :
+                                                        <WbSunnyIcon />}
+                                </ListItemIcon>
+                                <ListItemText primary={text} />
+                            </ListItem>
+                        ))}
+                    </List>
                 </Box>
-                <label htmlFor="imageUpload">
-                    <Button component="span" variant="contained" color="primary" sx={{ mt: 2 }}>
-                        Upload Profile Picture
-                    </Button>
-                </label>
-                <Divider orientation="horizontal" flexItem sx={{ width: "100%", my: 2 }} />
-                <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" width="100%" mt={2}>
-                    <ProfileDrawer open={ProfileDrawerOpen} handleClose={handleClose} />
-                    <Paper elevation={3} sx={{ padding: 3, flex: 1, ml: 3, borderRadius: "10px", display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Typography variant="h5" component="div" sx={{ fontWeight: 500, mb: 3 }}>
-                            Explore Manhattan
-                        </Typography>
-                        <Tooltip title="Hold onto your hat! It's about to get busy!" arrow>
-                            <Button
-                                variant="contained"
-                                sx={{ height: 50, width: "100%", backgroundColor: "#757de8", color: "white", mt: 2, mb: 2 }}
-                                onClick={handleOnClick}
-                                startIcon={<LuggageRoundedIcon />}
-                            >
-                                Create Itinerary
-                            </Button>
-                        </Tooltip>
-                        <Box display="flex" justifyContent="center" mt={2} sx={{ '& img:hover': { transform: 'scale(1.1)' } }}>
-                            <img src={SCELogo} alt="sce-logo" style={{ height: "80px" }} />
+                <Box display="flex" flexDirection="column" alignItems="center" flex={1}>
+                    <Box display="flex" flexDirection="row" alignItems="center" p={2}>
+                        {renderAvatar()}
+                        <input type="file" onChange={handleImageUpload} style={{ display: 'none' }} id="imageUpload" />
+                        <Box ml={4}>
+                            <Typography variant="h6" sx={{ fontWeight: 500 }}>Jane Doe</Typography>
+                            <Typography variant="subtitle2" color="textSecondary">Personal Account</Typography>
                         </Box>
-                    </Paper>
+                    </Box>
+                    <label htmlFor="imageUpload">
+                        <Button component="span" variant="contained" color="primary" sx={{ mt: 2, mb: 2 }}>
+                            Upload Profile Picture
+                        </Button>
+                    </label>
+                    <Divider orientation="horizontal" flexItem sx={{ width: "100%", my: 2 }} />
+                    <Box display="flex" flexDirection="row" justifyContent="space-between" alignItems="center" width="100%" mt={2}>
+                        <ProfileDrawer open={ProfileDrawerOpen} handleClose={handleClose} />
+                        <Paper elevation={3} sx={{ padding: 4, flex: 1, ml: 3, borderRadius: "10px", display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                            <Typography variant="h5" component="div" sx={{ fontWeight: 500, mb: 3 }}>
+                                Explore Manhattan
+                            </Typography>
+                            <Tooltip title="Hold onto your hat! It's about to get busy!" arrow>
+                                <Button
+                                    variant="contained"
+                                    sx={{ height: 50, width: "100%", backgroundColor: "#757de8", color: "white", mt: 2, mb: 2 }}
+                                    onClick={handleOnClick}
+                                    startIcon={<LuggageRoundedIcon />}
+                                >
+                                    Create Itinerary
+                                </Button>
+                            </Tooltip>
+                            <Box display="flex" justifyContent="center" mt={2} sx={{ '& img:hover': { transform: 'scale(1.1)' } }}>
+                                <img src={SCELogo} alt="sce-logo" style={{ height: "80px" }} />
+                            </Box>
+                        </Paper>
+                    </Box>
                 </Box>
             </Box>
         </Container>
     );
 };
+
 
 export default Profile;

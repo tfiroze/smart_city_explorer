@@ -388,7 +388,7 @@ export const Register: React.FC<IProps> = ({
 							disabled={disableVerify}
 							loadingIndicator={verifyLoading}
 						>
-							<span>Verfiy</span>
+							<span>Verify</span>
 						</LoadingButton>
 					</Grid>
 				</Grid>

@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { CircularProgress } from '@mui/material';
-import { Card, CardContent, CardMedia, CardActions } from '@mui/material';
+import "leaflet/dist/leaflet.css";
+// import data from '../../temp/Manhattan_Taxi_Zones.geojson';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from "react-leaflet";
+import { CircularProgress, FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { Card, CardContent, CardMedia, CardActions } from "@mui/material";
+// import MarkerClusterGroup from "react-leaflet-markercluster";
+import "react-leaflet-markercluster/dist/styles.min.css";
 import {
   Grid,
   Paper,
@@ -13,10 +17,20 @@ import {
   InputLabel,
   Rating,
   useTheme,
+  Accordion,
+  AccordionSummary,
+  ListItem,
+  List,
+  Divider
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
-import { DateCalendar, DesktopDatePicker, DesktopTimePicker, StaticDatePicker } from "@mui/x-date-pickers";
+import {
+  DateCalendar,
+  DesktopDatePicker,
+  DesktopTimePicker,
+  StaticDatePicker,
+} from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -31,8 +45,14 @@ import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
 import { CButton } from "../common/button";
 import { toTitleCase } from "../../utils/utility_func";
 import { smartApi } from "../../utils/apiCalls";
-
-
+import zoneCords from "../../temp/zone_Grouping.json";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+const iconPerson = new L.Icon({
+  iconUrl: 'https://media.giphy.com/media/EX66GGqpooVsQ/giphy.gif',
+  iconRetinaUrl: 'https://media.giphy.com/media/EX66GGqpooVsQ/giphy.gif',
+  iconSize: new L.Point(60, 75),
+  className: 'leaflet-div-icon'
+});
 const venueTypes = [
   {
     id: 1,
@@ -55,59 +75,71 @@ const venueTypes = [
 ];
 
 const redIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  shadowSize: [41, 41],
 });
 
 const greenIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  shadowSize: [41, 41],
 });
 
 const yellowIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  shadowSize: [41, 41],
 });
 
 const orangeIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  shadowSize: [41, 41],
 });
 
 const purpleIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-purple.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-purple.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  shadowSize: [41, 41],
 });
-
 
 const blueIcon = new L.Icon({
-  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
-  shadowSize: [41, 41]
+  shadowSize: [41, 41],
 });
+
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 15,
   boxShadow: theme.shadows[1],
@@ -120,9 +152,8 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
 
 const StyledCardMedia = styled(CardMedia)({
   height: 0,
-  paddingTop: '56.25%', // 16:9
+  paddingTop: "56.25%", // 16:9
 });
-
 
 const QuestionnaireTitle = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(1),
@@ -144,29 +175,42 @@ interface IProps {
   currentItinerary: IItinerary;
 }
 
-export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
-  const [tags, setTags] = useState<string[]>([])
+export const Questionnaire: React.FC<IProps> = ({
+  updateItinerary,
+  currentItinerary,
+}) => {
+  const [tags, setTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [subCategory, setSubCategory] = useState<string[]>([]);
-  const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<string[]>([]);
-
+  const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<
+    string[]
+  >([]);
+  const [zoneGroupItems, setZoneGroupItems] = useState<any>([]);
   const [zoneGroup, setZoneGroup] = useState<string[]>([]);
-
-
   const [mapItems, setMapItems] = useState<any[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Object>(
+    dayjs().add(1, "day")
+  );
+  const [expanded, setExpanded] = React.useState<string | false>("panel1");
 
-  const [selectedDate, setSelectedDate] = useState<Object>(dayjs().add(1, 'day'))
+  const handleChange =
+    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
+      setExpanded(newExpanded ? panel : false);
+      onZOneGroupClick(panel);
+      setSelectedZoneItemToHiglight('')
+    };
 
+  const [selectedZoneItemToHiglight, setSelectedZoneItemToHiglight] = useState<string>('');
   useEffect(() => {
-    const token = getCookieValue('token')
-    token && questionnaire(token)
-  }, [])
+    const token = getCookieValue("token");
+    token && questionnaire(token);
+  }, []);
 
   function getCookieValue(cookieName: string) {
-    const cookies = document.cookie.split(';');
+    const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
+      const [name, value] = cookie.trim().split("=");
       if (name === cookieName) {
         return decodeURIComponent(value);
       }
@@ -175,25 +219,23 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
   }
 
   function questionnaire(token: string) {
-    smartApi.getQuestionnaire(token)
+    smartApi
+      .getQuestionnaire(token)
       .then((results) => {
         console.log(results);
 
         if (results?.valid) {
-          setTags([...results.attraction_type])
-          setZoneGroup([...results.zone_group])
+          setTags([...results.attraction_type]);
+          setZoneGroup([...results.zone_group]);
           // setSelectedSubCategoryTags
         } else {
           // ... handle the case when results?.valid is falsy ...
-
         }
       })
       .catch((error) => {
         console.log(error);
-
       });
   }
-
 
   const handleSubTagChange = (
     event: React.ChangeEvent<{}>,
@@ -209,61 +251,74 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
   };
 
   const dateUpdate = (dateObject: object | null) => {
-    setSelectedDate(dateObject ? dateObject : dayjs().add(1, 'day'))
-  }
+    setSelectedDate(dateObject ? dateObject : dayjs().add(1, "day"));
+  };
 
   const toggleTags = (item: string) => {
-    let tagArray = [...selectedTags]
-    let index = tagArray.indexOf(item)
+    let tagArray = [...selectedTags];
+    let index = tagArray.indexOf(item);
     if (index == -1) {
-      tagArray.push(item)
+      tagArray.push(item);
     } else {
-      tagArray.splice(index, 1)
+      tagArray.splice(index, 1);
     }
-    setSelectedTags(tagArray)
-  }
-
+    setSelectedTags(tagArray);
+  };
 
   const toggleCusine = (item: string) => {
-    let tagArray = [...selectedSubCategoryTags]
-    let index = tagArray.indexOf(item)
+    let tagArray = [...selectedSubCategoryTags];
+    let index = tagArray.indexOf(item);
     if (index == -1) {
-      tagArray.push(item)
+      tagArray.push(item);
     } else {
-      tagArray.splice(index, 1)
+      tagArray.splice(index, 1);
     }
-    setSelectedSubCategoryTags(tagArray)
-  }
-
+    setSelectedSubCategoryTags(tagArray);
+  };
 
   const finishTripQuestionnaire = () => {
     if (selectedTags.length < 3) {
-      alert('Please Select at least 3 tags')
+      alert("Please Select at least 3 tags");
     } else if (selectedSubCategoryTags.length < 2) {
-      alert('Please Select at least 2 tags')
+      alert("Please Select at least 2 tags");
     } else if (Object.keys(selectedDate).length === 0) {
-      alert('Please Select a Date')
+      alert("Please Select a Date");
     } else {
       // Call the Api
-      updateItinerary()
+      updateItinerary();
     }
-  }
+  };
 
+  const onZOneGroupClick = (item: string) => {
+    let zoneGroupItems = zoneCords.filter((x) => x.zone_group === item);
+    setZoneGroupItems([...zoneGroupItems]);
+  };
 
   const currentTheme = useTheme();
 
   return (
     <Grid container>
-      <Grid item xs={6} style={{ overflow: 'scroll', height: '90vh', padding: '10px' }}>
+      <Grid
+        item
+        xs={6}
+        style={{ overflow: "scroll", height: "90vh", padding: "10px" }}
+      >
         <Container>
-          <Grid container xs={12} style={{ display: 'flex', alignItems: 'center', margin: '10px 0px' }}>
-            {/* <div style={{ width: '50px', height: '50px', background: 'red', borderRadius: '50px', marginRight: '10px' }}></div> */}
-            <Typography variant="h5" align="center" width={'80%'}>
+          <Grid
+            container
+            xs={12}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              margin: "10px 0px",
+            }}
+          >
+            <Typography variant="h5" align="center" width={"80%"}>
               Create Itinerary
             </Typography>
           </Grid>
           <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer components={['DateCalendar', 'DateCalendar']}>
+            <DemoContainer components={["DateCalendar", "DateCalendar"]}>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12}>
                   <DemoItem>
@@ -275,33 +330,70 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
                       onChange={(newValue) => dateUpdate(newValue)}
                       sx={{
                         backgroundColor: currentTheme.palette.secondary.main,
-                        borderRadius: '15px'
+                        borderRadius: "15px",
                       }}
                     />
                   </DemoItem>
                 </Grid>
               </Grid>
             </DemoContainer>
-
           </LocalizationProvider>
-          <div style={{ width: '100%', marginTop: '20px' }}>
+          <div style={{ width: "100%", marginTop: "20px" }}>
+            <Typography variant="h6" align="left">
+              Zone Group
+            </Typography>
+            <FormControl>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                defaultValue="female"
+                name="radio-buttons-group"
+              >
+                {zoneGroup?.map((item, index) => {
+                  let zoneGroupItems = zoneCords.filter(
+                    (x) => x.zone_group === item
+                  );
+                  return (
+                    <Accordion expanded={expanded === item} onChange={handleChange(item)} style={{ marginBottom: '10px' }}>
+                      <AccordionSummary aria-controls="panel1d-content" id="panel1d-header" expandIcon={<ExpandMoreIcon />}>
+                        <Typography> <FormControlLabel value={item} control={<Radio />} label='' />{item}</Typography>
+                      </AccordionSummary>
+                      <List style={{ cursor: 'pointer' }}>
+                        {zoneGroupItems.map((grp) => {
+                          return (<><ListItem style={{ backgroundColor: grp.name === selectedZoneItemToHiglight ? '#b8c0ff' : '' }} onClick={() => setSelectedZoneItemToHiglight(grp.name)}>{grp.name}</ListItem><Divider /></>)
+                        })}
+                      </List>
+                    </Accordion>
+
+                  );
+                })}
+              </RadioGroup>
+            </FormControl>
+          </div>
+          <div style={{ width: "100%", marginTop: "20px" }}>
             <Typography variant="h6" align="left">
               Attraction Type
             </Typography>
-            <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
+            <Grid
+              item
+              xs={12}
+              style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
+            >
               {tags?.map((el, ind) => (
                 <span
                   onClick={() => toggleTags(el)}
                   style={{
-                    padding: '10px',
-                    border: '2px solid',
-                    borderColor: '#757de8',
-                    marginRight: '15px',
-                    marginBottom: '10px',
-                    borderRadius: '25px',
-                    cursor: 'pointer',
-                    backgroundColor: selectedTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
-                    color: selectedTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
+                    padding: "10px",
+                    border: "2px solid",
+                    borderColor: "#757de8",
+                    marginRight: "15px",
+                    marginBottom: "10px",
+                    borderRadius: "25px",
+                    cursor: "pointer",
+                    backgroundColor:
+                      selectedTags.indexOf(el) !== -1
+                        ? "#757de8"
+                        : "transparent",
+                    color: selectedTags.indexOf(el) !== -1 ? "#fff" : "#757de8",
                   }}
                 >
                   {el}
@@ -309,109 +401,54 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
               ))}
             </Grid>
           </div>
-          <div style={{ width: '100%', marginTop: '20px' }}>
+          <div style={{ width: "100%", marginTop: "20px" }}>
             <Typography variant="h6" align="left">
               Cusine Type
             </Typography>
-            <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
+            <Grid
+              item
+              xs={12}
+              style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
+            >
               {venueTypes?.map((el, ind) => (
                 <span
                   onClick={() => toggleCusine(el.tag)}
                   style={{
-                    padding: '10px',
-                    border: '2px solid',
-                    borderColor: '#757de8',
-                    marginRight: '15px',
-                    borderRadius: '25px',
-                    cursor: 'pointer',
-                    backgroundColor: selectedSubCategoryTags.indexOf(el.tag) !== -1 ? '#757de8' : 'transparent',
-                    color: selectedSubCategoryTags.indexOf(el.tag) !== -1 ? '#fff' : '#757de8'
-                  }}>
+                    padding: "10px",
+                    border: "2px solid",
+                    borderColor: "#757de8",
+                    marginRight: "15px",
+                    borderRadius: "25px",
+                    cursor: "pointer",
+                    backgroundColor:
+                      selectedSubCategoryTags.indexOf(el.tag) !== -1
+                        ? "#757de8"
+                        : "transparent",
+                    color:
+                      selectedSubCategoryTags.indexOf(el.tag) !== -1
+                        ? "#fff"
+                        : "#757de8",
+                  }}
+                >
                   {el.tag}
                 </span>
               ))}
             </Grid>
           </div>
 
-          <div style={{ width: '100%', marginTop: '20px' }}>
-            <Typography variant="h6" align="left">
-              Zone Group
-            </Typography>
-            <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-              {zoneGroup?.map((item, index) => {
-                return (
-                  <Grid
-                    style={{
-                      cursor: "pointer",
-                      padding: '15px',
-                      width: '30%',
-                      backgroundColor: currentTheme?.palette?.secondary?.main,
-                      marginRight: '5px',
-                      borderRadius: '10px',
-                      marginBottom: '10px'
-                    }}
-                    item
-                    className="unselectable"
-                  >
-
-                    <StyledCard>
-                      <StyledCardMedia
-
-                        image="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-
-                      />
-                      <StyledCardContent>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                          {toTitleCase(item)}
-                        </Typography>
-                      </StyledCardContent>
-                      <CardActions>
-                        <CButton
-                          title="Select"
-                          onClick={() => finishTripQuestionnaire()}
-                          style={{
-                            width: '45%',
-                            background: '#757de8',
-                            color: '#ffffff',
-                            borderRadius: '20px',
-                            padding: '10px',
-                            fontWeight: 'bold',
-                            height: '30px',
-                            fontSize: '10px',
-                          }}
-                        />
-                        <CButton
-                          title="View"
-                          onClick={() => finishTripQuestionnaire()}
-                          style={{
-                            width: '45%',
-                            background: '#757de8',
-                            color: '#ffffff',
-                            borderRadius: '20px',
-                            padding: '10px',
-                            fontWeight: 'bold',
-                            height: '30px',
-                            fontSize: '10px',
-                          }}
-                        />
-                      </CardActions>
-                    </StyledCard>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          </div>
-          <div style={{ width: '100%', justifyContent: 'center', display: 'flex' }}>
+          <div
+            style={{ width: "100%", justifyContent: "center", display: "flex" }}
+          >
             <CButton
               title="Next"
               onClick={() => finishTripQuestionnaire()}
               style={{
-                width: '50%',
-                background: '#757de8',
-                color: '#ffffff',
-                borderRadius: '20px',
-                padding: '10px 30px',
-                fontWeight: 'bold',
+                width: "50%",
+                background: "#757de8",
+                color: "#ffffff",
+                borderRadius: "20px",
+                padding: "10px 30px",
+                fontWeight: "bold",
               }}
             />
           </div>
@@ -419,7 +456,12 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
       </Grid>
       <Grid item xs={6}>
         <MapContainer
-          style={{ height: "100%", width: "100%", borderTopLeftRadius: '30px', borderBottomLeftRadius: '30px' }}
+          style={{
+            height: "100%",
+            width: "100%",
+            borderTopLeftRadius: "30px",
+            borderBottomLeftRadius: "30px",
+          }}
           zoom={13}
           center={[40.7831, -73.9712]}
         >
@@ -427,45 +469,31 @@ export const Questionnaire: React.FC<IProps> = ({ updateItinerary, currentItiner
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {mapItems?.map((item) => {
-            let icon;
-            switch (item.zone_group) {
-              case "Upper West Side":
-                icon = redIcon;
-                break;
-              case "Midtown Manhattan":
-                icon = greenIcon;
-                break;
-              case "Upper East Side":
-                icon = blueIcon;
-                break;
-              case "Chelsea/Greenwhich market":
-                icon = yellowIcon;
-                break;
-              case "Upper Manhattan":
-                icon = orangeIcon;
-                break;
-              default:
-                icon = purpleIcon;
-            }
-            return (
-              //@ts-ignore
-              <Marker position={[item.latitude, item.longitude]} icon={icon} riseOnHover>
+          {/* <GeoJSON data={data} /> */}
+
+          {zoneGroupItems.map((item: any) => {
+            return (<Marker icon={item.name === selectedZoneItemToHiglight ? greenIcon : blueIcon} position={[item.latitude, item.longitude]}>
+              <Popup>
+                {item.name}<br /> {item.address}
+              </Popup>
+            </Marker>);
+          })}
+          {/* <MarkerClusterGroup>
+            {zoneGroupItems.map((item: any) => (
+              <Marker
+                icon={item.name === selectedZoneItemToHiglight ? greenIcon : blueIcon}
+                position={[item.latitude, item.longitude]}
+              >
                 <Popup>
-                  <Grid container display='flex' spacing={2}>
-                    <Grid item xs={12}>
-                      <Typography variant="h6">
-                        {item.name}
-                      </Typography>
-                    </Grid>
-                  </Grid>
+                  {item.name}
+                  <br /> {item.address}
                 </Popup>
               </Marker>
-            );
-          })}
+            ))}
+          </MarkerClusterGroup> */}
+
         </MapContainer>
       </Grid>
-    </Grid>
-
+    </Grid >
   );
 };

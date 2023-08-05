@@ -28,8 +28,10 @@ function App() {
   return (
     <ThemeContext.Provider value={{ onChange: onThemeChange, theme: theme }}>
       <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+
         <BrowserRouter>
           <AuthStack />
+
         </BrowserRouter>
       </ThemeProvider>
     </ThemeContext.Provider>
