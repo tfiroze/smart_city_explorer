@@ -2,20 +2,15 @@ import joblib
 import pandas as pd
 import json
 import numpy as np
+import sys
 
 
-data = {
-    "hour": 11,
-    "weekday": 0,
-    "temperature_2m": 23.8,
-    "apparent_temperature": 24.9,
-    "precipitation":0,
-    "weathercode": 3,
-    "visibility": 12000,
-    "windspeed_10m": 6.0
-}
+data_received = sys.argv[1]
 
-hour = data['hour']
+data = json.loads(data_received)
+
+venue_id = data['hash_ven_id']
+hour = int(data['hour'])
 weekday = data['weekday']
 temperature_2m = data['temperature_2m']
 apparent_temperature = data['apparent_temperature']
@@ -26,8 +21,7 @@ windspeed_10m = data['windspeed_10m']
 
 input_data = np.array([[hour, weekday, temperature_2m, apparent_temperature, precipitation, weathercode, visibility, windspeed_10m]])
 
-# 3031 => {venue_id}
-model_path = f'data_models/model_venue_busyness/bestime_3031.pkl'
+model_path = f'../data_models/model_venue_busyness/bestime_{venue_id}.pkl'
 model = joblib.load(model_path)
 
 prediction = model.predict(input_data)

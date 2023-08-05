@@ -106,13 +106,11 @@ function getWeather(req) {
 }
 
 function getWeatherCode(last8) {
-  if (last8.includes("sunny")) {
-    return 0;
-  } else if (last8.includes("rain")) {
+  if (last8.includes("rain") || last8.includes("snow") || last8.includes("shower") || last8.includes("sleet") || last8.includes("storm") || last8.includes("drizzle")) {
     return 2;
-  } else if (last8.includes("fog")) {
+  } else if (last8.includes("fog") || last8.includes("mist") || last8.includes("haze")) {
     return 3;
-  } else if (last8.includes("cloud") || last8.includes("overcast")) {
+  } else if (last8.includes("cloud") || last8.includes("overcast") || last8.includes("wind") || last8.includes("gusty")) {
     return 51;
   } else {
     return 0;
@@ -166,6 +164,7 @@ async function prepareJSON(res) {
   for (let i = 0; i < fareArray.length; i++) {
     fareArray[i] = fareArray[i].replace(/\r?\n|\r/g, ''); 
   }
+  // return a array 
   return res.status(200).send(fareArray); 
 }
 
