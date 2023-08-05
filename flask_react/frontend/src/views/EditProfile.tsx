@@ -3,6 +3,7 @@ import { Grid, Paper, Typography, styled, Divider, Avatar, TextField, Box, Butto
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ImageUploader from 'react-images-upload';
 import { useTheme } from '@mui/material/styles';
+import Profile from '../components/profile/Profile';
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(3),
@@ -38,6 +39,7 @@ const EditProfile = () => {
     const theme = useTheme();
     return (
         <StyledPaper elevation={3}>
+            <Profile />
             <StyledReturnButton variant="outlined" size="small">Return To Dashboard</StyledReturnButton>
             <Typography variant="h5" align="center" gutterBottom>Your Information</Typography>
             <StyledGrid container spacing={3}>
