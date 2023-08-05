@@ -40,10 +40,10 @@ const EditProfile = () => {
     return (
         <StyledPaper elevation={3}>
             <Profile />
-            <StyledReturnButton variant="outlined" size="small">Return To Dashboard</StyledReturnButton>
-            <Typography variant="h5" align="center" gutterBottom>Your Information</Typography>
+            {/* <StyledReturnButton variant="outlined" size="small">Return To Dashboard</StyledReturnButton> */}
+            {/* <Typography variant="h5" align="center" gutterBottom>Your Information</Typography> */}
             <StyledGrid container spacing={3}>
-                <StyledGrid item xs={12} sm={4} md={4}>
+                {/* <StyledGrid item xs={12} sm={4} md={4}>
                     <StyledAvatar />
                     <ImageUploader
                         buttonText='Upload Image'
@@ -51,7 +51,7 @@ const EditProfile = () => {
                         maxFileSize={5242880}
                     />
                     <StyledButton variant="contained" color="primary">Edit Picture</StyledButton>
-                </StyledGrid>
+                </StyledGrid> */}
                 {/* <StyledGrid item xs={12} sm={8} md={8}>
                     <Box display="flex" alignItems="center">
                         <AccountCircleIcon fontSize="large" />
@@ -61,11 +61,11 @@ const EditProfile = () => {
                         </Box>
                     </Box>
                 </StyledGrid> */}
-            </StyledGrid>
-            <Divider variant="middle" />
-            {/* <Typography variant="h5" align="center" gutterBottom>Security Information</Typography> */}
+                {/* </StyledGrid> */}
+                <Divider variant="middle" />
+                {/* <Typography variant="h5" align="center" gutterBottom>Security Information</Typography> */}
 
-            <StyledGrid container spacing={3}>
+                {/* <StyledGrid container spacing={3}>
                 <StyledGrid item xs={12} md={6}>
                     <Divider></Divider>
                     <Typography variant="h6" gutterBottom>Update Password</Typography>
@@ -74,22 +74,22 @@ const EditProfile = () => {
                         fullWidth
                         label="Old Password"
                         variant="outlined"
-                    />
-                    <StyledTextField
+                    /> */}
+                {/* <StyledTextField
                         type="password"
                         fullWidth
                         label="New Password"
                         variant="outlined"
-                    />
-                    <StyledTextField
+                    /> */}
+                {/* <StyledTextField
                         type="password"
                         fullWidth
                         label="Confirm New Password"
                         variant="outlined"
                     />
-                </StyledGrid>
+                </StyledGrid> */}
             </StyledGrid>
-        </StyledPaper>
+        </StyledPaper >
     );
 };
 
