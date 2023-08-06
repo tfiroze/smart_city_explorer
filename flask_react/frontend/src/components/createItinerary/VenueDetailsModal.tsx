@@ -9,12 +9,15 @@ import {
 	Checkbox,
 	Button,
 	Avatar,
+	makeStyles,
 } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, positions } from "@mui/system";
 import { ChangeEvent, useState, useContext, useEffect } from "react";
 import { CButton } from "../common/button";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../utils/AuthContext";
+
+
 
 
 const erroDict: { [key: string]: string } = {
@@ -24,7 +27,7 @@ const erroDict: { [key: string]: string } = {
 }
 
 
-export const FriendsModal = () => {
+export const VenueDetailsModal = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
 	const authContext = useContext(AuthContext);
 	const [autoLogin, setAutoLogin] = useState(false);
@@ -165,7 +168,6 @@ export const FriendsModal = () => {
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
 	const handleForgotPasswordDialogOpen = () => setForgotPasswordOpen(!forgotPasswordOpen)
 
-	const handleModalView = () => setModalView(modalView == 0 ? 1:0)
 
 
 	return (
@@ -173,66 +175,34 @@ export const FriendsModal = () => {
 			<Paper
 				elevation={0}
 				style={{
-					background: '#f7f7f7',
-
+					padding: '10px',
+					position:'relative',
+					display:'flex',
+					backgroundColor:'transparent'
 				}}
-			>
-				<Grid container style={{ padding: '20px' }}>
-					<Typography variant="h5" align="center" style={{ width: '100%' }}>Friends List</Typography>
-					{modalView == 0 ? 
-					<Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
-						<Box my={2}>
-							<TextField
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<AccountCircle />
-										</InputAdornment>
-									),
-								}}
-								label="Email"
-								placeholder="Please enter your email..."
-								variant="outlined"
-								color="primary"
-								fullWidth
-								type="email"
-								name="email"
-								// value={loginRequest.email}
-								onChange={handleInputOnChange}
-								error={format.email}
-								helperText={
-									format.email
-										? "Your Email is off on a tropical getaway! 🏝️ Please provide a valid email address so we can catch up."
-										: ""
-								}
-							/>
-						</Box>
 
-						<Box mt={3}>
-							<Grid container spacing={2}>
-								<Grid item xs={12} sm={6}>
-									<CButton
-										title="LOGIN"
-										loading={loading}
-										onClick={formValidator}
-										style={{
-											background: '#757de8', color: 'white'
-										}}
-									/>
-								</Grid>
-							</Grid>
-						</Box>
-					</Grid> :
-						<Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
-							<Grid xs={12} style={{ padding: '2px', display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-								<div style={{ padding: '5px', border: '2px solid #757de8', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-									<Avatar>A</Avatar>
-									<span style={{ margin: '0px 10px' }}>anish@gmail.com</span>
-								</div>
-							</Grid>
-						</Grid>
-					}
-					<span style={{ cursor: 'pointer' }} onClick={handleModalView}><Typography>{'Add Friends'}</Typography></span>
+			>
+				<Grid container xs = {3} style={{alignItems:'center', display:'flex', position:'relative', backgroundColor:'transparent'}}>
+				<img
+					src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+					alt=""
+					style={{ width:'250px', borderRadius: '5px', aspectRatio: 1 / 1, position:'absolute', left:'100px', backgroundColor:'transparent'}}
+				/>
+				</Grid>
+				<Grid container xs = {9} style={{ height:'350px',  width:'100%', display:'flex'}}>
+					<Grid item xs = {3} style={{ height:'350px'}}></Grid>
+					<Grid item xs = {9} style={{height:'350px', padding:'10px'}}>
+						<Typography variant="h5" align="center">Central Park</Typography>
+						<div style={{width:'100%', display:'flex', justifyContent:'space-between'}}>
+							<Typography variant="h6">9AM TO 11AM</Typography> 
+							<Typography variant="h6">Tourist Destination</Typography>
+						</div>
+						<Typography variant="subtitle1">'TAP NYC is a 100% gluten-free sandwich and açaí bowl shop located on the Upper West Side. The shop has a clean and modern aesthetic, with white walls and bright lighting. There is a large counter where customers can order, and a few small tables for seati'</Typography>
+						<div style={{width:'100%', display:'flex', justifyContent:'space-between'}}>
+							<Typography variant="h6">Ratings: 5</Typography> 
+							<Typography variant="h6">Busyness: Moderate</Typography>
+						</div>
+					</Grid>
 				</Grid>
 			</Paper>
 		</>

@@ -16,6 +16,14 @@ export default createTheme({
         },
       },
     },
+    MuiDialog:{
+      // MuiPaper-root-MuiDialog-paper
+      styleOverrides:{
+        root:{
+          backgroundColor:'transparent'
+        }
+      }
+    },
     MuiTypography:{
       styleOverrides:{
         root:{

@@ -28,8 +28,16 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
     marginBottom: theme.spacing(1),
 }));
 
-export const VenueCard = () => {
+interface IProps {
+    detailsModalClick?: ()=>void;
+}
+
+export const VenueCard :React.FC<IProps> = ({
+  detailsModalClick
+})  => {
+    
     const currentTheme = useTheme();
+    const showModalDetails = ()=> detailsModalClick? detailsModalClick():console.log('Something went wrong!')
 
     return (
         <Grid
@@ -88,7 +96,7 @@ export const VenueCard = () => {
                 />
                 <CButton
                     title="View"
-                    onClick={() => { }}
+                    onClick={() => showModalDetails()}
                     style={{
                         width: '30%',
                         background: '#757de8',
