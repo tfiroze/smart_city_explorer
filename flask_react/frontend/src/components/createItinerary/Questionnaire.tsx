@@ -14,6 +14,8 @@ import {
   CircleMarkerProps,
 
 } from "react-leaflet";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import {
   CircularProgress,
   FormControl,
@@ -23,6 +25,7 @@ import {
   LinearProgress
 } from "@mui/material";
 import { Card, CardContent, CardMedia, CardActions } from "@mui/material";
+// import MarkerClusterGroup from "../map/MarkerClusterGroup";
 import MarkerClusterGroup from "react-leaflet-markercluster";
 import "leaflet/dist/leaflet.css";
 import {
@@ -150,6 +153,7 @@ interface IProps {
   updateItinerary: () => void;
   currentItinerary: IItinerary;
 }
+
 
 export const Questionnaire: React.FC<IProps> = ({
   updateItinerary,
@@ -318,7 +322,7 @@ export const Questionnaire: React.FC<IProps> = ({
                 <Grid item xs={12}>
                   <DemoItem>
                     <Typography variant="h6" align="left">
-                      Date
+                      Select Date
                     </Typography>
                     <DateCalendar
                       value={selectedDate}
@@ -338,7 +342,7 @@ export const Questionnaire: React.FC<IProps> = ({
           </div>
           <div style={{ width: "100%", marginTop: "20px" }}>
             <Typography variant="h6" align="left">
-              Attraction Type
+              Select Attraction Type
             </Typography>
             <Grid
               item
@@ -370,7 +374,17 @@ export const Questionnaire: React.FC<IProps> = ({
           </div>
           <div style={{ width: "100%", marginTop: "20px" }}>
             <Typography variant="h6" align="left">
-              Zone Group
+              Select Cuisine Type
+            </Typography>
+            <Grid
+              item
+              xs={12}
+              style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
+            ></Grid>
+          </div>
+          <div style={{ width: "100%", marginTop: "20px" }}>
+            <Typography variant="h6" align="left">
+              Select Zone Group
             </Typography>
             <FormControl>
               <RadioGroup
@@ -437,16 +451,7 @@ export const Questionnaire: React.FC<IProps> = ({
               </RadioGroup>
             </FormControl>
           </div>
-          <div style={{ width: "100%", marginTop: "20px" }}>
-            <Typography variant="h6" align="left">
-              Cuisine Type
-            </Typography>
-            <Grid
-              item
-              xs={12}
-              style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
-            ></Grid>
-          </div>
+
           <div
             style={{ width: "100%", justifyContent: "center", display: "flex" }}
           >
@@ -468,8 +473,8 @@ export const Questionnaire: React.FC<IProps> = ({
       <Grid item xs={6}>
         <MapContainer
           style={{
-            height: "100%",
-            width: "100%",
+            height: "90%",
+            width: "90%",
             borderTopLeftRadius: "30px",
             borderBottomLeftRadius: "30px",
           }}
@@ -478,7 +483,7 @@ export const Questionnaire: React.FC<IProps> = ({
           center={[40.7831, -73.9712]}
         >
           <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png" />
-
+          {/* <MarkerClusterGroup> */}
           {zoneGroupItems
             .filter((x: any) => {
               let valid = false;
@@ -490,6 +495,7 @@ export const Questionnaire: React.FC<IProps> = ({
             })
             .map((item: any) => {
               return (
+
                 <Marker
                   icon={
                     item.name === selectedZoneItemToHiglight
@@ -499,13 +505,14 @@ export const Questionnaire: React.FC<IProps> = ({
                   position={[item.latitude, item.longitude]}
                 >
                   <Popup>
-                    {item.name} <br /> {item.address}
+                    {item.name} <br /> <strong>Rating:</strong>{item.rating}
                   </Popup>
                 </Marker>
+
+
               );
             })}
-
-
+          {/* </MarkerClusterGroup> */}
         </MapContainer>
       </Grid>
     </Grid >
