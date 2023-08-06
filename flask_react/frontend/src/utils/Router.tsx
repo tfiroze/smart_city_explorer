@@ -14,7 +14,7 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
     <Routes>
       {auth ? (
         <>
-          <Route path="/*" element={<ItineraryDetails />} />
+          <Route path="/*" element={<Dashboard />} />
           <Route path="/createItinerary" element={<CreateItinerary/>} />
         </>
       ) : (
