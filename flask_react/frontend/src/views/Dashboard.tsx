@@ -27,7 +27,6 @@ import EditNoteIcon from "@mui/icons-material/EditNote";
 import ChoroplethMap from "./MapTest";
 import Choropleth from "../components/map/Choropleth";
 import { MapContainer, TileLayer, Popup, Marker, useMap } from 'react-leaflet';
-import Slider from "../components/navigation/SliderNav"
 import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
 import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
 import { toTitleCase } from "../utils/utility_func";
