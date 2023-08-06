@@ -1,11 +1,30 @@
 import React, { useState, useEffect } from "react";
-import "leaflet/dist/leaflet.css";
 // import data from '../../temp/Manhattan_Taxi_Zones.geojson';
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from "react-leaflet";
-import { CircularProgress, FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Popup,
+  GeoJSON,
+  CircleMarker,
+  Tooltip,
+  AttributionControl,
+  Circle,
+  CircleProps,
+  CircleMarkerProps,
+
+} from "react-leaflet";
+import {
+  CircularProgress,
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  LinearProgress
+} from "@mui/material";
 import { Card, CardContent, CardMedia, CardActions } from "@mui/material";
-// import MarkerClusterGroup from "react-leaflet-markercluster";
-import "react-leaflet-markercluster/dist/styles.min.css";
+import MarkerClusterGroup from "react-leaflet-markercluster";
+import "leaflet/dist/leaflet.css";
 import {
   Grid,
   Paper,
@@ -21,7 +40,7 @@ import {
   AccordionSummary,
   ListItem,
   List,
-  Divider
+  Divider,
 } from "@mui/material";
 import dayjs, { Dayjs } from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
@@ -46,33 +65,15 @@ import { CButton } from "../common/button";
 import { toTitleCase } from "../../utils/utility_func";
 import { smartApi } from "../../utils/apiCalls";
 import zoneCords from "../../temp/zone_Grouping.json";
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import tagMapping from "../../temp/tag_mapping";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 const iconPerson = new L.Icon({
-  iconUrl: 'https://media.giphy.com/media/EX66GGqpooVsQ/giphy.gif',
-  iconRetinaUrl: 'https://media.giphy.com/media/EX66GGqpooVsQ/giphy.gif',
+  iconUrl: "https://media.giphy.com/media/daxA5okS3H9gkpKpjR/giphy.gif",
+  iconRetinaUrl: "https://media.giphy.com/media/f3dRSiajsz8DLmt0KS/giphy.gif",
   iconSize: new L.Point(60, 75),
-  className: 'leaflet-div-icon'
+  className: "leaflet-div-icon",
 });
-const venueTypes = [
-  {
-    id: 1,
-    tag: "Tourist Attraction",
-    venueType: "tourist_attraction",
-    venueTypes: ["Brooklyn Bridge", "Empire State Building"],
-  },
-  {
-    id: 2,
-    tag: "Historical Landmark",
-    venueType: "historical_landmark",
-    venueTypes: ["Empire State Building", "Central Park"],
-  },
-  {
-    id: 3,
-    tag: "Scenic Spot",
-    venueType: "scenic_spot",
-    venueTypes: ["Cherry Hill", "Strawberry field"],
-  },
-];
 
 const redIcon = new L.Icon({
   iconUrl:
@@ -96,31 +97,9 @@ const greenIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const yellowIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
-const orangeIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
-
 const purpleIcon = new L.Icon({
   iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-purple.png",
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-violet.png",
   shadowUrl:
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
   iconSize: [25, 41],
@@ -129,16 +108,13 @@ const purpleIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const blueIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
+const createClusterCustomIcon = function (cluster: any) {
+  return L.divIcon({
+    html: `<span>${cluster.getChildCount()}</span>`,
+    className: "marker-cluster-custom",
+    iconSize: L.point(40, 40, true),
+  });
+};
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 15,
@@ -186,6 +162,7 @@ export const Questionnaire: React.FC<IProps> = ({
   const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<
     string[]
   >([]);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [zoneGroupItems, setZoneGroupItems] = useState<any>([]);
   const [zoneGroup, setZoneGroup] = useState<string[]>([]);
   const [mapItems, setMapItems] = useState<any[]>([]);
@@ -193,15 +170,22 @@ export const Questionnaire: React.FC<IProps> = ({
     dayjs().add(1, "day")
   );
   const [expanded, setExpanded] = React.useState<string | false>("panel1");
-
+  const restaurants = zoneCords.filter((item) =>
+    item.venue_type.toLowerCase().includes("restaurant")
+  );
+  const Attractions = zoneCords.filter(
+    (item) => !item.venue_type.toLowerCase().includes("restaurant")
+  );
+  const [isLoading, setIsLoading] = useState(true)
   const handleChange =
     (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
       onZOneGroupClick(panel);
-      setSelectedZoneItemToHiglight('')
+      setSelectedZoneItemToHiglight("");
     };
 
-  const [selectedZoneItemToHiglight, setSelectedZoneItemToHiglight] = useState<string>('');
+  const [selectedZoneItemToHiglight, setSelectedZoneItemToHiglight] =
+    useState<string>("");
   useEffect(() => {
     const token = getCookieValue("token");
     token && questionnaire(token);
@@ -219,21 +203,38 @@ export const Questionnaire: React.FC<IProps> = ({
   }
 
   function questionnaire(token: string) {
+    setIsLoading(true)
     smartApi
       .getQuestionnaire(token)
       .then((results) => {
         console.log(results);
-
+        setIsLoading(false)
         if (results?.valid) {
+          let restaurantTags = [];
+          let attractionTags = [];
           setTags([...results.attraction_type]);
           setZoneGroup([...results.zone_group]);
           // setSelectedSubCategoryTags
+          for (let item of results.attraction_type) {
+            if (item.toLowerCase().includes("restaurant")) {
+              restaurantTags.push(item);
+            } else {
+              attractionTags.push(item);
+            }
+          }
+
+          // Use the separated arrays
+          setTags([...attractionTags]);
+          // setRestaurantTags([...restaurantTags]);
+          console.log("ZONE GROUPS", results.zone_group);
+          setZoneGroup([...results.zone_group]);
         } else {
           // ... handle the case when results?.valid is falsy ...
         }
       })
       .catch((error) => {
         console.log(error);
+        setIsLoading(false)
       });
   }
 
@@ -242,12 +243,6 @@ export const Questionnaire: React.FC<IProps> = ({
     value: string[]
   ) => {
     setSelectedSubCategoryTags(value);
-  };
-
-  const filterVenuesByTags = () => {
-    const selectedVenueTypes = venueTypes.filter((venue) =>
-      selectedTags.includes(venue.tag)
-    );
   };
 
   const dateUpdate = (dateObject: object | null) => {
@@ -338,36 +333,8 @@ export const Questionnaire: React.FC<IProps> = ({
               </Grid>
             </DemoContainer>
           </LocalizationProvider>
-          <div style={{ width: "100%", marginTop: "20px" }}>
-            <Typography variant="h6" align="left">
-              Zone Group
-            </Typography>
-            <FormControl>
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="female"
-                name="radio-buttons-group"
-              >
-                {zoneGroup?.map((item, index) => {
-                  let zoneGroupItems = zoneCords.filter(
-                    (x) => x.zone_group === item
-                  );
-                  return (
-                    <Accordion expanded={expanded === item} onChange={handleChange(item)} style={{ marginBottom: '10px' }}>
-                      <AccordionSummary aria-controls="panel1d-content" id="panel1d-header" expandIcon={<ExpandMoreIcon />}>
-                        <Typography> <FormControlLabel value={item} control={<Radio />} label='' />{item}</Typography>
-                      </AccordionSummary>
-                      <List style={{ cursor: 'pointer' }}>
-                        {zoneGroupItems.map((grp) => {
-                          return (<><ListItem style={{ backgroundColor: grp.name === selectedZoneItemToHiglight ? '#b8c0ff' : '' }} onClick={() => setSelectedZoneItemToHiglight(grp.name)}>{grp.name}</ListItem><Divider /></>)
-                        })}
-                      </List>
-                    </Accordion>
-
-                  );
-                })}
-              </RadioGroup>
-            </FormControl>
+          <div>
+            {isLoading && <LinearProgress color="success" />}
           </div>
           <div style={{ width: "100%", marginTop: "20px" }}>
             <Typography variant="h6" align="left">
@@ -403,39 +370,83 @@ export const Questionnaire: React.FC<IProps> = ({
           </div>
           <div style={{ width: "100%", marginTop: "20px" }}>
             <Typography variant="h6" align="left">
-              Cusine Type
+              Zone Group
+            </Typography>
+            <FormControl>
+              <RadioGroup
+                aria-labelledby="demo-radio-buttons-group-label"
+                name="radio-buttons-group"
+              >
+                {zoneGroup?.map((item, index) => {
+                  let zoneGroupItems = zoneCords
+                    .filter((x) => {
+                      let valid = false;
+                      for (let [key, value] of Object.entries(tagMapping)) {
+                        if (key == x.venue_type && selectedTags.includes(value))
+                          valid = true;
+                      }
+                      return valid;
+                    })
+                    .filter((x) => x.zone_group === item);
+                  return (
+                    <Accordion
+                      expanded={expanded === item}
+                      onChange={handleChange(item)}
+                      style={{ marginBottom: "10px", width: '100%' }}
+                    >
+                      <AccordionSummary
+                        aria-controls="panel1d-content"
+                        id="panel1d-header"
+                        expandIcon={<ExpandMoreIcon />}
+                      >
+                        <Typography>
+                          <FormControlLabel
+                            value={item}
+                            control={<Radio />}
+                            label=""
+                          />
+                          {item}
+                        </Typography>
+                      </AccordionSummary>
+                      <List style={{ cursor: "pointer" }}>
+                        {zoneGroupItems.map((grp, index) => {
+                          return (
+                            <>
+                              <ListItem
+                                key={grp.name + index}
+                                style={{
+                                  backgroundColor:
+                                    grp.name === selectedZoneItemToHiglight
+                                      ? "#b8c0ff"
+                                      : "",
+                                }}
+                                onClick={() =>
+                                  setSelectedZoneItemToHiglight(grp.name)
+                                }
+                              >
+                                {grp.name}
+                              </ListItem>
+                              <Divider />
+                            </>
+                          );
+                        })}
+                      </List>
+                    </Accordion>
+                  );
+                })}
+              </RadioGroup>
+            </FormControl>
+          </div>
+          <div style={{ width: "100%", marginTop: "20px" }}>
+            <Typography variant="h6" align="left">
+              Cuisine Type
             </Typography>
             <Grid
               item
               xs={12}
               style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
-            >
-              {venueTypes?.map((el, ind) => (
-                <span
-                  onClick={() => toggleCusine(el.tag)}
-                  style={{
-                    padding: "10px",
-                    border: "2px solid",
-                    borderColor: "#757de8",
-                    marginRight: "15px",
-                    borderRadius: "25px",
-                    cursor: "pointer",
-                    backgroundColor:
-                      selectedSubCategoryTags.indexOf(el.tag) !== -1
-                        ? "#757de8"
-                        : "transparent",
-                    color:
-                      selectedSubCategoryTags.indexOf(el.tag) !== -1
-                        ? "#fff"
-                        : "#757de8",
-                  }}
-                >
-                  {el.tag}
-                </span>
-              ))}
-            </Grid>
+            ></Grid>
           </div>
-
           <div
             style={{ width: "100%", justifyContent: "center", display: "flex" }}
           >
@@ -462,35 +473,38 @@ export const Questionnaire: React.FC<IProps> = ({
             borderTopLeftRadius: "30px",
             borderBottomLeftRadius: "30px",
           }}
+          className="markercluster-map"
           zoom={13}
           center={[40.7831, -73.9712]}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {/* <GeoJSON data={data} /> */}
+          <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png" />
 
-          {zoneGroupItems.map((item: any) => {
-            return (<Marker icon={item.name === selectedZoneItemToHiglight ? greenIcon : blueIcon} position={[item.latitude, item.longitude]}>
-              <Popup>
-                {item.name}<br /> {item.address}
-              </Popup>
-            </Marker>);
-          })}
-          {/* <MarkerClusterGroup>
-            {zoneGroupItems.map((item: any) => (
-              <Marker
-                icon={item.name === selectedZoneItemToHiglight ? greenIcon : blueIcon}
-                position={[item.latitude, item.longitude]}
-              >
-                <Popup>
-                  {item.name}
-                  <br /> {item.address}
-                </Popup>
-              </Marker>
-            ))}
-          </MarkerClusterGroup> */}
+          {zoneGroupItems
+            .filter((x: any) => {
+              let valid = false;
+              for (let [key, value] of Object.entries(tagMapping)) {
+                if (key == x.venue_type && selectedTags.includes(value))
+                  valid = true;
+              }
+              return valid;
+            })
+            .map((item: any) => {
+              return (
+                <Marker
+                  icon={
+                    item.name === selectedZoneItemToHiglight
+                      ? greenIcon
+                      : purpleIcon
+                  }
+                  position={[item.latitude, item.longitude]}
+                >
+                  <Popup>
+                    {item.name} <br /> {item.address}
+                  </Popup>
+                </Marker>
+              );
+            })}
+
 
         </MapContainer>
       </Grid>

@@ -1,5 +1,5 @@
 import React from "react";
-import { MapContainer, GeoJSON } from "react-leaflet";
+import { MapContainer, GeoJSON, TileLayer } from "react-leaflet";
 import manhattan_zones from "../../temp/manhattan_zones.geojson";
 import { scaleQuantile } from "d3-scale";
 

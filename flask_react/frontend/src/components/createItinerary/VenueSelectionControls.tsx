@@ -18,7 +18,7 @@ import { InviteFriends } from "./NewItemSteps/InviteFriends";
 import { ConfirmNewItem } from "./NewItemSteps/ConfirmNewItem";
 import IVenueItem from "../../models/IVenueItem";
 import { TimeSelection } from "./NewItemSteps/TimeSelection";
-
+// import IItinerary from "../../models/IItinerary";
 const steps = ["Time Selection", "Venue Selection", "Invites", "Confirm"];
 
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
@@ -48,6 +48,10 @@ interface IProps {
 	open: boolean;
 	changeOpenState: () => void;
 	addItem: (item: IVenueItem) => void;
+
+	// updateItinerary: (data: IItinerary) => void;
+	// currentItinerary: IItinerary;
+
 }
 
 export const VenueSelectionControls: React.FC<IProps> = ({
