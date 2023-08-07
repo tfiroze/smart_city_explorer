@@ -68,7 +68,6 @@ export const ItineraryDetails = () => {
   const handleFriendsModal = () => setOpenFriendsModal(!openFriendsModal)
   const handItienraryDetailsModal = () => {
     console.log('Called Details');
-    
     setOpenItienaryDetailsModal(!openItienaryDetailsModal)
   }
 
@@ -94,7 +93,7 @@ export const ItineraryDetails = () => {
         fullWidth
         className={classes.root}
       >
-        <VenueDetailsModal />
+        {/* <VenueDetailsModal /> */}
       </Dialog>
       <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
         <Grid container xs={12} style={{ height: '10vh', }}>

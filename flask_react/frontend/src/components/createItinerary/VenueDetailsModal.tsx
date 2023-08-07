@@ -22,8 +22,14 @@ import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRou
 import Groups2RoundedIcon from '@mui/icons-material/Groups2Rounded';
 
 interface Venue {
-    name: string;
-    image?: string;
+	busyness?:number,
+	description?:string 
+	image?:string, 
+	original_ven_id?:string,
+	rating?:number,
+	name?:string,
+	opening_time?:number;
+    closing_time?:number;
   }
   
   interface IProps {
@@ -31,10 +37,6 @@ interface Venue {
     onClick?: ()=>void
   }
 export const VenueDetailsModal: React.FC<IProps> = ({venue, onClick}) => {
-
-
-
-
 	return (
 		<>
 			<Paper
@@ -49,7 +51,7 @@ export const VenueDetailsModal: React.FC<IProps> = ({venue, onClick}) => {
 			>
 				<Grid container xs = {3} style={{alignItems:'center', display:'flex', position:'relative', backgroundColor:'transparent'}}>
 				<img
-					src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+					src={venue.image}
 					alt=""
 					style={{ 
 						width:'250px', 
@@ -65,24 +67,27 @@ export const VenueDetailsModal: React.FC<IProps> = ({venue, onClick}) => {
 				<Grid container xs = {9} style={{ height:'350px',  width:'100%', display:'flex',borderRadius:'20px'}}>
 					<Grid item xs = {3} style={{ height:'350px', borderRadius:'20px'}}></Grid>
 					<Grid item xs = {9} style={{height:'350px', padding:'10px',borderRadius:'20px', display:'flex',flexDirection:'column', alignItems:'center'}}>
-						<Typography variant="h4" style={{color:'#757de8', width:'100%'}} align="left">Central Park</Typography>
+						<Typography variant="h4" style={{color:'#757de8', width:'100%'}} align="left">{venue.name}</Typography>
 						<div style={{width:'100%', height:'1px', margin:'10px 0', backgroundColor:'#E0E0E0'}}/>
-						<Typography variant="subtitle2" style={{margin:'10px 0'}}>TAP NYC is a 100% gluten-free sandwich and açaí bowl shop located on the Upper West Side. The shop has a clean and modern aesthetic, with white walls and bright lighting. There is a large counter where customers can order, and a few small tables for seati</Typography>
+						<Typography variant="subtitle2" style={{margin:'10px 0'}}>
+						{venue.description}
+						</Typography>
 						<div style={{width:'100%', marginBottom:'10px', display:'flex'}}>
 							<StarsRoundedIcon/>
 							<Typography variant="subtitle1" style={{marginLeft:'10px'}}>Ratings: </Typography>
-							{new Array(4).fill(0).map((_, index) => <StarRateRoundedIcon sx={{color: '#FFC93A'}}/>)}
+							{venue.rating &&  new Array(Math.floor(venue.rating)).fill(0).map((_, index) => <StarRateRoundedIcon sx={{color: '#FFC93A'}}/>)}
 						</div>
 						<div style={{width:'100%', marginBottom:'10px', display:'flex'}}>
 							<AccessTimeFilledRoundedIcon/>
 							<Typography variant="subtitle2" style={{marginLeft:'10px'}}>Timings: </Typography>
-							<Typography variant="subtitle2">9:00 AM to 11:00 AM</Typography>
+							{(venue.opening_time && venue.opening_time !== -1) ? 
+							<Typography variant="subtitle2">{venue.opening_time}:00  to {venue.closing_time}:00</Typography> : 'Closed'}
 						</div>
-						<div style={{width:'100%', marginBottom:'10px', display:'flex'}}>
+						{venue.busyness && <div style={{width:'100%', marginBottom:'10px', display:'flex'}}>
 							<Groups2RoundedIcon/>
 							<Typography variant="subtitle2" style={{marginLeft:'10px'}}>Busyness: </Typography>
-							<Typography variant="subtitle2">Moderate</Typography>
-						</div>
+							<Typography variant="subtitle2">{(venue.busyness >= 40 && venue.busyness < 80) ? ' Moderate' : (venue.busyness >= 80) ? ' High' : ' Low' }</Typography>
+						</div>}
 					</Grid>
 				</Grid>
 			</Paper>

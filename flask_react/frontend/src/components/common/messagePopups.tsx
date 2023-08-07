@@ -15,11 +15,11 @@ import { CButton } from "../common/button";
 
 
 interface IProps {
-    onFirstClick?: ()=>void;
-    onSecondClick?: ()=>void;
-    totalButtons?: number;
-    buttonText?:string;
-    message?:string
+    onFirstClick?: ()=>void,
+    onSecondClick?: ()=>void,
+    totalButtons?: number,
+    buttonText?:string,
+    message?:string,
 }
 
 export const MessagePopups :React.FC<IProps> = ({
@@ -42,7 +42,7 @@ export const MessagePopups :React.FC<IProps> = ({
             onClick={() => {}}
         >
             <Typography variant="h6" align="center" style={{margin:'10px 0'}}>{message}</Typography>
-            <Grid container style={{ flexDirection: 'row', justifyContent:totalButtons ==2 ? 'space-aeound' : 'center', backgroundColor: currentTheme.palette.secondary.main }}>
+            <Grid container style={{ flexDirection: 'row', justifyContent:totalButtons ==2 ? 'space-around' : 'center', backgroundColor: currentTheme.palette.secondary.main }}>
                 <CButton
                     title={ buttonText?buttonText : "Select"}
                     onClick={() => {firstButtonClick()}}
