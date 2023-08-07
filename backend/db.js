@@ -35,6 +35,8 @@ const createSSHTunnel  = async (dbOperation) => {
                 });
                 tunnel.then((conn) => {
                     dbOperation(conn)
+                    conn.end()
+                    conn.destroy()
                 }).catch((err) => {
                     console.log(err);
                 });

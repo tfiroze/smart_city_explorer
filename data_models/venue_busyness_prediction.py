@@ -1,36 +1,28 @@
 import joblib
 import pandas as pd
 import json
+import numpy as np
+import sys
 
-# Load the model
-def load_model(model_path):
-    model = joblib.load(model_path)
-    return model
 
-# Define function that takes in parameters, uses the model to make a prediction, and returns the output
-def predict_with_model(model, parameters):
-    # assuming parameters is a dictionary, we convert it to DataFrame as it's usually the input type for ML models
-    df = pd.DataFrame([parameters])
+data_received = sys.argv[1]
 
-    # using model to predict based on parameters
-    prediction = model.predict(df)
-    
-    return prediction[0]
+data = json.loads(data_received)
 
-# Load parameters from JSON
-def load_parameters(json_file):
-    with open(json_file) as file:
-        parameters = json.load(file)
-    return parameters
+venue_id = data['hash_ven_id']
+hour = int(data['hour'])
+weekday = data['weekday']
+temperature_2m = data['temperature_2m']
+apparent_temperature = data['apparent_temperature']
+precipitation = data['precipitation']
+weathercode = data['weathercode']
+visibility = data['visibility']
+windspeed_10m = data['windspeed_10m']
 
-# Ask for JSON file path
-json_file = input("Enter the path to the JSON file: ")
-parameters = load_parameters(json_file)
+input_data = np.array([[hour, weekday, temperature_2m, apparent_temperature, precipitation, weathercode, visibility, windspeed_10m]])
 
-# Load the model based on venue_id from parameters
-venue_id = parameters.pop('venue_id', None) # Remove the 'venue_id' from the parameters for model prediction
-model_path = f'model_venue_busyness/bestime_{venue_id}.pkl'
-model = load_model(model_path)
+model_path = f'../data_models/model_venue_busyness/bestime_{venue_id}.pkl'
+model = joblib.load(model_path)
 
-# Print prediction
-print(predict_with_model(model, parameters))
+prediction = model.predict(input_data)
+print(prediction[0])
