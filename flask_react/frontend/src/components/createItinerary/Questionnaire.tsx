@@ -209,7 +209,7 @@ export const Questionnaire: React.FC<IProps> = ({
       .getQuestionnaire(token)
       .then((results) => {
         setIsLoading(false)
-        if (results?.valid) {
+        if (results?.valid && results?.attraction_type && results?.cusine_type) {
           let restaurantTags = [];
           let attractionTags = [];
           setTags([...results.attraction_type]);

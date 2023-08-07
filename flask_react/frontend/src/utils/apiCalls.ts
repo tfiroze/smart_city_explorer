@@ -327,6 +327,45 @@ popularPlaces = async function(){
   }
 };
 
+updatePassword = async function(request: object, token:string){
+	try {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "password", {
+		  method: "PATCH",
+		  body: new URLSearchParams({...request}),
+		  credentials: 'include',
+		  headers: {
+			"token": token, // Add the token in the headers with the key "token"
+		},
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Update Password Request Response: ', data)
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1'
+			  };
+		  }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  } catch (error) {
+	  return {
+		  valid: false,
+		  errorType: '2'
+	  };
+  }
+};
+
 
 };
 
