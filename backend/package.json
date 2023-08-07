@@ -14,6 +14,7 @@
     "express-session": "^1.17.3",
     "fs": "^0.0.1-security",
     "jsonwebtoken": "^9.0.1",
+    "lru-cache": "^10.0.0",
     "md5": "^2.3.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.5.2",

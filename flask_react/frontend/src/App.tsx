@@ -22,17 +22,13 @@ function App() {
   }, [theme]);
 
   return (
-      <ThemeContext.Provider value={{ onChange: onThemeChange, theme: theme }}>
-        <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/error" element={<ErrorPage />} />
-              {/* Add other routes here if needed */}
-            </Routes>
-            <AuthStack />
-          </BrowserRouter>
-        </ThemeProvider>
-      </ThemeContext.Provider>
+    <ThemeContext.Provider value={{ onChange: onThemeChange, theme: theme }}>
+      <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+        <BrowserRouter>
+          <AuthStack />
+        </BrowserRouter>
+      </ThemeProvider>
+    </ThemeContext.Provider>
   );
 }
 
