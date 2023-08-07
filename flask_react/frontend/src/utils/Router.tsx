@@ -20,7 +20,7 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
         </>
       ) : (
         <>
-          <Route path="/*" element={<ErrorPage />} />
+          <Route path="/*" element={<Startup />} />
         </>
       )}
     </Routes>
