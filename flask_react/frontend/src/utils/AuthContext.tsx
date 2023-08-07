@@ -3,8 +3,8 @@ import React, { createContext, useState } from "react";
 
 export interface IUserInfo {
   first_name: string|null;
-  last_name: string|null;
-  userUid: string|null;
+  surname: string|null;
+  user_id: string|null;
   email: string|null;
 }
 

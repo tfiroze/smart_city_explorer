@@ -29,7 +29,7 @@ parameters = load_parameters(json_file)
 
 # Load the model based on venue_id from parameters
 venue_id = parameters.pop('venue_id', None) # Remove the 'venue_id' from the parameters for model prediction
-model_path = f'data_models\model_venue_busyness\bestime_{venue_id}.pkl'
+model_path = f'model_venue_busyness/bestime_{venue_id}.pkl'
 model = load_model(model_path)
 
 # Print prediction

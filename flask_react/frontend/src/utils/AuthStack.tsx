@@ -29,9 +29,8 @@ export const AuthStack = () => {
     ...authInfo,
   };
   useEffect(() => {
-    const accessToken = getCookie('accessToken');
-    const refreshToken = getCookie('refreshToken');
-    checkLoginStatus(accessToken)
+    const token = getCookie('token');
+    checkLoginStatus(token)
   }, []);
 
   useEffect(() => {
@@ -50,16 +49,16 @@ export const AuthStack = () => {
 
   function checkLoginStatus(accessToken: string | null) {
     if (accessToken !== null) {
-      const userUid = localStorage.getItem('userUid');
+      const userUid = localStorage.getItem('user_id');
       const email = localStorage.getItem('email');
       const first_name = localStorage.getItem('first_name');
-      const last_name = localStorage.getItem('last_name');
+      const last_name = localStorage.getItem('surname');
 
       authInfo.authenticate(true, {
         first_name: first_name,
-        last_name: last_name,
-        userUid: email,
-        email: userUid,
+        surname: last_name,
+        email: email,
+        user_id: userUid,
       });
     } else {
       authInfo.authenticate(false)

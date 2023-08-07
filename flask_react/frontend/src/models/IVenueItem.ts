@@ -16,4 +16,6 @@ export default interface IVenueItem {
 	weatherCode?:number;
 	lat?: number;   
     lon?: number;   
+	duration: number;
+	taxiFare: number;
 }
