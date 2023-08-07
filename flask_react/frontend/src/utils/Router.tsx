@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 // import { Header } from "../components/dashboard/Header"; // Path to your Header component
 // import SliderNav from "../components/navigation/SliderNav"; // Path to your ProfileDrawer component
 import { Dashboard } from "../views/Dashboard";
@@ -34,7 +34,7 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
             <Route path="/*" element={<Startup />} />
           </>
         )}
-      </Routes>
+        </Routes>
     </>
   );
 };

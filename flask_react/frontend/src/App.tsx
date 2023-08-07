@@ -1,7 +1,7 @@
 import { ThemeProvider } from "@mui/material/styles";
 import "./app.css";
 import { Login } from "./views/Login";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { Dashboard } from "./views/Dashboard";
 import { ThemeContext } from "./utils/ApplicationContext";
 import darkTheme from "./utils/Themes/darkTheme";
