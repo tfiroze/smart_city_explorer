@@ -15,7 +15,7 @@ class SmartCityApi {
 		
 
 		try {
-			const response =await fetch('http://127.0.0.1:5000' + "/api/register", {
+			const response =await fetch('https://csstudent09.ucd.ie/api/' + "register", {
 				method: "POST",
 				credentials: 'include',
 				body: new URLSearchParams({...request}),
@@ -53,7 +53,7 @@ class SmartCityApi {
 
 	verifyEmail = async function(email: string){
 		  try {
-			const response = await fetch('http://127.0.0.1:5000' + "/api/emails", {
+			const response = await fetch('https://csstudent09.ucd.ie/api/' + "emails", {
 				method: "POST",
 				body: new URLSearchParams({email: email}),
 				credentials: 'include'
@@ -130,7 +130,7 @@ class SmartCityApi {
 		console.log(token);
 
 		try {
-			const response = await fetch('http://127.0.0.1:5000' + "/api/users", {
+			const response = await fetch('https://csstudent09.ucd.ie/api/' + "users", {
 				method: "GET",
 				headers: {
 					"token": token, // Add the token in the headers with the key "token"
@@ -160,9 +160,37 @@ class SmartCityApi {
 		}
 	}
 
+	allTrips = async function (user_id: string) {
+		try {
+			const response = await fetch('http://127.0.0.1:5000/api/' + `trips/all/${user_id}`, {
+				method: "GET",
+			});
+			if (response.status === 200) {
+				const data = await response.json();
+				console.log('All Trips Request Response: ', data)
+					return {
+					  valid: true,
+					  errorType: "0",
+					  ...data
+					};
+			} else {
+				  return {
+					valid: false,
+					errorType: '2'
+				  };
+			}
+		} catch (error) {
+			console.log(error);
+			return {
+			  valid: false,
+			  errorType: '2'
+			};
+		}
+	}
+
 	getQuestionnaire = async function (token: string) {
 		try {
-			const response = await fetch('http://127.0.0.1:5000' + "/api/tripinfoquestionnaire", {
+			const response = await fetch('http://127.0.0.1:5000/api/' + "tripinfoquestionnaire", {
 				method: "GET",
 				headers: {
 					"token": token, // Add the token in the headers with the key "token"
@@ -190,7 +218,7 @@ class SmartCityApi {
 
 	verifyForgotPasswordEmail = async function(email: string){
 		try {
-		  const response = await fetch('http://127.0.0.1:5000' + "/api/captcha", {
+		  const response = await fetch('https://csstudent09.ucd.ie/api/' + "captcha", {
 			  method: "POST",
 			  body: new URLSearchParams({email: email}),
 			  credentials: 'include'
@@ -229,7 +257,7 @@ class SmartCityApi {
 	console.log(request);
 	
 	try {
-	  const response = await fetch('http://127.0.0.1:5000' + "/api/password", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "password", {
 		  method: "POST",
 		  body: new URLSearchParams({...request}),
 		  credentials: 'include'
@@ -257,6 +285,41 @@ class SmartCityApi {
 	  }
   } catch (error) {
 	  console.log(error);
+	  return {
+		  valid: false,
+		  errorType: '2'
+	  };
+  }
+};
+
+popularPlaces = async function(){
+	try {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "popularPlaces", {
+		  method: "GET",
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Popular Places Request Response: ', data)
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+				  ...data
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1'
+			  };
+		  }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  } catch (error) {
 	  return {
 		  valid: false,
 		  errorType: '2'

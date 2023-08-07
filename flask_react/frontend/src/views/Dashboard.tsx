@@ -32,13 +32,19 @@ import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
 import { toTitleCase } from "../utils/utility_func";
 // import Profile from "../components/profile/Profile"
 import { ProfileDrawer } from "../components/navigation/ProfileDrawer";
+import { smartApi } from "../utils/apiCalls";
+import { AuthContext } from "../utils/AuthContext";
+import { Loader } from "../components/common/loader";
+import { ErrorPage } from "./ErrorPage";
+import { SmallCards } from "../components/dashboard/SmallCards";
 
 
 export const Dashboard = () => {
+  const { userInfo } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const [itineraryItems, setItineraryItems] = useState<IItinerary[]>([]);
-  const [pastItems, setPastItineraryItems] = useState<IItinerary[]>([]);
+  const [upcomingTrips, setUpcomingTrips] = useState<IItinerary[]>([]);
+  const [pastTrips, setPastTrips] = useState<IItinerary[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState<boolean>(false);
   const [dialogItineraryItem, setDialogItineraryItems] = useState<IItinerary | null>(null);
@@ -49,13 +55,11 @@ export const Dashboard = () => {
 
   const [tab, setTab] = useState(0)
 
+  const [loader, setLoader] = useState<boolean>(false)
+  const [error, setError] = useState<string>("0")
+
   const currentTheme = useTheme();
-  const markAsCompleted = (itemIndex: number) => {
-    const updatedItems = itineraryItems.filter((_, index) => index !== itemIndex);
-    const completedItem = itineraryItems[itemIndex];
-    setPastItineraryItems([...pastItems, completedItem]);
-    setItineraryItems(updatedItems);
-  };
+
 
   useEffect(() => {
     firstTimeUser()
@@ -77,10 +81,62 @@ export const Dashboard = () => {
     setProfileDrawerOpen(true)
   }
 
+  const getTripInfo = ()=>{
+    setLoader(true)
+    if (userInfo?.user_id){
+      smartApi.allTrips(userInfo.user_id)
+      .then((results) => {
+        console.log(results);
+        setLoader(false)
+        if (results?.valid) {
+          setPastTrips([...results.completedTrips])
+          setUpcomingTrips([...results.upcomingTrips])
+          getPopularPlaces()
+        } else {
+          // ... handle the case when results?.valid is falsy ...
+          setError(results.errorType)
+          
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setError('2')
+        setLoader(false)
+      });
+    }
+  }
+
+  const getPopularPlaces = () =>{
+    
+      smartApi.popularPlaces()
+      .then((results) => {
+        console.log(results);
+        // setLoader(false)
+        // if (results?.valid) {
+        //   setPastTrips([...results.completedTrips])
+        //   setUpcomingTrips([...results.upcomingTrips])
+        // } else {
+        //   // ... handle the case when results?.valid is falsy ...
+        //   setError(results.errorType)
+          
+        // }
+      })
+      .catch((error) => {
+        console.log(error);
+        setError('2')
+        setLoader(false)
+      });
+    
+  }
+
+  useEffect(()=>{getTripInfo()},[])
+
 
   return (
     <>
-
+      {loader ? <Loader/> :
+      error !== '0'? <ErrorPage/>:
+      <>
       <ProfileDrawer open={profileDrawerOpen} handleClose={handleClose} />
       <Dialog open={dialogOpen} maxWidth='xl' fullWidth>
         <DialogTitle>{dialogItineraryItem?.name}</DialogTitle>
@@ -93,7 +149,7 @@ export const Dashboard = () => {
       </Dialog>
       <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
         <Grid container xs={6} style={{ padding: '15px', overflow: 'scroll', height: '100%' }}>
-          <div style={{ width: '100%', height: '10%', marginBottom: '10px' }}>
+          <div style={{ width: '100%', height: '10%'}}>
             <Header />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }}>
@@ -141,14 +197,14 @@ export const Dashboard = () => {
             </Grid>
 
             {
-              (itineraryItems?.length >= 0 && pastItems?.length >= 0) &&
+              (upcomingTrips?.length > 0 || pastTrips?.length > 0) &&
               <>
                 <Grid item xs={12} md={12} style={{ margin: "15px 0px" }}>
                   <Typography variant="h6" align="left">
                     My Manhattan Itinerary
                   </Typography>
                   <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '10px 0px' }}>
-                    <div style={{
+                    {upcomingTrips?.length > 0 && <div style={{
                       width: '20%',
                       padding: '8px',
                       cursor: 'pointer',
@@ -161,8 +217,8 @@ export const Dashboard = () => {
                     }}
                       onClick={() => setTab(0)}>
                       Upcoming
-                    </div>
-                    <div style={{
+                    </div>}
+                    {pastTrips?.length > 0 && <div style={{
                       width: '20%',
                       padding: '8px',
                       cursor: 'pointer',
@@ -174,37 +230,18 @@ export const Dashboard = () => {
                     }}
                       onClick={() => setTab(1)}>
                       Completed
-                    </div>
+                    </div>}
                   </Grid>
                   <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                    {thingsTodo.slice(0, 3).map((item, index) => {
-                      return (
-                        <Grid
-                          style={{ cursor: "pointer", padding: '15px', width: '35%', backgroundColor: currentTheme?.palette?.secondary?.main, marginRight: '5px', borderRadius: '10px' }}
-                          item
-                          className="unselectable"
-                        >
-                          <Grid xs={12} >
-                            <img
-                              src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                              alt=""
-                              style={{ width: '100%', borderRadius: '5px' }}
-                            />
-                          </Grid>
-                          <Grid xs={12}>
-                            <Typography variant="subtitle2" fontWeight={600}>
-                              {toTitleCase(item.venue_name)}
-                            </Typography>
-                          </Grid>
-
-                        </Grid>
-                      );
-                    })}
+                    {(pastTrips?.length > 0 && tab == 0) && pastTrips.slice(0, 3).map((item, index) => <SmallCards venue={item}/>
+                    )}
+                    {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item, index) => <SmallCards venue={item}/>
+                    )}
                   </Grid>
                 </Grid>
               </>
             }
-            <div style={{ width: '100%' }}>
+            <div style={{ width: '100%', padding:'10px 0px' }}>
               <Typography variant="h6" align="left">
                 Explore Popular Destinations
               </Typography>
@@ -240,8 +277,9 @@ export const Dashboard = () => {
         <Grid container xs={6}>
           <MapContainer
             style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
-            zoom={13}
+            zoom={12}
             center={[40.7831, -73.9712]}
+            zoomControl={false}
           >
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -250,6 +288,8 @@ export const Dashboard = () => {
           </MapContainer>
         </Grid>
       </Grid>
+      </>}
+      
 
     </>
   );

@@ -76,7 +76,7 @@ export const Header: React.FC<Partial<IProps>> = ({
       </Menu>
       <Grid container alignItems="center" xs={12}>
         <Grid item xs={2} style={{ justifyContent: 'center', display: 'flex' }}>
-          <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '5vh', transition: 'height 0.5s' }} />
+          <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '8vh', transition: 'height 0.5s' }} />
         </Grid>
         {steps?.length && <Grid item xs={6}>
           <Stepper activeStep={activeStep} sx={{ mx: "auto", backgroundColor: "#FAFAFA" }}>

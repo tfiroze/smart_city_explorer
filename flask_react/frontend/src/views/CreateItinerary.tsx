@@ -106,33 +106,8 @@ export const CreateItinerary: React.FC<IProps> = ({
   return (
     <Grid container style={{ backgroundColor: '#ffff' }}>
       <Grid item xs={12} style={{ width: '100%', height: '10vh', display: 'flex', alignItems: 'center' }}>
+        <Header activeStep={currentStep} steps={steps} />
       </Grid>
-      {/* <Grid item xs={12}>
-          <Grid container>
-            <Grid item xs={6}>
-              <Button
-                color="secondary"
-                aria-label="Back"
-                onClick={handleBack}
-                startIcon={<ArrowBackIosIcon />}
-                variant="contained"
-              >
-                Back
-              </Button>
-            </Grid>
-            <Grid item xs={6} display='flex' justifyContent="end">
-              <Button
-                color="secondary"
-                aria-label="Back"
-                onClick={handleNext}
-                endIcon={<ArrowForwardIosIcon />}
-                variant="contained"
-              >
-                Next
-              </Button>
-            </Grid>
-          </Grid>
-        </Grid> */}
       <Grid item xs={12} style={{ padding: '0px' }}>
         {renderStep()}
       </Grid>

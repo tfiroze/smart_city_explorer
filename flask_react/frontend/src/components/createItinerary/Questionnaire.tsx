@@ -22,7 +22,8 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  LinearProgress
+  LinearProgress,
+  Dialog
 } from "@mui/material";
 import { Card, CardContent, CardMedia, CardActions } from "@mui/material";
 // import MarkerClusterGroup from "../map/MarkerClusterGroup";
@@ -71,6 +72,10 @@ import { Loader } from "../common/loader";
 import zoneCords from "../../temp/zone_Grouping.json";
 import tagMapping from "../../temp/tag_mapping";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { useNavigate } from "react-router-dom";
+import { MessagePopups } from "../common/messagePopups";
+
 
 const iconPerson = new L.Icon({
   iconUrl: "https://media.giphy.com/media/daxA5okS3H9gkpKpjR/giphy.gif",
@@ -158,42 +163,34 @@ interface IProps {
 
 export const Questionnaire: React.FC<IProps> = ({
   updateItinerary,
-  currentItinerary,
 }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
   const [subCategory, setSubCategory] = useState<string[]>([]);
   const [selectedSubCategoryTags, setSelectedSubCategoryTags] = useState<string[]>([]);
-  const [selectedItem, setSelectedItem] = useState(null);
   const [zoneGroupItems, setZoneGroupItems] = useState<any>([]);
   const [zoneGroup, setZoneGroup] = useState<string[]>([]);
-  const [mapItems, setMapItems] = useState<any[]>([]);
-
-  const [expanded, setExpanded] = React.useState<string | false>("panel1");
-  const restaurants = zoneCords.filter((item) =>
-    item.venue_type.toLowerCase().includes("restaurant")
-  );
-  const Attractions = zoneCords.filter(
-    (item) => !item.venue_type.toLowerCase().includes("restaurant")
-  );
+  const [selectedZones, setSelectedZones] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const handleChange =
-    (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
-      setExpanded(newExpanded ? panel : false);
-      onZOneGroupClick(panel);
-      setSelectedZoneItemToHiglight("");
-    };
-
   const [selectedDate, setSelectedDate] = useState<Object>(dayjs().add(1, 'day'))
-
-  const [showLoader, setShowLoader] = useState<boolean>(true)
   const [selectedZoneItemToHiglight, setSelectedZoneItemToHiglight] = useState<string>("");
-  
+  const [oneButtonModal, setOneButtonModal] = useState<boolean>(false);
+  const [oneButtonMessage, setOneButtonMessage] = useState<string>('');
+  const [twoButtonModal, setTwoButtonModal] = useState<boolean>(false);
+
+  const currentTheme = useTheme();
+  const navigate = useNavigate();
+
   useEffect(() => {
     const token = getCookieValue("token");
     token && questionnaire(token);
   }, []);
+
+  const handleChange =
+    (panel: string) => {
+      onZOneGroupClick(panel);
+      setSelectedZoneItemToHiglight("");
+    };
 
   function getCookieValue(cookieName: string) {
     const cookies = document.cookie.split(";");
@@ -211,7 +208,6 @@ export const Questionnaire: React.FC<IProps> = ({
     smartApi
       .getQuestionnaire(token)
       .then((results) => {
-        setShowLoader(false)
         setIsLoading(false)
         if (results?.valid) {
           let restaurantTags = [];
@@ -219,21 +215,6 @@ export const Questionnaire: React.FC<IProps> = ({
           setTags([...results.attraction_type]);
           setZoneGroup([...results.zone_group]);
           setSubCategory([...results?.cusine_type])
-
-          // setSelectedSubCategoryTags
-          for (let item of results.attraction_type) {
-            if (item.toLowerCase().includes("restaurant")) {
-              restaurantTags.push(item);
-            } else {
-              attractionTags.push(item);
-            }
-          }
-
-          // Use the separated arrays
-          setTags([...attractionTags]);
-          // setRestaurantTags([...restaurantTags]);
-          console.log("ZONE GROUPS", results.zone_group);
-          setZoneGroup([...results.zone_group]);
         } else {
           // ... handle the case when results?.valid is falsy ...
         }
@@ -244,12 +225,6 @@ export const Questionnaire: React.FC<IProps> = ({
       });
   }
 
-  const handleSubTagChange = (
-    event: React.ChangeEvent<{}>,
-    value: string[]
-  ) => {
-    setSelectedSubCategoryTags(value);
-  };
 
   const dateUpdate = (dateObject: object | null) => {
     setSelectedDate(dateObject ? dateObject : dayjs().add(1, "day"));
@@ -259,7 +234,12 @@ export const Questionnaire: React.FC<IProps> = ({
     let tagArray = [...selectedTags];
     let index = tagArray.indexOf(item);
     if (index == -1) {
-      tagArray.push(item);
+      if (tagArray.length == 4){
+        handleSelectionError('A maximum of four venue types can be chosen.')
+      }else{
+        tagArray.push(item);
+
+      }
     } else {
       tagArray.splice(index, 1);
     }
@@ -270,267 +250,398 @@ export const Questionnaire: React.FC<IProps> = ({
     let tagArray = [...selectedSubCategoryTags];
     let index = tagArray.indexOf(item);
     if (index == -1) {
-      tagArray.push(item);
+      if (tagArray.length == 2){
+        handleSelectionError('A maximum of two cusine types can be chosen.')
+      }else{
+        tagArray.push(item);
+      }
     } else {
       tagArray.splice(index, 1);
     }
     setSelectedSubCategoryTags(tagArray);
   };
 
-  const finishTripQuestionnaire = () => {
-    if (selectedTags.length < 3) {
-      alert("Please Select at least 3 tags");
-    } else if (selectedSubCategoryTags.length < 2) {
-      alert("Please Select at least 2 tags");
-    } else if (Object.keys(selectedDate).length === 0) {
-      alert("Please Select a Date");
-    } else {
-      // Call the Api
-      updateItinerary();
-    }
-  };
+
 
   const onZOneGroupClick = (item: string) => {
-    let zoneGroupItems = zoneCords.filter((x) => x.zone_group === item);
+    let zoneArray = [...selectedZones];
+    let index = zoneArray.indexOf(item);
+    if (index == -1) {
+      if (zoneArray.length == 2){
+        handleSelectionError('A maximum of two Zones can be chosen.')
+      }else{
+        zoneArray.push(item);
+      }
+    } else {
+      zoneArray.splice(index, 1);
+    }
+    setSelectedZones(zoneArray);
+    const zoneGroupItems = zoneArray.flatMap((el) => zoneCords.filter((x) => x.zone_group === el));
+    // let zoneGroupItems = zoneCords.filter((x) => x.zone_group === item);
     setZoneGroupItems([...zoneGroupItems]);
   };
 
-  const currentTheme = useTheme();
+  const handleGoBack = () => {
+    // navigate(-1);
+    console.log('HANDLE GO BACK');
+    
+    handleTwoSelectionError('Are you sure you want to exit!')
+  };
+
+  const setErrorMessage = (message:string)=>{
+    setOneButtonMessage(message)
+  }
+
+  const handleOneButtonPopup = () =>{
+    setOneButtonModal(!oneButtonModal)
+  }
+
+  const handleSelectionError = (message:string)=>{
+    setErrorMessage(message)
+    handleOneButtonPopup()
+  }
+
+  const handleTwoButtonPopup = () =>{
+    setTwoButtonModal(!twoButtonModal)
+  }
+
+  const handleTwoSelectionError = (message:string)=>{
+    setErrorMessage(message)
+    handleTwoButtonPopup()
+  }
+
+  const handleExit=()=>{
+    navigate(-1)
+  }
+
+  
+
+  const finishTripQuestionnaire = () => {
+    if (selectedTags.length < 1) {
+      handleSelectionError("Please Select atleast 1 Venue Tag")
+    } else if (selectedSubCategoryTags.length < 2) {
+       handleSelectionError("Please Select at least 2 Cusine Tags");
+    } else if (selectedZones.length < 2) {
+       handleSelectionError("Please Select at least 2 Zones");
+    }else if (Object.keys(selectedDate).length === 0) {
+      handleSelectionError("Please Select a Date");
+   } else {
+      updateItinerary();
+    }
+  };
+  
 
   return (
-    <Grid container>
-      <Grid
-        item
-        xs={6}
-        style={{ overflow: "scroll", height: "90vh", padding: "10px" }}
+    <>
+    <Dialog
+        open={oneButtonModal}
+        onClose={handleOneButtonPopup}
+        maxWidth="sm"
+        fullWidth
       >
-        <Container>
-          <Grid
-            container
-            xs={12}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              margin: "10px 0px",
-            }}
-          >
-            <Typography variant="h5" align="center" width={"80%"}>
-              Create Itinerary
-            </Typography>
-          </Grid>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DemoContainer components={["DateCalendar", "DateCalendar"]}>
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={12}>
-                  <DemoItem>
-                    <Typography variant="h6" align="left">
-                      Select Date
-                    </Typography>
-                    <DateCalendar
-                      value={selectedDate}
-                      onChange={(newValue) => dateUpdate(newValue)}
-                      sx={{
-                        backgroundColor: currentTheme.palette.secondary.main,
-                        borderRadius: "15px",
-                      }}
-                    />
-                  </DemoItem>
-                </Grid>
-              </Grid>
-            </DemoContainer>
-          </LocalizationProvider>
-          <div>
-            {isLoading && <LinearProgress color="success" />}
-          </div>
-          <div style={{ width: "100%", marginTop: "20px" }}>
-            <Typography variant="h6" align="left">
-              Select Attraction Type
-            </Typography>
-            <Grid
-              item
-              xs={12}
-              style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
-            >
-              {tags?.map((el, ind) => (
-                <span
-                  onClick={() => toggleTags(el)}
-                  style={{
-                    padding: "10px",
-                    border: "2px solid",
-                    borderColor: "#757de8",
-                    marginRight: "15px",
-                    marginBottom: "10px",
-                    borderRadius: "25px",
-                    cursor: "pointer",
-                    backgroundColor:
-                      selectedTags.indexOf(el) !== -1
-                        ? "#757de8"
-                        : "transparent",
-                    color: selectedTags.indexOf(el) !== -1 ? "#fff" : "#757de8",
-                  }}
-                >
-                  {el}
-                </span>
-              ))}
-            </Grid>
-          </div>
-          <div style={{ width: "100%", marginTop: "20px" }}>
-            <Typography variant="h6" align="left">
-              Select Cuisine Type
-            </Typography>
-            <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
-              {subCategory?.map((el, ind) => (
-                <span
-                  onClick={() => toggleCusine(el)}
-                  style={{
-                    padding: '10px',
-                    border: '2px solid',
-                    borderColor: '#757de8',
-                    marginRight: '15px',
-                    borderRadius: '25px',
-                    cursor: 'pointer',
-                    marginBottom: '10px',
-                    backgroundColor: selectedSubCategoryTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
-                    color: selectedSubCategoryTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
-                  }}>
-                  {el}
-                </span>
-              ))}
-            </Grid>
-          </div>
-          <div style={{ width: "100%", marginTop: "20px" }}>
-            <Typography variant="h6" align="left">
-              Select Zone Group
-            </Typography>
-            <FormControl>
-              <RadioGroup
-                aria-labelledby="demo-radio-buttons-group-label"
-                name="radio-buttons-group"
-              >
-                {zoneGroup?.map((item, index) => {
-                  let zoneGroupItems = zoneCords
-                    .filter((x) => {
-                      let valid = false;
-                      for (let [key, value] of Object.entries(tagMapping)) {
-                        if (key == x.venue_type && selectedTags.includes(value))
-                          valid = true;
-                      }
-                      return valid;
-                    })
-                    .filter((x) => x.zone_group === item);
-                  return (
-                    <Accordion
-                      expanded={expanded === item}
-                      onChange={handleChange(item)}
-                      style={{ marginBottom: "10px", width: '100%' }}
-                    >
-                      <AccordionSummary
-                        aria-controls="panel1d-content"
-                        id="panel1d-header"
-                        expandIcon={<ExpandMoreIcon />}
-                      >
-                        <Typography>
-                          <FormControlLabel
-                            value={item}
-                            control={<Radio />}
-                            label=""
-                          />
-                          {item}
-                        </Typography>
-                      </AccordionSummary>
-                      <List style={{ cursor: "pointer" }}>
-                        {zoneGroupItems.map((grp, index) => {
-                          return (
-                            <>
-                              <ListItem
-                                key={grp.name + index}
-                                style={{
-                                  backgroundColor:
-                                    grp.name === selectedZoneItemToHiglight
-                                      ? "#b8c0ff"
-                                      : "",
-                                }}
-                                onClick={() =>
-                                  setSelectedZoneItemToHiglight(grp.name)
-                                }
-                              >
-                                {grp.name}
-                              </ListItem>
-                              <Divider />
-                            </>
-                          );
-                        })}
-                      </List>
-                    </Accordion>
-                  );
-                })}
-              </RadioGroup>
-            </FormControl>
-          </div>
-
-          <div
-            style={{ width: "100%", justifyContent: "center", display: "flex" }}
-          >
-            <CButton
-              title="Next"
-              onClick={() => finishTripQuestionnaire()}
-              style={{
-                width: "50%",
-                background: "#757de8",
-                color: "#ffffff",
-                borderRadius: "20px",
-                padding: "10px 30px",
-                fontWeight: "bold",
-              }}
-            />
-          </div>
-        </Container>
-      </Grid>
-      <Grid item xs={6}>
-        <MapContainer
+        <MessagePopups totalButtons={1} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleOneButtonPopup}/>
+      </Dialog>
+      <Dialog
+        open={twoButtonModal}
+        onClose={handleTwoButtonPopup}
+        maxWidth="sm"
+        fullWidth
+      >
+        <MessagePopups totalButtons={2} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleExit}  onSecondClick={handleTwoButtonPopup}/>
+      </Dialog>
+    {isLoading  ? <Loader/> : 
+    <Grid container>
+    <Grid
+      item
+      xs={6}
+      style={{ overflow: "scroll", height: "90vh", padding: "10px" }}
+    >
+      <Container>
+        <Grid
+          container
+          xs={12}
           style={{
-            height: "90%",
-            width: "90%",
-            borderTopLeftRadius: "30px",
-            borderBottomLeftRadius: "30px",
+            display: "flex",
+            alignItems: "center",
+            margin: "10px 0px",
           }}
-          className="markercluster-map"
-          zoom={13}
-          center={[40.7831, -73.9712]}
         >
-          <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png" />
-          {/* <MarkerClusterGroup> */}
-          {zoneGroupItems
-            .filter((x: any) => {
-              let valid = false;
-              for (let [key, value] of Object.entries(tagMapping)) {
-                if (key == x.venue_type && selectedTags.includes(value))
-                  valid = true;
-              }
-              return valid;
-            })
-            .map((item: any) => {
-              return (
+          <span 
+            onClick={()=>{handleGoBack()}}
+          style={{cursor:'pointer', padding:'5px', border:'2px solid #757de8', borderRadius:'50%', display:'flex', justifyContent:'center', alignItems:'center'}}>
+          <ArrowBackIosNewIcon sx={{color:'#757de8'}}/>
+          </span>
+          <Typography variant="h5" align="center" width={"80%"}>
+            Create Itinerary
+          </Typography>
+        </Grid>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DemoContainer components={["DateCalendar", "DateCalendar"]}>
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs={12}>
+                <DemoItem>
+                  <Typography variant="h6" align="left">
+                    Select Date
+                  </Typography>
+                  <DateCalendar
+                    value={selectedDate}
+                    onChange={(newValue) => dateUpdate(newValue)}
+                    sx={{
+                      backgroundColor: currentTheme.palette.secondary.main,
+                      borderRadius: "15px",
+                    }}
+                  />
+                </DemoItem>
+              </Grid>
+            </Grid>
+          </DemoContainer>
+        </LocalizationProvider>
 
-                <Marker
-                  icon={
-                    item.name === selectedZoneItemToHiglight
-                      ? greenIcon
-                      : purpleIcon
-                  }
-                  position={[item.latitude, item.longitude]}
-                >
-                  <Popup>
-                    {item.name} <br /> <strong>Rating:</strong>{item.rating}
-                  </Popup>
-                </Marker>
+        <div style={{ width: "100%", marginTop: "20px" }}>
+          <Typography variant="h6" align="left">
+            Select Attraction Type
+          </Typography>
+          <Grid
+            item
+            xs={12}
+            style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
+          >
+            {tags?.map((el, ind) => (
+              <span
+                onClick={() => toggleTags(el)}
+                style={{
+                  padding: "10px",
+                  border: "2px solid",
+                  borderColor: "#757de8",
+                  marginRight: "15px",
+                  marginBottom: "10px",
+                  borderRadius: "25px",
+                  cursor: "pointer",
+                  backgroundColor:
+                    selectedTags.indexOf(el) !== -1
+                      ? "#757de8"
+                      : "transparent",
+                  color: selectedTags.indexOf(el) !== -1 ? "#fff" : "#757de8",
+                }}
+              >
+                {el}
+              </span>
+            ))}
+          </Grid>
+        </div>
+        <div style={{ width: "100%", marginTop: "20px" }}>
+          <Typography variant="h6" align="left">
+            Select Cuisine Type
+          </Typography>
+          <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
+            {subCategory?.map((el, ind) => (
+              <span
+                onClick={() => toggleCusine(el)}
+                style={{
+                  padding: '10px',
+                  border: '2px solid',
+                  borderColor: '#757de8',
+                  marginRight: '15px',
+                  borderRadius: '25px',
+                  cursor: 'pointer',
+                  marginBottom: '10px',
+                  backgroundColor: selectedSubCategoryTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
+                  color: selectedSubCategoryTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
+                }}>
+                {el}
+              </span>
+            ))}
+          </Grid>
+        </div>
+        <div style={{ width: "100%", marginTop: "20px" }}>
+          <Typography variant="h6" align="left">
+            Select Zone Group
+          </Typography>
+          <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+              {zoneGroup?.map((item, index) => {
+                return (
+                  <Grid
+                    style={{
+                      cursor: "pointer",
+                      padding: '15px',
+                      width: '30%',
+                      backgroundColor: currentTheme?.palette?.secondary?.main,
+                      marginRight: '5px',
+                      borderRadius: '10px',
+                      marginBottom: '10px',
+                      
+                    }}
+                    item
+                    className="unselectable"
+                  >
+                    <Grid xs={12} >
+                      <img
+                        src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                        alt=""
+                        style={{ width: '100%', borderRadius: '5px' }}
+                      />
+                    </Grid>
+                    <Grid xs={12}>
+                      <Typography variant="subtitle2" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom:'10px' }}>
+                        {toTitleCase(item)}
+                      </Typography>
+                    </Grid>
+                    <Grid xs={12} style={{display:'flex', justifyContent:'center', background: currentTheme.palette.secondary.main}}>
+                      <CButton
+                        title="Select"
+                        onClick={()=>handleChange(item)}
+                        style={{
+                          width: '45%',
+                          background: 'transparent',
+                          borderRadius: '20px',
+                          padding: '10px',
+                          fontWeight: 'bold',
+                          height:'30px',
+                          fontSize: '10px',
+                          border:'1px solid #757de8',
+                          backgroundColor:
+                          selectedZones.indexOf(item) !== -1
+                            ? "#757de8"
+                            : "transparent",
+                          color: selectedZones.indexOf(item) !== -1 ? "#fff" : "#757de8",
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          {/* <FormControl>
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              name="radio-buttons-group"
+            >
+              {zoneGroup?.map((item, index) => {
+                let zoneGroupItems = zoneCords
+                  .filter((x) => {
+                    let valid = false;
+                    for (let [key, value] of Object.entries(tagMapping)) {
+                      if (key == x.venue_type && selectedTags.includes(value))
+                        valid = true;
+                    }
+                    return valid;
+                  })
+                  .filter((x) => x.zone_group === item);
+                return (
+                  <Accordion
+                    expanded={expanded === item}
+                    onChange={handleChange(item)}
+                    style={{ marginBottom: "10px", width: '100%' }}
+                  >
+                    <AccordionSummary
+                      aria-controls="panel1d-content"
+                      id="panel1d-header"
+                      expandIcon={<ExpandMoreIcon />}
+                    >
+                      <Typography>
+                        <FormControlLabel
+                          value={item}
+                          control={<Radio />}
+                          label=""
+                        />
+                        {item}
+                      </Typography>
+                    </AccordionSummary>
+                    <List style={{ cursor: "pointer" }}>
+                      {zoneGroupItems.map((grp, index) => {
+                        return (
+                          <>
+                            <ListItem
+                              key={grp.name + index}
+                              style={{
+                                backgroundColor:
+                                  grp.name === selectedZoneItemToHiglight
+                                    ? "#b8c0ff"
+                                    : "",
+                              }}
+                              onClick={() =>
+                                setSelectedZoneItemToHiglight(grp.name)
+                              }
+                            >
+                              {grp.name}
+                            </ListItem>
+                            <Divider />
+                          </>
+                        );
+                      })}
+                    </List>
+                  </Accordion>
+                );
+              })}
+            </RadioGroup>
+          </FormControl> */}
+        </div>
+
+        <div
+          style={{ width: "100%", justifyContent: "center", display: "flex" }}
+        >
+          <CButton
+            title="Next"
+            onClick={() => finishTripQuestionnaire()}
+            style={{
+              width: "50%",
+              background: "#757de8",
+              color: "#ffffff",
+              borderRadius: "20px",
+              padding: "10px 30px",
+              fontWeight: "bold",
+            }}
+          />
+        </div>
+      </Container>
+    </Grid>
+    <Grid item xs={6} style={{border:'2px solid black'}}>
+      <MapContainer
+        style={{
+          height: "100%",
+          width: "100%",
+          borderTopLeftRadius: "30px",
+          borderBottomLeftRadius: "30px",
+        }}
+        className="markercluster-map"
+        zoom={13}
+        center={[40.7831, -73.9712]}
+      >
+        <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png" />
+        {/* <MarkerClusterGroup> */}
+        {zoneGroupItems
+          .filter((x: any) => {
+            let valid = false;
+            for (let [key, value] of Object.entries(tagMapping)) {
+              if (key == x.venue_type && selectedTags.includes(value))
+                valid = true;
+            }
+            return valid;
+          })
+          .map((item: any) => {
+            return (
+
+              <Marker
+                icon={
+                  item.name === selectedZoneItemToHiglight
+                    ? greenIcon
+                    : purpleIcon
+                }
+                position={[item.latitude, item.longitude]}
+              >
+                <Popup>
+                  {item.name} <br /> <strong>Rating:</strong>{item.rating}
+                </Popup>
+              </Marker>
 
 
-              );
-            })}
-          {/* </MarkerClusterGroup> */}
-        </MapContainer>
-      </Grid>
-    </Grid >
+            );
+          })}
+        {/* </MarkerClusterGroup> */}
+      </MapContainer>
+    </Grid>
+  </Grid >
+    }
+    </>
   );
 };
