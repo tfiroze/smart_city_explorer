@@ -32,6 +32,8 @@ router.delete('/trips', tripController.deleteTrip)
 
 router.get('/tripinfoquestionnaire', tripController.getTripInfoQuestionnaireMW,tripController.getTripInfoQuestionnaireMW2, tripController.getTripInfoQuestionnaire)
 
+router.get('/popularPlaces', tripController.popularPlaces)
+
 router.get('/weathers', weather.getWeather)
 
 router.post('/fare', fareModel.getFare)
@@ -39,5 +41,7 @@ router.post('/duration', durationModel.getDuration)
 router.post('/busyness', busynessModel.getVenueBusyness)
 
 router.post('/venues', distanceModel.getRecommendVenues)
+
+
 
 module.exports = router

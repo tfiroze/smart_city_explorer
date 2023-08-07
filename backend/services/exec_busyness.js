@@ -29,6 +29,7 @@ function start(req, res) {
             conn.query(sqlStr, [req.body.venue_id], (err, result) => {
                 if(err) {
                     console.log(err.message)
+                    conn.end()
                     return res.status(400).send(err.message)
                 }
             }).then(([rows]) => {
@@ -41,6 +42,7 @@ function start(req, res) {
 
                 // // prepare JSON data and execute model
                 prepareJSON(res)
+                conn.end()
             })
         }
         createSSHTunnel(dbOperation)
@@ -70,7 +72,6 @@ function getWeather(req) {
         }
         }catch (err) {
             console.error(err)
-        return
         }
     })
 }
@@ -107,7 +108,7 @@ async function prepareJSON(res) {
 
         try {
             const result = await exec_py(dataToSendString);
-            return res.status(200).send(result); 
+            return res.status(200).send(result)
         } catch (error) {
             console.error('Error from Python:', error);
         }
@@ -143,5 +144,5 @@ let getVenueBusyness = (req, res) => {
 }
 
 module.exports = {
-    getVenueBusyness
+    getVenueBusyness,
 }

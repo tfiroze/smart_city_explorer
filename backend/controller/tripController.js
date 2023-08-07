@@ -1,5 +1,7 @@
 const createSSHTunnel = require('../db')
 const jwt = require('jsonwebtoken')
+const qs = require('qs')
+const axios = require('axios')
 
 let secretKey = 'This is the smart_city_explorer app'
 
@@ -12,6 +14,7 @@ let upcomingTripsInfo = (req, res, next) => {
             conn.query(sqlStr, [req.params.user_id], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(200).send({valid:false,message:'Failed to get trips information'})
                 }
             }).then(([rows]) => {
@@ -35,10 +38,12 @@ let completedTripsInfo = (req, res) => {
             conn.query(sqlStr, [req.params.user_id], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(200).send({valid:false,message:'Failed to get trips information'})
                 }
             }).then(([rows]) => {
                 req.res_json.completedTrips = rows
+                conn.end()
                 return res.status(200).send(req.res_json)
             })
         }
@@ -57,9 +62,11 @@ let tripInfo = (req, res) => {
             conn.query(sqlStr, [req.params.trip_id], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(200).send({valid:false,message:'Failed to get trip information'})
                 }
             }).then(([rows]) => {
+                conn.end()
                 return res.status(200).json(rows[0])
             })
         }
@@ -78,8 +85,11 @@ let updateTrip = (req, res) => {
             conn.query(sqlStr, [req.body.firstname, ], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Failed to update trip information'})
-                }}).then(([rows]) => {
+                }
+            }).then(([rows]) => {
+                conn.end()
                 return res.status(200).send({valid: true,message: 'Succeed to update trip information'})
             })
         }
@@ -98,12 +108,15 @@ let addTrip = (req, res) => {
             conn.query(sqlStr, [req.body.trip_name, ], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Failed to add new trip'})
                 }
             }).then(([rows]) => {
                 if(rows.affectedRows === 1){
+                    conn.end()
                     return res.status(200).send({valid: true, message: 'Succeed to add new trip'})
                 }else {
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Failed to add new trip'})
                 }
             })
@@ -123,8 +136,10 @@ let deleteTrip = (req, res) => {
             conn.query(sqlStr, [req.body.trip_id], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(200).send({valid:false,message:'Failed to delete trip'})
                 }}).then(([rows]) => {
+                conn.end()
                 return res.status(200).send({valid: true,message: 'Succeed to delete trip'})
             })
         }
@@ -140,7 +155,8 @@ let getTripInfoQuestionnaireMW = (req, res, next) => {
     const token = req.headers['token']
     jwt.verify(token, secretKey, (err, decoded) => {
         if (err) {
-            console.error(err);
+            console.error(err)
+            conn.end()
             return res.status(200).send({valid: false,message: 'Invalid token'})
         } else {
             res_json = {}
@@ -150,6 +166,7 @@ let getTripInfoQuestionnaireMW = (req, res, next) => {
                     conn.query(sqlStr, [], (err, result) => {
                         if(err) {
                             console.error(err)
+                            conn.end()
                             return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
                         }
                     }).then(([rows]) => {
@@ -162,6 +179,7 @@ let getTripInfoQuestionnaireMW = (req, res, next) => {
                 createSSHTunnel(dbOperation)
             }catch(err) {
                 console.error(err)
+                conn.end()
                 return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
             }
         }
@@ -177,6 +195,7 @@ let getTripInfoQuestionnaireMW2 = (req, res, next) => {
             conn.query(sqlStr, [], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
                 }
             }).then(([rows]) => {
@@ -202,12 +221,14 @@ let getTripInfoQuestionnaire = (req, res) => {
             conn.query(sqlStr, [], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
                 }
             }).then(([rows]) => {
                 res_json = req.res_json
                 const typeArray = rows.map(item => item.type_mod);
                 res_json.attraction_type = typeArray
+                conn.end()
                 return res.status(200).send(res_json)
             })
         }
@@ -215,6 +236,82 @@ let getTripInfoQuestionnaire = (req, res) => {
     }catch(err){
         console.error(err)
         return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
+    }
+}
+
+// Return five popular places: Central Park, Times Square, Empire State Building, The Metropolitan Museum of Art, Chelsea Market
+let popularPlaces = (req, res) => {
+    try {
+        let dbOperation = (conn) => {
+            sqlStr = 'select original_ven_id,name,image,rating,description from venue_static where name="Central Park" or name="Times Square" or name="Empire State Building" or name="The Metropolitan Museum of Art"or name = "Chelsea Market"'
+            conn.query(sqlStr, [], (err, result) => {
+                if(err) {
+                    console.error(err)
+                    conn.end()
+                    return res.status(200).send({valid:false, message:'Failed to get five popular places'})
+                }
+            }).then(([rows]) => {
+                let places = rows
+                const currentTime = new Date()
+                const currentDate = currentTime.toISOString().slice(0,10)
+                const currentHour = currentTime.getHours()
+
+                // call the busyness api
+                // const apiUrl = 'http://127.0.0.1:5000/api/busyness'
+
+
+                // for(let i=0;i<places.length;i++){
+                //     axios.post(apiUrl, { venue_id: places[i].original_ven_id,
+                //         date: currentDate,
+                //         hour: currentHour })
+                //     .then(response => {
+                //         places[i].busyness = response.data
+                //     })
+                //     .catch(error => {
+                //         console.error('Error fetching data:', error)
+                //     });
+                // }
+
+
+                // conn.end()
+                // return res.status(200).send(places)
+                const apiUrl = 'http://127.0.0.1:5000/api/busyness';
+                const promises = [];
+
+                for (let i = 0; i < places.length; i++) {
+                const promise = axios.post(apiUrl, {
+                    venue_id: places[i].original_ven_id,
+                    date: currentDate,
+                    hour: currentHour
+                })
+                    .then(response => {
+                    places[i].busyness = response.data;
+                    })
+                    .catch(error => {
+                    console.error('Error fetching data:', error);
+                    });
+
+                promises.push(promise);
+                }
+
+                Promise.all(promises)
+                .then(() => {
+                    conn.end();
+                    return res.status(200).send(places);
+                })
+                .catch(error => {
+                    // 处理错误
+                    console.error('Error:', error);
+                    conn.end();
+                    return res.status(500).send('Internal Server Error');
+                });
+
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err) {
+        console.error(err)
+        return res.status(200).send({valid:false, message:'Failed to get five popular places'})
     }
 }
 
@@ -227,5 +324,6 @@ module.exports = {
     deleteTrip,
     getTripInfoQuestionnaire,
     getTripInfoQuestionnaireMW2,
-    getTripInfoQuestionnaireMW
+    getTripInfoQuestionnaireMW,
+    popularPlaces
 }

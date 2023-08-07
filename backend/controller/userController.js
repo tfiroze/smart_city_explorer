@@ -20,6 +20,7 @@ let verifyEmailUnique = (req, res, next) => {
             conn.query(sqlStr, [req.body.email], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(500).send({
                         valid: false,
                         message: 'Failed to register',
@@ -30,6 +31,7 @@ let verifyEmailUnique = (req, res, next) => {
                 if(rows[0].count === 0){
                     next()
                 }else {
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Email has been registered'})
                 }
             })
@@ -58,6 +60,7 @@ let register = (req, res) => {
             conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, md5(req.body.password)], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to register',
@@ -68,12 +71,15 @@ let register = (req, res) => {
                 if(rows.affectedRows === 1){
                     req.session.destroy((err) => {
                         if (err) {
-                          console.error('Error destroying session:', err);
-                          return res.status(500).send({ message: 'Error destroying session' });
+                          console.error('Error destroying session:', err)
+                          conn.end()
+                          return res.status(500).send({ message: 'Error destroying session' })
                         }
-                    });
+                    })
+                    conn.end()
                     return res.status(200).send({valid: true, message: 'Succeed to register'})
                 }else {
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Failed to register'})
                 }
             })
@@ -93,6 +99,7 @@ let login = (req, res) => {
             conn.query(sqlStr, [req.body.email, md5(req.body.password)], (err, result) => {
                 if(err) {
                     console.error(err);
+                    conn.end()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to login',
@@ -101,6 +108,7 @@ let login = (req, res) => {
                 }
             }).then(([rows]) => {
                 if(rows[0] == undefined) {
+                    conn.end()
                     return res.status(200).send({valid:false,message: 'wrong email or password'})
                 }
                 let user_idStr = rows[0].user_id
@@ -109,6 +117,7 @@ let login = (req, res) => {
                 const decoded = jwt.decode(tokenStr);
     
                 const expirationTime = new Date(decoded.exp * 1000); 
+                conn.end()
                 return res.status(200).send({
                     valid: true,
                     message: 'Succeed to login',
@@ -134,6 +143,7 @@ let userInfo = (req, res) => {
             conn.query(sqlStr, [decode], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to get user information',
@@ -141,6 +151,7 @@ let userInfo = (req, res) => {
                     })
                 }
             }).then(([rows]) => {
+                conn.end()
                 return res.status(200).json(rows[0])
             })
         }
@@ -159,6 +170,7 @@ let updateUser = (req, res) => {
             conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, req.body.user_id], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to update user information',
@@ -167,8 +179,10 @@ let updateUser = (req, res) => {
                 }
                 }).then(([rows]) => {
                     if(rows.affectedRows === 1){
+                        conn.end()
                         return res.status(200).send({valid: true,message: 'Succeed to update user information'})
                     }else {
+                        conn.end()
                         return res.status(200).send({valid: false, message: 'Failed to update user information'})
                     }
             })
@@ -188,6 +202,7 @@ let checkRegisteredEmail = (req, res, next) => {
             conn.query(sqlStr, [req.body.email], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(500).send({
                         valid: false,
                         message: 'Failed to register',
@@ -199,6 +214,7 @@ let checkRegisteredEmail = (req, res, next) => {
                     req.body.user_id = rows[0].user_id
                     next()
                 }else {
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Email has not found'}) 
                 }
             })
@@ -222,6 +238,7 @@ let forgetPWD = (req, res) => {
             conn.query(sqlStr, [md5(req.body.password), req.body.user_id], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to update user password',
@@ -229,8 +246,10 @@ let forgetPWD = (req, res) => {
                 }
             }).then(([rows]) => {
                 if(rows.affectedRows === 1){
+                    conn.end()
                     return res.status(200).send({valid: true,message: 'Succeed to update password'})
                 }else {
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Failed to update password'})
                 }
             })
@@ -252,6 +271,7 @@ let checkPWD = (req, res, next) => {
             conn.query(sqlStr, [decode], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to update user password',
@@ -261,6 +281,7 @@ let checkPWD = (req, res, next) => {
                 if(rows[0].password == md5(req.body.old_password)){
                     next()
                 }else {
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Wrong old password'})
                 }
             })
@@ -282,6 +303,7 @@ let updatePWD = (req, res) => {
             conn.query(sqlStr, [md5(req.body.password), decode], (err, result) => {
                 if(err) {
                     console.error(err)
+                    conn.end()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to update user password',
@@ -290,8 +312,10 @@ let updatePWD = (req, res) => {
                 }
             }).then(([rows]) => {
                 if(rows.affectedRows === 1){
+                    conn.end()
                     return res.status(200).send({valid: true,message: 'Succeed to update password'})
                 }else {
+                    conn.end()
                     return res.status(200).send({valid: false, message: 'Failed to update password'})
                 }
             })
