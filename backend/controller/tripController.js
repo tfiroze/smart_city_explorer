@@ -240,7 +240,7 @@ let getTripInfoQuestionnaire = (req, res) => {
 }
 
 // Return five popular places: Central Park, Times Square, Empire State Building, The Metropolitan Museum of Art, Chelsea Market
-let popularPlaces = (req, res) => {
+let popularPlaces = (req, res, next) => {
     try {
         let dbOperation = (conn) => {
             sqlStr = 'select original_ven_id,name,image,rating,description from venue_static where name="Central Park" or name="Times Square" or name="Empire State Building" or name="The Metropolitan Museum of Art"or name = "Chelsea Market"'
@@ -248,7 +248,7 @@ let popularPlaces = (req, res) => {
                 if(err) {
                     console.error(err)
                     conn.end()
-                    return res.status(200).send({valid:false, message:'Failed to get five popular places'})
+                    return res.status(200).send({valid:false, message:'Failed to get 5 popular places'})
                 }
             }).then(([rows]) => {
                 let places = rows
@@ -256,25 +256,7 @@ let popularPlaces = (req, res) => {
                 const currentDate = currentTime.toISOString().slice(0,10)
                 const currentHour = currentTime.getHours()
 
-                // call the busyness api
-                // const apiUrl = 'http://127.0.0.1:5000/api/busyness'
-
-
-                // for(let i=0;i<places.length;i++){
-                //     axios.post(apiUrl, { venue_id: places[i].original_ven_id,
-                //         date: currentDate,
-                //         hour: currentHour })
-                //     .then(response => {
-                //         places[i].busyness = response.data
-                //     })
-                //     .catch(error => {
-                //         console.error('Error fetching data:', error)
-                //     });
-                // }
-
-
-                // conn.end()
-                // return res.status(200).send(places)
+                // the url should be the ip address of server
                 const apiUrl = 'http://127.0.0.1:5000/api/busyness';
                 const promises = [];
 
@@ -296,8 +278,9 @@ let popularPlaces = (req, res) => {
 
                 Promise.all(promises)
                 .then(() => {
+                    req.body.places = places
                     conn.end();
-                    return res.status(200).send(places);
+                    next()
                 })
                 .catch(error => {
                     // 处理错误
@@ -315,6 +298,42 @@ let popularPlaces = (req, res) => {
     }
 }
 
+// add opening_time and closing time in req.body
+let businessHour = (req, res) => {
+    try {
+        const ids = []
+        for (let i=0;i<req.body.places.length;i++) {
+            ids.push(req.body.places[i]['original_ven_id'])
+        }
+        let dbOperation = (conn) => {
+            sqlStr = 'select distinct venue_id,opening_time,closing_time from venue_timings where venue_id in (?) and day=?'
+            conn.query(sqlStr, [ids, new Date().getDay()], (err, result) => {
+                if(err) {
+                    console.error(err)
+                    conn.end()
+                    return res.status(200).send({valid:false, message:'Failed to get 5 popular places'})
+                }
+            }).then((rows)=>{
+                let result = req.body.places
+                for (let i=0;i<result.length;i++) {
+                    rows[0].forEach(row => {
+                        if(row['venue_id'] == result[i]['original_ven_id']){
+                            result[i]['opening_time'] = row['opening_time']
+                            result[i]['closing_time'] = row['closing_time']
+                        }
+                    });
+                }
+                conn.end()
+                return res.status(200).send(result)
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err) {
+        console.error(err)
+        return res.status(200).send({valid:false, message:'Failed to get 5 popular places'})
+    }
+}
+
 module.exports = {
     upcomingTripsInfo,
     completedTripsInfo,
@@ -325,5 +344,6 @@ module.exports = {
     getTripInfoQuestionnaire,
     getTripInfoQuestionnaireMW2,
     getTripInfoQuestionnaireMW,
-    popularPlaces
+    popularPlaces,
+    businessHour
 }
