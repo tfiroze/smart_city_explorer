@@ -32,7 +32,7 @@ router.delete('/trips', tripController.deleteTrip)
 
 router.get('/tripinfoquestionnaire', tripController.getTripInfoQuestionnaireMW,tripController.getTripInfoQuestionnaireMW2, tripController.getTripInfoQuestionnaire)
 
-router.get('/popularPlaces', tripController.popularPlaces)
+router.get('/popularPlaces', tripController.popularPlaces, tripController.businessHour)
 
 router.get('/weathers', weather.getWeather)
 
