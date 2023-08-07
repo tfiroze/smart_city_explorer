@@ -16,7 +16,8 @@ import {
   DialogActions,
   DialogTitle,
   styled,
-  useTheme
+  useTheme,
+  Theme,
 } from "@mui/material";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { CreateItinerary } from "./CreateItinerary";
@@ -37,6 +38,30 @@ import { AuthContext } from "../utils/AuthContext";
 import { Loader } from "../components/common/loader";
 import { ErrorPage } from "./ErrorPage";
 import { SmallCards } from "../components/dashboard/SmallCards";
+import { VenueDetailsModal } from "../components/createItinerary/VenueDetailsModal";
+import makeStyles from "@mui/styles/makeStyles/makeStyles";
+
+
+const useStyles = makeStyles((theme: Theme) => ({
+	root: {
+	  "& .MuiPaper-root": {
+		backgroundColor: "transparent",
+    boxShadow: '0 0 0 rgba(0, 0, 0, 0.3)',
+	  }
+	}
+  }));
+
+interface PopularPlaces {
+  busyness: number,
+  description: string,
+  image: string,
+  name: string,
+  original_ven_id: string,
+  rating: number
+}
+
+
+
 
 
 export const Dashboard = () => {
@@ -48,6 +73,9 @@ export const Dashboard = () => {
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [profileDrawerOpen, setProfileDrawerOpen] = useState<boolean>(false);
   const [dialogItineraryItem, setDialogItineraryItems] = useState<IItinerary | null>(null);
+  const [popularPlacesArr, setPopularPlacesArr] = useState<Array<PopularPlaces>>([])
+  const [openItienaryDetailsModal, setOpenItienaryDetailsModal] = useState<boolean>(false);
+  const [venueDetails, setVenueDetails] = useState({})
 
   const [firstTime, setFirstTime] = useState(false)
 
@@ -81,21 +109,42 @@ export const Dashboard = () => {
     setProfileDrawerOpen(true)
   }
 
-  const getTripInfo = ()=>{
+  const getTripInfo = () => {
     setLoader(true)
-    if (userInfo?.user_id){
+    if (userInfo?.user_id) {
       smartApi.allTrips(userInfo.user_id)
+        .then((results) => {
+          console.log(results);
+          setLoader(false)
+          if (results?.valid) {
+            setPastTrips([...results.completedTrips])
+            setUpcomingTrips([...results.upcomingTrips])
+            getPopularPlaces()
+          } else {
+            // ... handle the case when results?.valid is falsy ...
+            setError(results.errorType)
+
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setError('2')
+          setLoader(false)
+        });
+    }
+  }
+
+  const getPopularPlaces = () => {
+
+    smartApi.popularPlaces()
       .then((results) => {
-        console.log(results);
+        console.log(results, 'Popular');
         setLoader(false)
-        if (results?.valid) {
-          setPastTrips([...results.completedTrips])
-          setUpcomingTrips([...results.upcomingTrips])
-          getPopularPlaces()
+        if (results?.valid && results?.places) {
+          setPopularPlacesArr([...results.places])
         } else {
           // ... handle the case when results?.valid is falsy ...
           setError(results.errorType)
-          
         }
       })
       .catch((error) => {
@@ -103,193 +152,173 @@ export const Dashboard = () => {
         setError('2')
         setLoader(false)
       });
-    }
+
   }
 
-  const getPopularPlaces = () =>{
-    
-      smartApi.popularPlaces()
-      .then((results) => {
-        console.log(results);
-        // setLoader(false)
-        // if (results?.valid) {
-        //   setPastTrips([...results.completedTrips])
-        //   setUpcomingTrips([...results.upcomingTrips])
-        // } else {
-        //   // ... handle the case when results?.valid is falsy ...
-        //   setError(results.errorType)
-          
-        // }
-      })
-      .catch((error) => {
-        console.log(error);
-        setError('2')
-        setLoader(false)
-      });
-    
+  useEffect(() => { getTripInfo() }, [])
+  const handItienraryDetailsModal = () => {
+    setOpenItienaryDetailsModal(!openItienaryDetailsModal)
   }
 
-  useEffect(()=>{getTripInfo()},[])
+  const setVenueFullInfo = (venue: object)=>{
+    setVenueDetails({...venue})
+    handItienraryDetailsModal()
+  }
+
+const classes = useStyles();
 
 
   return (
     <>
-      {loader ? <Loader/> :
-      error !== '0'? <ErrorPage/>:
-      <>
-      <ProfileDrawer open={profileDrawerOpen} handleClose={handleClose} />
-      <Dialog open={dialogOpen} maxWidth='xl' fullWidth>
-        <DialogTitle>{dialogItineraryItem?.name}</DialogTitle>
-        <DialogContent>
-          <ChoroplethMap data={dialogItineraryItem} />
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" onClick={() => setDialogOpen(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-      <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
-        <Grid container xs={6} style={{ padding: '15px', overflow: 'scroll', height: '100%' }}>
-          <div style={{ width: '100%', height: '10%'}}>
-            <Header />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }}>
-            <Grid item xs={12} style={{
-              backgroundPosition: 'center', // Center the background image
-              backgroundSize: 'cover', // Ensure the image covers the entire container
-              backgroundRepeat: 'no-repeat', // Prevent image repetition
-              backgroundImage: `url(${manhattanDarkImage})`,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              borderRadius: '10px',
-              padding: '30px'
-            }}>
-              {firstTime && <>
-                <Typography
-                  variant="h5"
-                  align="center"
-                  color="#ffffff"
-                  sx={{ mb: 4 }}
-                  style={{ marginBottom: 0 }}
-                >
-                  Unleash the magic of <span style={{ color: "#FFC93A" }}>Manhattan</span> in just one day!
-                </Typography>
-                <Typography
-                  variant="h6"
-                  align="center"
-                  color="#ffffff"
-                  sx={{ mb: 4 }}
-                  style={{ marginBottom: 0 }}
-                >
-                  Plan your perfect itinerary 🗽
-                </Typography>
-                <Box display="flex" justifyContent="center" mt={2}>
-                  <Button
-                    onClick={handleCreateItinerary}
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                  >
-                    CREATE
-                  </Button>
-                </Box>
-              </>}
-            </Grid>
+      {loader && false ? <Loader /> :
+        error !== '0' ? <ErrorPage /> :
+          <>
+            <ProfileDrawer open={profileDrawerOpen} handleClose={handleClose} />
 
-            {
-              (upcomingTrips?.length > 0 || pastTrips?.length > 0) &&
-              <>
-                <Grid item xs={12} md={12} style={{ margin: "15px 0px" }}>
-                  <Typography variant="h6" align="left">
-                    My Manhattan Itinerary
-                  </Typography>
-                  <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '10px 0px' }}>
-                    {upcomingTrips?.length > 0 && <div style={{
-                      width: '20%',
-                      padding: '8px',
-                      cursor: 'pointer',
-                      backgroundColor: tab == 0 ? '#757de8' : 'transparent',
-                      border: tab == 0 ? '2px solid transparent' : '2px solid #757de8',
-                      marginRight: '20px',
-                      textAlign: 'center',
-                      borderRadius: '20px',
-                      color: tab == 0 ? '#ffff' : '#757de8'
-                    }}
-                      onClick={() => setTab(0)}>
-                      Upcoming
-                    </div>}
-                    {pastTrips?.length > 0 && <div style={{
-                      width: '20%',
-                      padding: '8px',
-                      cursor: 'pointer',
-                      backgroundColor: tab == 1 ? '#757de8' : 'transparent',
-                      border: tab == 1 ? '2px solid transparent' : '2px solid #757de8',
-                      textAlign: 'center',
-                      borderRadius: '20px',
-                      color: tab == 1 ? '#ffff' : '#757de8'
-                    }}
-                      onClick={() => setTab(1)}>
-                      Completed
-                    </div>}
+
+            <Dialog open={dialogOpen} maxWidth='xl' fullWidth>
+              <DialogTitle>{dialogItineraryItem?.name}</DialogTitle>
+              <DialogContent>
+                <ChoroplethMap data={dialogItineraryItem} />
+              </DialogContent>
+              <DialogActions>
+                <Button variant="contained" onClick={() => setDialogOpen(false)}>Close</Button>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog
+              open={openItienaryDetailsModal}
+              onClose={handItienraryDetailsModal}
+              maxWidth="md"
+              fullWidth
+              className={classes.root}
+            >
+              <VenueDetailsModal venue={venueDetails}/>
+            </Dialog>
+
+            <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
+              <Grid container xs={6} style={{ padding: '15px', overflow: 'scroll', height: '100%' }}>
+                <div style={{ width: '100%', height: '10%' }}>
+                  <Header />
+                </div>
+                <Grid xs={12} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }}>
+                  <Grid item xs={12} style={{
+                    backgroundPosition: 'center', // Center the background image
+                    backgroundSize: 'cover', // Ensure the image covers the entire container
+                    backgroundRepeat: 'no-repeat', // Prevent image repetition
+                    backgroundImage: `url(${manhattanDarkImage})`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    borderRadius: '10px',
+                    padding: '30px',
+                    width: '100%',
+                    height:'30vh'
+                  }}>
+                    {firstTime && <>
+                      <Typography
+                        variant="h5"
+                        align="center"
+                        color="#ffffff"
+                        sx={{ mb: 4 }}
+                        style={{ marginBottom: 0 }}
+                      >
+                        Unleash the magic of <span style={{ color: "#FFC93A" }}>Manhattan</span> in just one day!
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        align="center"
+                        color="#ffffff"
+                        sx={{ mb: 4 }}
+                        style={{ marginBottom: 0 }}
+                      >
+                        Plan your perfect itinerary 🗽
+                      </Typography>
+                      <Box display="flex" justifyContent="center" mt={2}>
+                        <Button
+                          onClick={handleCreateItinerary}
+                          variant="contained"
+                          color="primary"
+                          startIcon={<AddIcon />}
+                        >
+                          CREATE
+                        </Button>
+                      </Box>
+                    </>}
                   </Grid>
-                  <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                    {(pastTrips?.length > 0 && tab == 0) && pastTrips.slice(0, 3).map((item, index) => <SmallCards venue={item}/>
-                    )}
-                    {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item, index) => <SmallCards venue={item}/>
-                    )}
-                  </Grid>
-                </Grid>
-              </>
-            }
-            <div style={{ width: '100%', padding:'10px 0px' }}>
-              <Typography variant="h6" align="left">
-                Explore Popular Destinations
-              </Typography>
-              <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
-                {thingsTodo.slice(0, 3).map((item, index) => {
-                  return (
-                    <Grid
-                      style={{ cursor: "pointer", padding: '15px', width: '35%', backgroundColor: currentTheme?.palette?.secondary?.main, marginRight: '5px', borderRadius: '10px' }}
-                      item
-                      className="unselectable"
-                    >
-                      <Grid xs={12} >
-                        <img
-                          src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                          alt=""
-                          style={{ width: '100%', borderRadius: '5px' }}
-                        />
-                      </Grid>
-                      <Grid xs={12}>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                          {toTitleCase(item.venue_name)}
+
+                  {
+                    (upcomingTrips?.length > 0 || pastTrips?.length > 0) &&
+                    <>
+                      <Grid item xs={12} md={12} style={{ margin: "15px 0px" }}>
+                        <Typography variant="h6" align="left">
+                          My Manhattan Itinerary
                         </Typography>
+                        <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '10px 0px' }}>
+                          {upcomingTrips?.length > 0 && <div style={{
+                            width: '20%',
+                            padding: '8px',
+                            cursor: 'pointer',
+                            backgroundColor: tab == 0 ? '#757de8' : 'transparent',
+                            border: tab == 0 ? '2px solid transparent' : '2px solid #757de8',
+                            marginRight: '20px',
+                            textAlign: 'center',
+                            borderRadius: '20px',
+                            color: tab == 0 ? '#ffff' : '#757de8'
+                          }}
+                            onClick={() => setTab(0)}>
+                            Upcoming
+                          </div>}
+                          {pastTrips?.length > 0 && <div style={{
+                            width: '20%',
+                            padding: '8px',
+                            cursor: 'pointer',
+                            backgroundColor: tab == 1 ? '#757de8' : 'transparent',
+                            border: tab == 1 ? '2px solid transparent' : '2px solid #757de8',
+                            textAlign: 'center',
+                            borderRadius: '20px',
+                            color: tab == 1 ? '#ffff' : '#757de8'
+                          }}
+                            onClick={() => setTab(1)}>
+                            Completed
+                          </div>}
+                        </Grid>
+                        <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                          {(pastTrips?.length > 0 && tab == 0) && pastTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => {setVenueFullInfo(item)}} />
+                          )}
+                          {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => {setVenueFullInfo(item)}} />
+                          )}
+                        </Grid>
                       </Grid>
-
+                    </>
+                  }
+                  {(popularPlacesArr && popularPlacesArr.length > 0) && <div style={{ width: '100%', padding: '10px 0px' }}>
+                    <Typography variant="h6" align="left">
+                      Explore Popular Destinations
+                    </Typography>
+                    <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
+                      {popularPlacesArr.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => {setVenueFullInfo(item)}} />)}
                     </Grid>
-                  );
-                })}
-              </Grid>
 
-            </div>
-          </div>
-        </Grid>
-        <Grid container xs={6}>
-          <MapContainer
-            style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
-            zoom={12}
-            center={[40.7831, -73.9712]}
-            zoomControl={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </MapContainer>
-        </Grid>
-      </Grid>
-      </>}
-      
+                  </div>}
+                </Grid>
+              </Grid>
+              <Grid container xs={6}>
+                <MapContainer
+                  style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
+                  zoom={12}
+                  center={[40.7831, -73.9712]}
+                  zoomControl={false}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                </MapContainer>
+              </Grid>
+            </Grid>
+          </>}
+
 
     </>
   );

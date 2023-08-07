@@ -9,7 +9,6 @@ let secretKey = 'This is the smart_city_explorer app'
 let upcomingTripsInfo = (req, res, next) => {
     try {
         let dbOperation = (conn) => {
-            console.log(req.params);
             // let sqlStr = 'SELECT * FROM trip_info JOIN trip_user ON trip_info.trip_id=trip_user.trip_id JOIN user_info ON user_info.user_id=trip_user.user_id WHERE user_info.user_id=?'
             let sqlStr = 'select * from trip_info where trip_owner = ? and trip_date > now()'
             conn.query(sqlStr, [req.params.user_id], (err, result) => {

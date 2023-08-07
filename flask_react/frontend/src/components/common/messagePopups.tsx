@@ -42,7 +42,7 @@ export const MessagePopups :React.FC<IProps> = ({
             onClick={() => {}}
         >
             <Typography variant="h6" align="center" style={{margin:'10px 0'}}>{message}</Typography>
-            <Grid container style={{ flexDirection: 'row', justifyContent:totalButtons ==2 ? 'space-between' : 'center', backgroundColor: currentTheme.palette.secondary.main }}>
+            <Grid container style={{ flexDirection: 'row', justifyContent:totalButtons ==2 ? 'space-aeound' : 'center', backgroundColor: currentTheme.palette.secondary.main }}>
                 <CButton
                     title={ buttonText?buttonText : "Select"}
                     onClick={() => {firstButtonClick()}}

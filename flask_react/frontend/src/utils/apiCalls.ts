@@ -301,11 +301,11 @@ popularPlaces = async function(){
 	  if (response.status === 200) {
 		  const data = await response.json();
 		  console.log('Popular Places Request Response: ', data)
-		  if (data?.valid) {
+		  if (data?.length > 0) {
 			  return {
 				  valid: true,
 				  errorType: "0",
-				  ...data
+				  places: [...data]
 			  };
 		  } else {
 			  return {

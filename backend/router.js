@@ -42,6 +42,4 @@ router.post('/busyness', busynessModel.getVenueBusyness)
 
 router.post('/venues', distanceModel.getRecommendVenues)
 
-
-
 module.exports = router
