@@ -4,6 +4,7 @@ import { Startup } from "../views/Startup";
 import ChoroplethMap from "../views/MapTest";
 import { CreateItinerary } from "../views/CreateItinerary";
 import { ItineraryDetails } from "../views/ItienaryDetails";
+import { ErrorPage } from "../views/ErrorPage";
 
 interface RouterProps {
   auth: boolean;
@@ -19,7 +20,7 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
         </>
       ) : (
         <>
-          <Route path="/*" element={<Startup />} />
+          <Route path="/*" element={<ErrorPage />} />
         </>
       )}
     </Routes>
