@@ -49,10 +49,27 @@ exports.checkRequests = (req, res) => {
 
   createSSHTunnel(async (connection) => {
     try {
-      const [rows] = await connection.execute('SELECT * FROM trip_requests WHERE requested_user_id = ? AND confirmation_status = ?', [user_id, 'awaiting']);
+      // First, get trip requests using the user_id and awaiting status
+      const [tripRequests] = await connection.execute('SELECT * FROM trip_requests WHERE requested_user_id = ? AND confirmation_status = ?', [user_id, 'awaiting']);
 
-      if (rows.length > 0) {
-        res.status(200).json({ message: 'Trip requests found.', requests: rows });
+      if (tripRequests.length > 0) {
+        // Loop over trip requests and fetch additional information
+        for (let request of tripRequests) {
+          // Fetch trip name using trip_id
+          const [tripInfo] = await connection.execute('SELECT trip_name FROM trip_info WHERE trip_id = ?', [request.trip_id]);
+          if (tripInfo.length > 0) {
+            request.trip_name = tripInfo[0].trip_name;
+          }
+
+          // Fetch user email and name using trip_owner_id
+          const [userInfo] = await connection.execute('SELECT email, name FROM user_info WHERE user_id = ?', [request.trip_owner_id]);
+          if (userInfo.length > 0) {
+            request.email = userInfo[0].email;
+            request.name = userInfo[0].name;
+          }
+        }
+
+        res.status(200).json({ message: 'Trip requests found.', requests: tripRequests });
       } else {
         res.status(404).json({ message: 'No trip requests found.' });
       }
@@ -64,6 +81,7 @@ exports.checkRequests = (req, res) => {
     }
   });
 };
+
 // 3. API to accept an invite
 exports.acceptInvite = (req, res) => {
   const { trip_id, user_id } = req.body;
