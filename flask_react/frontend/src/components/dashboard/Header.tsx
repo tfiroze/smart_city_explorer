@@ -1,19 +1,40 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../utils/ApplicationContext';
 import { AuthContext } from '../../utils/AuthContext';
+import Logo from '../../resources/images/SCE_Logo.png'
 import Paper from '@mui/material/Paper';
-import { Avatar, Divider, Menu, MenuItem, Switch, Typography } from '@mui/material';
+import { Avatar, Divider, Menu, MenuItem, Step, StepLabel, Stepper, Switch, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-export const Header = () => {
+import { useLocation } from 'react-router-dom';
+
+interface IProps {
+  activeStep: number | undefined;
+  steps: null | string[];
+}
+
+
+export const Header: React.FC<Partial<IProps>> = ({
+  activeStep,
+  steps
+}) => {
+
+  const pathname = useLocation()
+
   const authContext = useContext(AuthContext);
   const themeContext = useContext(ThemeContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [showTimeline, setShowTimeLine] = useState<boolean>(false)
+
+  useEffect(() => {
+    pathname.pathname == '/createItinerary' ? setShowTimeLine(true) : setShowTimeLine(false)
+  }, [])
 
   const open = Boolean(anchorEl);
+
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -28,11 +49,16 @@ export const Header = () => {
   };
 
   const getAvatarColor = () => {
-    return themeContext.theme === 'dark' ? '#ffffff' : '#115b4c';
+    return themeContext.theme === 'dark' ? '#757de8' : '#757de8';
   };
 
+
+
+
+
   return (
-    <div style={{ marginBottom: '20px' }}>
+
+    <>
       <Menu
         anchorEl={anchorEl}
         open={open}
@@ -56,33 +82,40 @@ export const Header = () => {
           <Typography variant="subtitle1">Log Out</Typography>
         </MenuItem>
       </Menu>
-      <Paper
-        square
-        elevation={3}
-        sx={{
-          padding: '10px',
-          backgroundColor: '#115b4c',
-          color: '#fff',
-        }}
-      >
-        <Grid container alignItems="center" justifyContent="space-between">
-          <Grid item xs={10}>
-            <Typography variant="h5">
-              Welcome {authContext.userInfo?.first_name}!
-            </Typography>
-          </Grid>
-          <Grid item xs={2}>
-            <Avatar
-              style={{
-                float: 'right',
-                cursor: 'pointer',
-                backgroundColor: getAvatarColor(),
-              }}
-              onClick={handleClick}
-            />
-          </Grid>
+      {/* <Paper
+        elevation={0}
+
+      > */}
+      <Grid container alignItems="center" xs={12}>
+        <Grid item xs={2} style={{justifyContent: 'center', display: 'flex' }}>
+          <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '60px' }} />
         </Grid>
-      </Paper>
-    </div>
+
+        {steps?.length && <Grid item xs={6} >
+          <Stepper activeStep={activeStep} sx={{ mx: "auto" }}>
+            {steps?.map((label, index) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </Grid>}
+        <Grid item xs={steps?.length ? 4 : 10} style={{ display: 'flex', alignItems: 'center', justifyContent:'flex-end' }}>
+          <Typography variant="h5" align='left'>
+            Welcome {authContext.userInfo?.first_name}! 👋
+          </Typography>
+          <Avatar
+            style={{
+              cursor: 'pointer',
+              backgroundColor: getAvatarColor(),
+              marginRight: '10px'
+            }}
+            onClick={handleClick}
+          />
+        </Grid>
+
+      </Grid>
+      {/* </Paper> */}
+    </>
   );
 };

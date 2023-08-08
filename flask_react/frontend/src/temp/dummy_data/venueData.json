@@ -18,7 +18,9 @@
 			"jane.doe@ucdconnect.com",
 			"jill@mweb.com",
 			"fred@pewpew.com"
-		]
+		],
+		"taxiFare": 20,
+		"duration": 30
 	},
 	{
 		"timeFrom": "13:45",
@@ -33,7 +35,15 @@
 		"busyness": "moderate",
 		"rating": 7,
 		"lat": 40.748,
-		"lon": -74.0048
+		"lon": -74.0048,
+		"invitedParticipant": [
+			"amy@yahoo.com",
+			"brian@outlook.com",
+			"charlie@zoho.com",
+			"dave@gmx.com"
+		],
+		"taxiFare": 25,
+		"duration": 35
 	},
 	{
 		"timeFrom": "10:00",
@@ -48,7 +58,15 @@
 		"busyness": "low",
 		"rating": 8,
 		"lat": 40.7829,
-		"lon": -73.9654
+		"lon": -73.9654,
+		"invitedParticipant": [
+			"eve@protonmail.com",
+			"frank@icloud.com",
+			"grace@fastmail.com",
+			"harry@mail.com"
+		],
+		"taxiFare": 30,
+		"duration": 40
 	},
 	{
 		"timeFrom": "12:00",
@@ -63,7 +81,15 @@
 		"busyness": "high",
 		"rating": 9,
 		"lat": 40.7484,
-		"lon": -73.9857
+		"lon": -73.9857,
+		"invitedParticipant": [
+			"irene@hushmail.com",
+			"john@tutanota.com",
+			"kate@posteo.de",
+			"leo@aol.com"
+		],
+		"taxiFare": 35,
+		"duration": 45
 	},
 
 	{

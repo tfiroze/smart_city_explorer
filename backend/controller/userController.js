@@ -12,7 +12,7 @@ let connTest = (req, res) => {
     console.log(req.session[sessionID])
 }
 
-// verify email unique when user register a new account (Required: firstname, surname, email, captcha, password)
+// verify email unique (Required: email)
 let verifyEmailUnique = (req, res, next) => {
     let dbOperation = (conn) => {
         let sqlStr = 'SELECT COUNT(*) as count FROM user_info WHERE email =?'
@@ -36,11 +36,16 @@ let verifyEmailUnique = (req, res, next) => {
     createSSHTunnel(dbOperation)
 }
 
-// Register 
+// Register (Required: firstname, surname, email, captcha, password)
 let register = (req, res) => {
-    let captchaCheckResult = captchaCheck.verifyCode(req, req.body.captcha)
-    if (!captchaCheckResult.isValid) {
-        return res.status(401).send({valid: false, message: captchaCheckResult.message})
+    try {
+        let captchaCheckResult = captchaCheck.verifyCode(req)
+        if (!captchaCheckResult.isValid) {
+            return res.status(401).send({valid: false, message: captchaCheckResult.message})
+        }
+    }catch(err) {
+        // console.error(err)
+        return res.status(200).send({valid: false, message: 'Invalid captcha'})
     }
     let dbOperation = (conn) => {
         let sqlStr = 'insert into user_info (firstname, surname, email, password) values (?, ?, ?, ?)'
@@ -55,6 +60,12 @@ let register = (req, res) => {
             }
         }).then(([rows]) => {
             if(rows.affectedRows === 1){
+                req.session.destroy((err) => {
+                    if (err) {
+                      console.error('Error destroying session:', err);
+                      return res.status(500).send({ message: 'Error destroying session' });
+                    }
+                });
                 return res.status(200).send({valid: true, message: 'Succeed to register'})
             }else {
                 return res.status(200).send({valid: false, message: 'Failed to register'})
@@ -67,6 +78,7 @@ let register = (req, res) => {
 // Login (Required: email, password)
 let login = (req, res) => {
     let dbOperation = (conn) => {
+        console.log(req.body);
         sqlStr = 'select user_id, firstname, surname, email from user_info where email=? and password=?'
         conn.query(sqlStr, [req.body.email, md5(req.body.password)], (err, result) => {
             if(err) {
@@ -93,6 +105,8 @@ let login = (req, res) => {
                 tokenExpirationTime: expirationTime, 
                 token: tokenStr
             })
+        }).catch(err=>{
+            console.log(err);
         })
     }
     createSSHTunnel(dbOperation)
@@ -152,11 +166,41 @@ let updateUser = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
-// update user password (Required: password, user_id)
-let updatePWD = (req, res) => {
-    let captchaCheckResult = captchaCheck.verifyCode(req, res, req.body.captcha)
+// check user email address, find the user_id (Required: email)
+let checkRegisteredEmail = (req, res, next) => {
+    let dbOperation = (conn) => {
+        try {
+            let sqlStr = 'SELECT user_id FROM user_info WHERE email =?'
+            conn.query(sqlStr, [req.body.email], (err, result) => {
+                if(err) {
+                    console.error(err)
+                    return res.status(500).send({
+                        valid: false,
+                        message: 'Failed to register',
+                        err: err.message
+                    })
+                }
+            }).then(([rows]) => {
+                if(rows[0].user_id){
+                    req.body.user_id = rows[0].user_id
+                    next()
+                }else {
+                    return res.status(200).send({valid: false, message: 'Email has not found'}) 
+                }
+            })
+        }catch (err) {
+            console.error(err)
+            return res.status(200).send({valid: false, message: 'Email has not found'})   
+        }  
+    }
+    createSSHTunnel(dbOperation)
+}
+
+// reset user password when forget (Required: password, captcha)
+let forgetPWD = (req, res) => {
+    let captchaCheckResult = captchaCheck.verifyCode(req)
     if (!captchaCheckResult.isValid) {
-        return res.status(401).send({valid: false, message: 'captcha is not valid'})
+        return res.status(200).send({valid: false, message: 'captcha is not valid'})
     }
     let dbOperation = (conn) => {
         const sqlStr = 'update user_info set password=? WHERE user_id=?'
@@ -180,6 +224,70 @@ let updatePWD = (req, res) => {
     createSSHTunnel(dbOperation)
 }
 
+// check user old password (Required: token, old_password)
+let checkPWD = (req, res, next) => {
+    let token = req.headers['token']
+    try{
+        let decode = jwt.verify(token, secretKey).user_idStr;
+        let dbOperation = (conn) => {
+            const sqlStr = 'select password from user_info WHERE user_id=?'
+            conn.query(sqlStr, [decode], (err, result) => {
+                if(err) {
+                    console.error(err)
+                    return res.status(500).send({
+                        valid: false, 
+                        message: 'Failed to update user password',
+                        err: err.message
+                    })
+                }
+            }).then(([rows]) => {
+                if(rows[0].password){
+                    console.log(rows[0].password)
+                    console.log(req.body.old_password)
+                    next()
+                }else {
+                    return res.status(200).send({valid: false, message: 'Failed to update password'})
+                }
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err) {
+        console.error(err)
+        return res.status(200).send({valid: false, message: 'Failed to update password'})
+    }
+}
+
+// update user password (Required: token, password)
+let updatePWD = (req, res) => {
+    let token = req.headers['token']
+    try {
+        let decode = jwt.verify(token, secretKey).user_idStr;
+        let dbOperation = (conn) => {
+            const sqlStr = 'update user_info set password=? WHERE user_id=?'
+            conn.query(sqlStr, [md5(req.body.password), decode], (err, result) => {
+                if(err) {
+                    console.error(err)
+                    return res.status(500).send({
+                        valid: false, 
+                        message: 'Failed to update user password',
+                        err: err.message
+                    })
+                }
+            }).then(([rows]) => {
+                if(rows.affectedRows === 1){
+                    return res.status(200).send({valid: true,message: 'Succeed to update password'})
+                }else {
+                    return res.status(200).send({valid: false, message: 'Failed to update password'})
+                }
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err){
+        console.error(err)
+        return res.status(200).send({valid:false, message:'Failed to update password'})
+    }
+}
+
 
 module.exports = {
     connTest,
@@ -187,6 +295,9 @@ module.exports = {
     login,
     userInfo,
     updateUser,
+    forgetPWD,
     updatePWD,
-    verifyEmailUnique
+    checkPWD,
+    verifyEmailUnique,
+    checkRegisteredEmail
 }

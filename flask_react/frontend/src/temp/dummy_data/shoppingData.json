@@ -1,0 +1,66 @@
+[
+	{
+		"venue_address": "149-169 E 125th St, New York, NY 10035",
+		"venue_id": "ven_344c563654744266547349526b6f7733506f68442d65734a496843",
+		"venue_lat": 40.8041975,
+		"venue_lon": -73.9365275,
+		"selected": false,
+		"venue_name": "Gotham Plaza"
+	},
+	{
+		"venue_address": "30 Hudson Yards, New York, NY 10001",
+		"venue_id": "ven_382d63666a497555684834526b6f775a524c46703278364a496843",
+		"venue_lat": 40.7543229,
+		"venue_lon": -74.0016175,
+		"selected": false,
+		"venue_name": "Hudson Yards"
+	},
+	{
+		"venue_address": "147 East 86th St, New York, NY 10028",
+		"venue_id": "ven_456e54656a5a6276575936526b6f775a4e2d43744f5f644a496843",
+		"venue_lat": 40.7796391,
+		"venue_lon": -73.9552754,
+		"selected": false,
+		"venue_name": "Old Navy"
+	},
+	{
+		"venue_address": "725 5th Ave, New York, NY 10022",
+		"venue_id": "ven_494a68323156454c57744d526b6f775935666f68472d764a496843",
+		"venue_lat": 40.7622994,
+		"venue_lon": -73.9739283,
+		"selected": false,
+		"venue_name": "Gucci"
+	},
+	{
+		"venue_address": "1132 Madison Ave 2nd Floor, New York, NY 10028",
+		"venue_id": "ven_494d30494477545a4a657a526b6f7759563531734432524a496843",
+		"venue_lat": 40.779781,
+		"venue_lon": -73.959902,
+		"selected": false,
+		"venue_name": "La Boutique Resale Consignments"
+	},
+	{
+		"venue_address": "1000 5th Ave, New York, NY 10028",
+		"venue_id": "ven_49625652563441766a3837526b6f775a427959317a51524a496843",
+		"venue_lat": 40.7791865,
+		"venue_lon": -73.9635348,
+		"selected": false,
+		"venue_name": "The Met Store"
+	},
+	{
+		"venue_address": "235 W 57th St, New York, NY 10019",
+		"venue_id": "ven_4d566a675754566e775938526b6f775964767a734d342d4a496843",
+		"venue_lat": 40.7666966,
+		"venue_lon": -73.9821026,
+		"selected": false,
+		"venue_name": "Nordstrom Men's Store"
+	},
+	{
+		"venue_address": "147 W 72nd St, New York, NY 10023",
+		"venue_id": "ven_51446447416e773241794f526b6f775970494e52397a654a496843",
+		"venue_lat": 40.7783157,
+		"venue_lon": -73.9803179,
+		"selected": false,
+		"venue_name": "West NYC"
+	}
+]

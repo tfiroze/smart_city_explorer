@@ -2,6 +2,7 @@
 // a1357924691@gmail.com    zzdsoprdlrlxxjfq
 // 3037615469@qq.com    shvwybgfyfzudfbd
 
+const session = require('express-session')
 const nodemailer = require('nodemailer')
 
 let newCode
@@ -16,13 +17,11 @@ function createCode(){
     return newCode = arr
 }
 
-// POST /api/emails (Required: email)
+// send captcha (Required: email)
 let sendCaptcha = (req, res) => {
     let userMail = req.body.email
     createCode()
-    // storeCodeToSession(req, newCode)
 
-    // create smtp connection
     let transport = nodemailer.createTransport({
         // service: 'Gmail',
         service: 'QQ',
@@ -34,7 +33,6 @@ let sendCaptcha = (req, res) => {
         }
     })
 
-    // content of email
     let options = {
         // from : 'a1357924691@gmail.com',
         from : '3037615469@qq.com',
@@ -51,20 +49,25 @@ let sendCaptcha = (req, res) => {
             res.end()
         }else{
             req.session.captcha = newCode;
+            console.log(req.session.id, 'SESSION ID');
             res.cookie('sessionID', req.sessionID, {
                 maxAge: 60 * 10000,
-                httpOnly: true, 
-                secure: true 
+                httpOnly: false, 
+                secure: true, 
+                sameSite: 'none'
             });
-            res.status(200).send({valid: true, 'sessionID': req.sessionID})
+            res.status(200).send({valid: true, sessionID: req.sessionID})
             res.end()
             transport.close()
+
+            console.log(req.session,'REQUEST SESSION');
+            console.log( res.cookie, 'REQUEST COOKIE')
         }
     })
 }
   
 // Check if the user-entered captcha is correct or has expired.
-function verifyCode(req, enteredCode) {
+function verifyCode(req) {
     if(req.cookies.sessionID){
         
         const sessionID = req.cookies['sessionID'];
@@ -76,7 +79,7 @@ function verifyCode(req, enteredCode) {
                 return { isValid: false, message: 'Verification code not found. Please request a new one.' }
             }
         
-            if (enteredCode === captcha) {
+            if (req.body.captcha == captcha) {
                 return { isValid: true};
             } else {
                 return { isValid: false, message: 'Invalid captcha' };
