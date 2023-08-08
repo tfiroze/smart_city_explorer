@@ -15,7 +15,7 @@ class SmartCityApi {
 		
 
 		try {
-			const response =await fetch('http://127.0.0.1:5000' + "/api/register", {
+			const response =await fetch('https://csstudent09.ucd.ie' + "/api/register", {
 				method: "POST",
 				credentials: 'include',
 				body: new URLSearchParams({...request}),
@@ -53,7 +53,7 @@ class SmartCityApi {
 
 	verifyEmail = async function(email: string){
 		  try {
-			const response = await fetch('http://127.0.0.1:5000' + "/api/emails", {
+			const response = await fetch('https://csstudent09.ucd.ie' + "/api/emails", {
 				method: "POST",
 				body: new URLSearchParams({email: email}),
 				credentials: 'include'
@@ -90,7 +90,7 @@ class SmartCityApi {
 
 	login = async function (request: ILoginRequest): Promise<ILoginResults> {
 		try {
-			const response = await fetch('http://127.0.0.1:5000' + "/api/login", {
+			const response = await fetch('https://csstudent09.ucd.ie' + "/api/login", {
 				method: "POST",
 				body: new URLSearchParams({ ...request })
 			});
@@ -130,7 +130,7 @@ class SmartCityApi {
 		console.log(token);
 
 		try {
-			const response = await fetch('http://127.0.0.1:5000' + "/api/users", {
+			const response = await fetch('https://csstudent09.ucd.ie' + "/api/users", {
 				method: "GET",
 				headers: {
 					"token": token, // Add the token in the headers with the key "token"
@@ -162,7 +162,7 @@ class SmartCityApi {
 
 	getQuestionnaire = async function (token: string) {
 		try {
-			const response = await fetch('http://127.0.0.1:5000' + "/api/tripinfoquestionnaire", {
+			const response = await fetch('https://csstudent09.ucd.ie' + "/api/tripinfoquestionnaire", {
 				method: "GET",
 				headers: {
 					"token": token, // Add the token in the headers with the key "token"
@@ -190,7 +190,7 @@ class SmartCityApi {
 
 	verifyForgotPasswordEmail = async function(email: string){
 		try {
-		  const response = await fetch('http://127.0.0.1:5000' + "/api/captcha", {
+		  const response = await fetch('https://csstudent09.ucd.ie' + "/api/captcha", {
 			  method: "POST",
 			  body: new URLSearchParams({email: email}),
 			  credentials: 'include'
@@ -229,7 +229,7 @@ class SmartCityApi {
 	console.log(request);
 	
 	try {
-	  const response = await fetch('http://127.0.0.1:5000' + "/api/password", {
+	  const response = await fetch('https://csstudent09.ucd.ie' + "/api/password", {
 		  method: "POST",
 		  body: new URLSearchParams({...request}),
 		  credentials: 'include'
