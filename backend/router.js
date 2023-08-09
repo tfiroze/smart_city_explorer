@@ -2,12 +2,16 @@ const express = require('express')
 const router = express.Router()
 const userController = require('./controller/userController')
 const tripController = require('./controller/tripController')
+const friendController = require('./controller/friendController');
 const emailVerification = require('./services/emailVerification')
-const distanceModel = require('./services/venue_model/exec_venue_model')
+const recommendationModel = require('./services/exec_venue_model')
 const weather = require('./services/weather/weather')
 const fareModel = require('./services/exec_fare')
 const durationModel = require('./services/exec_duration')
 const busynessModel = require('./services/exec_busyness')
+
+
+
 
 router.use(express.urlencoded({ extended:false }))
 router.use(express.json())
@@ -40,6 +44,21 @@ router.post('/fare', fareModel.getFare)
 router.post('/duration', durationModel.getDuration)
 router.post('/busyness', busynessModel.getVenueBusyness)
 
-router.post('/venues', distanceModel.getRecommendVenues)
+router.post('/venues', recommendationModel.getRecommendVenues)
+
+
+router.post('/checkEmail', friendController.checkEmail);
+
+// 2. API to send an invite
+router.post('/sendInvite', friendController.sendInvite);
+
+// 3. API to check trip requests
+router.post('/checkRequests', friendController.checkRequests);
+
+// 4. API to accept an invite
+router.post('/acceptInvite', friendController.acceptInvite);
+
+// 5. API to decline an invite
+router.post('/declineInvite', friendController.declineInvite);
 
 module.exports = router

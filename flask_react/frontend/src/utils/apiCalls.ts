@@ -90,7 +90,7 @@ class SmartCityApi {
 
 	login = async function (request: ILoginRequest): Promise<ILoginResults> {
 		try {
-			const response = await fetch('http://127.0.0.1:5000' + "/api/login", {
+			const response = await fetch('https://csstudent09.ucd.ie' + "/api/login", {
 				method: "POST",
 				body: new URLSearchParams({ ...request })
 			});
@@ -190,7 +190,7 @@ class SmartCityApi {
 
 	getQuestionnaire = async function (token: string) {
 		try {
-			const response = await fetch('http://127.0.0.1:5000/api/' + "tripinfoquestionnaire", {
+			const response = await fetch('https://csstudent09.ucd.ie' + "/api/tripinfoquestionnaire", {
 				method: "GET",
 				headers: {
 					"token": token, // Add the token in the headers with the key "token"

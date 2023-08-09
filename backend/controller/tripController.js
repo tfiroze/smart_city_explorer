@@ -283,7 +283,6 @@ let popularPlaces = (req, res, next) => {
                     next()
                 })
                 .catch(error => {
-                    // 处理错误
                     console.error('Error:', error);
                     conn.end();
                     return res.status(500).send('Internal Server Error');
