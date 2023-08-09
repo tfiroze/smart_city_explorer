@@ -20,7 +20,7 @@ import {
   useTheme,
 
 } from "@mui/material";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from 'dayjs';
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import {
   DateCalendar,
@@ -41,6 +41,7 @@ import tagMapping from "../../temp/tag_mapping";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useNavigate } from "react-router-dom";
 import { MessagePopups } from "../common/messagePopups";
+import { log } from "console";
 
 
 
@@ -92,7 +93,8 @@ export const Questionnaire: React.FC<IProps> = ({
   const [zoneGroup, setZoneGroup] = useState<string[]>([]);
   const [selectedZones, setSelectedZones] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState<Object>(dayjs().add(1, 'day'))
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs('2022-04-17'));
+  const [dateString, setDateString] = useState<string>(dayjs().add(1, 'day').format('YYYY-MM-DD'))
   const [selectedZoneItemToHiglight, setSelectedZoneItemToHiglight] = useState<string>("");
   const [oneButtonModal, setOneButtonModal] = useState<boolean>(false);
   const [oneButtonMessage, setOneButtonMessage] = useState<string>('');
@@ -144,8 +146,11 @@ export const Questionnaire: React.FC<IProps> = ({
   }
 
 
-  const dateUpdate = (dateObject: object | null) => {
-    setSelectedDate(dateObject ? dateObject : dayjs().add(1, "day"));
+  const dateUpdate = (dateObject: Dayjs | null) => {
+    
+    if(dateObject){
+      setDateString(dateObject.format('YYYY-MM-DD'))
+    }
   };
 
   const toggleTags = (item: string) => {
@@ -194,7 +199,7 @@ export const Questionnaire: React.FC<IProps> = ({
     }
     setSelectedZones(zoneArray);
     console.log(zoneArray);
-    
+
     const zoneGroupItems = zoneArray.flatMap((el) => zoneCords.filter((x) => x.zone_group === el));
     console.log(zoneGroupItems);
     setZoneGroupItems([...zoneGroupItems]);
@@ -239,8 +244,6 @@ export const Questionnaire: React.FC<IProps> = ({
       handleSelectionError("Please Select at least 2 Cusine Tags");
     } else if (selectedZones.length < 2) {
       handleSelectionError("Please Select at least 2 Zones");
-    } else if (Object.keys(selectedDate).length === 0) {
-      handleSelectionError("Please Select a Date");
     } else {
       submitOptions();
     }
@@ -253,7 +256,7 @@ export const Questionnaire: React.FC<IProps> = ({
   function replaceUnderscoresWithSpaces(inputString: string) {
     return inputString.replace(/_/g, ' ');
   }
-  
+
 
   const submitOptions = () => {
 
@@ -264,7 +267,7 @@ export const Questionnaire: React.FC<IProps> = ({
 
 
     const request = {
-      date: selectedDate,
+      date: dateString,
       zoneGroup: zoneGroupArr.map(replaceSpacesWithUnderscores),
       attractions: attractionsArr.map(replaceSpacesWithUnderscores),
       cusine: cusineArr.map(replaceSpacesWithUnderscores)

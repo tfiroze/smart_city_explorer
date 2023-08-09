@@ -19,6 +19,7 @@ import LuggageIcon from "@mui/icons-material/Luggage";
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import HistoryIcon from '@mui/icons-material/History';
+import LocalAirportIcon from '@mui/icons-material/LocalAirport';
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 import { AuthContext } from "../../utils/AuthContext";
 import { CButton } from "../common/button";
@@ -348,7 +349,6 @@ const Profile = () => {
           }
     }
 
-
     return (
         <Container>
             <Dialog
@@ -367,8 +367,8 @@ const Profile = () => {
                     <Typography variant="h6" sx={{ marginBottom: 2, marginLeft: 1 }}>Navigation</Typography>
                     <Divider />
                     <List>
-                        {['Home', 'Update Details', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Weather'].map((text, index) => (
-                            <ListItem button key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => setActiveOption(text)}>
+                        {['Home', 'Update Details', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Dashboard', 'Weather'].map((text, index) => (
+                            <ListItem button key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => {text === 'Dashboard'?navigate('/dashboard'): setActiveOption(text)}}>
                                 <ListItemIcon>
                                     {index === 0 ? <HomeIcon /> :
                                         index === 1 ? <AdminPanelSettingsOutlinedIcon /> :
@@ -376,6 +376,7 @@ const Profile = () => {
                                                 index === 3 ? <ListAltIcon /> :
                                                     index === 4 ? <HistoryIcon /> :
                                                         index === 5 ? <LuggageIcon /> :
+                                                            index === 6 ? <LocalAirportIcon /> :
                                                             <WbSunnyIcon />}
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
