@@ -1,59 +1,48 @@
-import React from "react";
-import { MapContainer, GeoJSON, TileLayer, Marker, Popup } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import manhattanData from "./manhattan.geojson"; // GeoJSON data
-import data from "../temp/attr_Grouping.json";
-import { Grid, Rating, Typography } from "@mui/material";
-import IItinerary from "../models/IItinerary";
+// @ts-nocheck
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
+import { MapContainer, TileLayer, GeoJSON, useMap } from "react-leaflet";
+import seg from '../resources/Manhattan_Taxi_Zones.json'
+// const { MapContainer, TileLayer, GeoJSON, useMap } = require('react-leaflet');
 
-interface IProps {
-    data: IItinerary | null
-}
 
-function ChoroplethMap({ data }: IProps) {
-    return (
+
+export default function MapTest() {
+  const [render, setRednder] = useState(0)
+  const setColor = () => {
+    return { weight: 1 };
+  };
+  return (
+    <>
+      <div style={{ position: "relative", width: "100%", height: "100vh" }} onClick={() => setRednder(render + 1)}>
         <MapContainer
-            style={{ height: "100vh", width: "100%" }}
-            zoom={13}
-            center={[40.7831, -73.9712]}
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            // zIndex: -1,
+            top: 0
+          }}
+          center={[37.5004851, -96.2261503]}
+          zoom={4}
+          zoomControl={true}
+          scrollWheelZoom={true}
+        //   dragging={false}
+        //   touchZoom={false}
+        //   doubleClickZoom={false}
+        //   boxZoom={false}
+        //   keyboard={false}
         >
-            <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {data?.plan.map((item) => {
-                return (
-                    //@ts-ignore
-                    <Marker position={[item.lat, item.lon]} riseOnHover>
-                        <Popup>
-                            <Grid container display='flex' spacing={2}>
-                                <Grid item xs={12}>
-                                    <Typography variant="h6">
-                                        {item.title}
-                                        <img
-                                            loading="lazy"
-                                            width="20"
-                                            src={`https://www.meteosource.com/static/img/ico/weather/${item.weatherCode!.toString()}.svg`}
-                                            alt=""
-                                        />
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <img src={item.imgLink} style={{ maxHeight: '300px', maxWidth: '300px' }} />
-                                </Grid>
-
-                                <Grid item xs={12}>
-                                    <Typography variant="body2">
-                                        {item.description}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </Popup>
-                    </Marker>
-                );
-            })}
+          <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png" />
+          <GeoJSON data={seg}
+            key={1}
+            style={setColor}
+            // ref={layerReference}
+          />
         </MapContainer>
-    );
+      </div>
+    </>
+  );
 }
 
-export default ChoroplethMap;
+

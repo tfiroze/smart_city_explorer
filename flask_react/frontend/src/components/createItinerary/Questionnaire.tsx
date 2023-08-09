@@ -329,6 +329,13 @@ export const Questionnaire: React.FC<IProps> = ({
       updateItinerary();
     }
   };
+
+  const submitOptions =()=>{
+    const request = {
+      date: selectedDate,
+      
+    }
+  }
   
 
   return (

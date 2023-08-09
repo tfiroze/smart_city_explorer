@@ -366,6 +366,78 @@ updatePassword = async function(request: object, token:string){
   }
 };
 
+updateUserDetails = async function(request: object){
+	try {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "/users", {
+		  method: "PUT",
+		  body: new URLSearchParams({...request}),
+		  credentials: 'include',
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Update UserDetails Request Response: ', data)
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1'
+			  };
+		  }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  } catch (error) {
+	  return {
+		  valid: false,
+		  errorType: '2'
+	  };
+  }
+};
+
+getRecommendation = async function(request: object){
+	try {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "/venues", {
+		  method: "POST",
+		  body: new URLSearchParams({...request}),
+		  credentials: 'include',
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Update UserDetails Request Response: ', data)
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1'
+			  };
+		  }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  } catch (error) {
+	  return {
+		  valid: false,
+		  errorType: '2'
+	  };
+  }
+};
+
 
 };
 

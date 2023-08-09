@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useContext, useState } from "react";
+import React, { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Header } from "../dashboard/Header";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from '@mui/material/Tooltip';
@@ -12,17 +12,19 @@ import LuggageRoundedIcon from "@mui/icons-material/LuggageRounded";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import { ProfileDrawer } from "../navigation/ProfileDrawer";
-import { Dialog, Drawer, List, ListItem, ListItemIcon, ListItemText, TextField } from "@mui/material";
+import { Dialog, Drawer, Grid, List, ListItem, ListItemIcon, ListItemText, TextField } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import LuggageIcon from "@mui/icons-material/Luggage";
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import HistoryIcon from '@mui/icons-material/History';
+import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 import { AuthContext } from "../../utils/AuthContext";
 import { CButton } from "../common/button";
 import { smartApi } from "../../utils/apiCalls";
 import { MessagePopups } from "../common/messagePopups";
+import IItinerary from "../../models/IItinerary";
 
 const erroDict: { [key: string]: string } = {
     '0': '',
@@ -41,14 +43,45 @@ const Profile = () => {
         old_password: "",
         password: "",
     });
+    const [userRequest, setUserRequest] = useState({
+        firstname: "",
+        surname: "",
+        email: "",
+        user_id: ""
+    });
     const [format, setFormat] = useState({
         password: false,
         old_password: false,
+        firstname: false,
+        surname: false,
+        email: false
     });
     const [error, setError] = useState<string>("0")
     const [submitLoading, setSubmitLoading] = useState<boolean>(false)
     const [oneButtonModal, setOneButtonModal] = useState<boolean>(false);
     const [oneButtonMessage, setOneButtonMessage] = useState<string>('');
+    const [upcomingTrips, setUpcomingTrips] = useState<IItinerary[]>([]);
+    const [pastTrips, setPastTrips] = useState<IItinerary[]>([]);
+
+
+    useEffect(() => {
+        if (authContext.userInfo?.first_name !== undefined &&
+            authContext.userInfo?.surname !== undefined &&
+            authContext.userInfo?.email !== undefined &&
+            authContext.userInfo?.user_id !== undefined &&
+            authContext.userInfo?.first_name !== null &&
+            authContext.userInfo?.surname !== null &&
+            authContext.userInfo?.email !== null &&
+            authContext.userInfo?.user_id !== null) {
+            setUserRequest({
+                ...userRequest,
+                firstname: authContext.userInfo?.first_name,
+                surname: authContext.userInfo?.surname,
+                email: authContext.userInfo?.email,
+                user_id: authContext.userInfo?.user_id
+            })
+        }
+    }, [])
 
     const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files ? event.target.files[0] : null;
@@ -91,6 +124,11 @@ const Profile = () => {
     const handleInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
         setPasswordRequest({
             ...passwordRequest,
+            [event.target.name]: event.target.value,
+        });
+    const handleUserInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
+        setUserRequest({
+            ...userRequest,
             [event.target.name]: event.target.value,
         });
 
@@ -138,6 +176,48 @@ const Profile = () => {
         }
     };
 
+    const formUserValidator = () => {
+        // handleSubmit();
+        if (
+            validateName(userRequest.firstname) &&
+            validateSurname(userRequest.surname) &&
+            validateEmail(userRequest.email)
+        ) {
+            handleUserSubmit();
+        }
+    };
+
+    const handleUserSubmit = () => {
+        setSubmitLoading(true)
+        smartApi.updateUserDetails(userRequest).then((results) => {
+            console.log(results);
+            setSubmitLoading(false)
+            if (results?.valid) {
+                setError(results.errorType)
+                handleSelectionError('User Details has been Successfully Updated!')
+                setActiveOption('Home')
+
+                authContext.authenticate(true, {
+                    first_name: userRequest.firstname,
+                    surname: userRequest.surname,
+                    user_id: userRequest.user_id,
+                    email: userRequest.email,
+                });
+                localStorage.setItem("user_id", userRequest.user_id);
+                localStorage.setItem("email", userRequest.email);
+                localStorage.setItem("first_name", userRequest.firstname);
+                localStorage.setItem("surname", userRequest.surname);
+            } else {
+                // ... handle the case when results?.valid is falsy ...
+                setError(results.errorType)
+            }
+        })
+            .catch((error) => {
+                console.log(error);
+                setError('2')
+            });
+    }
+
     const handlePasswordSubmit = () => {
         setSubmitLoading(true)
         const token = getCookieValue("token")
@@ -150,6 +230,7 @@ const Profile = () => {
                     old_password: "",
                 })
                 setFormat({
+                    ...format,
                     password: false,
                     old_password: false,
                 })
@@ -178,18 +259,94 @@ const Profile = () => {
         return null; // Cookie not found
     }
 
-    const setErrorMessage = (message:string)=>{
+    const setErrorMessage = (message: string) => {
         setOneButtonMessage(message)
-      }
-    
-      const handleOneButtonPopup = () =>{
+    }
+
+    const handleOneButtonPopup = () => {
         setOneButtonModal(!oneButtonModal)
-      }
-    
-      const handleSelectionError = (message:string)=>{
+    }
+
+    const handleSelectionError = (message: string) => {
         setErrorMessage(message)
         handleOneButtonPopup()
-      }
+    }
+
+    const validateName = (name: string) => {
+        if (name === "" || !/^[a-zA-Z\s'-]+$/.test(name)) {
+            setFormat({
+                ...format,
+                firstname: true,
+            });
+            return false;
+        } else {
+            setFormat({
+                ...format,
+                firstname: false,
+            });
+            return true;
+        }
+    };
+
+    const validateSurname = (name: string) => {
+        if (name === "" || !/^[a-z ,.'-]+$/i.test(name)) {
+            setFormat({
+                ...format,
+                surname: true,
+            });
+            return false;
+        } else {
+            setFormat({
+                ...format,
+                surname: false,
+            });
+            return true;
+        }
+    };
+
+    const validateEmail = (email: string) => {
+        if (
+            email === "" ||
+            !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+        ) {
+            setFormat((prevFormat) => ({
+                ...prevFormat,
+                email: true,
+            }));
+            return false;
+        } else {
+            setFormat((prevFormat) => ({
+                ...prevFormat,
+                email: false,
+            }));
+            return true;
+        }
+    };
+
+
+    const handlegetTripDetails = () =>{
+        if (userRequest?.user_id) {
+            smartApi.allTrips(userRequest.user_id)
+              .then((results) => {
+                console.log(results);
+                // setLoader(false)
+                if (results?.valid) {
+                  setPastTrips([...results.completedTrips])
+                  setUpcomingTrips([...results.upcomingTrips])
+                //   getPopularPlaces()
+                } else {
+                  // ... handle the case when results?.valid is falsy ...
+                  setError(results.errorType)
+      
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+                // setError('2')
+                // setLoader(false)
+              });
+          }
+    }
 
 
     return (
@@ -210,15 +367,16 @@ const Profile = () => {
                     <Typography variant="h6" sx={{ marginBottom: 2, marginLeft: 1 }}>Navigation</Typography>
                     <Divider />
                     <List>
-                        {['Home', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Weather'].map((text, index) => (
+                        {['Home', 'Update Details', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Weather'].map((text, index) => (
                             <ListItem button key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => setActiveOption(text)}>
                                 <ListItemIcon>
                                     {index === 0 ? <HomeIcon /> :
-                                        index === 1 ? <LockOpenIcon /> :
-                                            index === 2 ? <ListAltIcon /> :
-                                                index === 3 ? <HistoryIcon /> :
-                                                    index === 4 ? <LuggageIcon /> :
-                                                        <WbSunnyIcon />}
+                                        index === 1 ? <AdminPanelSettingsOutlinedIcon /> :
+                                            index === 2 ? <LockOpenIcon /> :
+                                                index === 3 ? <ListAltIcon /> :
+                                                    index === 4 ? <HistoryIcon /> :
+                                                        index === 5 ? <LuggageIcon /> :
+                                                            <WbSunnyIcon />}
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItem>
@@ -315,6 +473,83 @@ const Profile = () => {
                             }}
                             loading={submitLoading}
                         />
+                    </>}
+                    {activeOption == 'Update Details' && <>
+
+                        <Box my={2} minWidth={'100%'}>
+                            <TextField
+                                label="First Name"
+                                placeholder="Please enter your First Name..."
+                                variant="outlined"
+                                color="primary"
+                                fullWidth
+                                type="firstname"
+                                name="firstname"
+                                value={userRequest.firstname}
+                                onChange={handleUserInputOnChange}
+                                error={format.firstname}
+                                helperText={
+                                    format.firstname
+                                        ? "Upgrade your first name for a travel adventure! 🌟"
+                                        : ""
+                                }
+                            />
+                        </Box>
+                        <Box my={2} minWidth={'100%'}>
+                            <TextField
+                                label="Last Name"
+                                placeholder="Please enter your Last Name..."
+                                variant="outlined"
+                                color="primary"
+                                fullWidth
+                                type="surname"
+                                name="surname"
+                                value={userRequest.surname}
+                                onChange={handleUserInputOnChange}
+                                error={format.surname}
+                                helperText={
+                                    format.surname
+                                        ? "Your surname is ready for a getaway! 🌊 Enter a valid one to set sail!"
+                                        : ""
+                                }
+                            />
+                        </Box>
+                        <Box my={2} minWidth={'100%'}>
+                            <TextField
+                                label="Email"
+                                placeholder="Please enter your Email..."
+                                variant="outlined"
+                                color="primary"
+                                fullWidth
+                                type="email"
+                                name="email"
+                                value={userRequest.email}
+                                onChange={handleUserInputOnChange}
+                                error={format.email}
+                                helperText={
+                                    format.email
+                                        ? "Your Email is off on a tropical getaway! 🏝️ Please provide a valid email address so we can catch up."
+                                        : ""
+                                }
+                            />
+                        </Box>
+                        {error !== '0' && <Typography variant="subtitle1" color={'red'}>
+                            {erroDict[error.toString()]}
+                        </Typography>}
+                        <CButton
+                            title="Confirm"
+                            onClick={formUserValidator}
+                            style={{
+                                background: '#757de8', color: 'white', margin: '10px 0px'
+                            }}
+                            loading={submitLoading}
+                        />
+                    </>}
+                    {activeOption == 'Past Trips' && <>
+
+                        <Grid container md={12} style={{height:'100%', display:'flex', flexWrap:'wrap', overflow:'scroll', border:'2px solid black'}}>
+                            
+                        </Grid>
                     </>}
                 </Box>
             </Box>

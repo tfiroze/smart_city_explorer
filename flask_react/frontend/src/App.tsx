@@ -9,6 +9,7 @@ import lightTheme from "./utils/Themes/lightTheme";
 import { AuthStack } from "./utils/AuthStack";
 import { ErrorPage } from './views/ErrorPage';
 import { useEffect, useState } from "react";
+import MapTest from "./views/MapTest";
 
 function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");

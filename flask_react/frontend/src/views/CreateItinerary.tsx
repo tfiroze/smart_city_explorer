@@ -23,6 +23,7 @@ import { PickRecommendation } from "../components/createItinerary/PickRecommenda
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { VenueSelectionControls } from "../components/createItinerary/VenueSelectionControls";
 import { Header } from "../components/dashboard/Header";
+import { smartApi } from "../utils/apiCalls";
 
 const steps = [
   "Trip Information",
@@ -72,6 +73,22 @@ export const CreateItinerary: React.FC<IProps> = ({
 
     setCurrentStep(currentStep + 1);
   };
+
+  // const handleGetRecommendation = (request: object) =>{
+  //   smartApi.getRecommendation(request).then((results) => {
+  //     console.log(results);
+  //     // setSubmitLoading(false)
+  //     // if (results?.valid) {
+  //     //     // setError(results.errorType)
+  //     //     // handleSelectionError('User Details has been Successfully Updated!')
+  //     //     // setActiveOption('Home')
+
+
+  //     // } else {
+  //     //     // ... handle the case when results?.valid is falsy ...
+  //     //     // setError(results.errorType)
+  //     // }
+  // }
 
   const renderStep = () => {
     switch (currentStep) {

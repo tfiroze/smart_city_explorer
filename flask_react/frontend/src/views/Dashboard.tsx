@@ -1,4 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+// @ts-nocheck
+import React, { useContext, useEffect, useRef, useState } from "react";
 import AttractionsIcon from '@mui/icons-material/Attractions';
 import { Header } from "../components/dashboard/Header";
 import {
@@ -27,7 +28,7 @@ import ModeOfTravelIcon from "@mui/icons-material/ModeOfTravel";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import ChoroplethMap from "./MapTest";
 import Choropleth from "../components/map/Choropleth";
-import { MapContainer, TileLayer, Popup, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup, Marker, useMap, GeoJSON } from 'react-leaflet';
 import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
 import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
 import { toTitleCase } from "../utils/utility_func";
@@ -40,17 +41,20 @@ import { ErrorPage } from "./ErrorPage";
 import { SmallCards } from "../components/dashboard/SmallCards";
 import { VenueDetailsModal } from "../components/createItinerary/VenueDetailsModal";
 import makeStyles from "@mui/styles/makeStyles/makeStyles";
+import { TripNotFound } from "../components/common/tripNotFound";
+import geoData from "../resources/Manhattan_Taxi_Zones.json"
+import L, { divIcon } from "leaflet";
 
 
+import { GeoJSON as LeafletGeoJSON } from "leaflet";
 const useStyles = makeStyles((theme: Theme) => ({
-	root: {
-	  "& .MuiPaper-root": {
-		backgroundColor: "transparent",
-    boxShadow: '0 0 0 rgba(0, 0, 0, 0.3)',
-	  }
-	}
-  }));
-
+  root: {
+    "& .MuiPaper-root": {
+      backgroundColor: "transparent",
+      boxShadow: '0 0 0 rgba(0, 0, 0, 0.3)',
+    }
+  }
+}));
 interface PopularPlaces {
   busyness: number,
   description: string,
@@ -60,7 +64,30 @@ interface PopularPlaces {
   rating: number
 }
 
+interface Geometry {
+  type: string;
+  coordinates: number[][][][];
+}
 
+interface Properties {
+  shape_area: string;
+  objectid: string;
+  shape_leng: string;
+  location_id: number;
+  zone: string;
+  borough: string;
+}
+
+interface Feature {
+  type: string;
+  properties: Properties;
+  geometry: Geometry;
+}
+
+interface GeoJSONData {
+  type: string;
+  features: Feature[];
+}
 
 
 
@@ -87,6 +114,7 @@ export const Dashboard = () => {
   const [error, setError] = useState<string>("0")
 
   const currentTheme = useTheme();
+
 
 
   useEffect(() => {
@@ -138,7 +166,6 @@ export const Dashboard = () => {
 
     smartApi.popularPlaces()
       .then((results) => {
-        console.log(results, 'Popular');
         setLoader(false)
         if (results?.valid && results?.places) {
           setPopularPlacesArr([...results.places])
@@ -160,12 +187,84 @@ export const Dashboard = () => {
     setOpenItienaryDetailsModal(!openItienaryDetailsModal)
   }
 
-  const setVenueFullInfo = (venue: object)=>{
-    setVenueDetails({...venue})
+  const setVenueFullInfo = (venue: object) => {
+    setVenueDetails({ ...venue })
     handItienraryDetailsModal()
   }
 
-const classes = useStyles();
+  const classes = useStyles();
+
+  function getFillColorForZoneGroup(zoneGroup: string) {
+    switch (zoneGroup) {
+      case "Upper Manhattan":
+        return "yellow";
+      case "Lower Manhattan":
+        return "green";
+      case "Upper West Side":
+        return "blue";
+      case "Upper East Side":
+        return "cyan";
+      case "Chelsea/Greenwhich market":
+        return "white";
+      case "Midtown Manhattan":
+        return "#000000";
+      // Add more cases for other zone groups here
+      default:
+        return "red"; // Default color if no match is found
+    }
+  }
+
+  let venue_zone_grouping = {
+    "Upper Manhattan": [128, 127, 243, 120, 244, 116, 42, 152, 41, 74, 75],
+    "Upper West Side": [166, 24, 151, 43, 238, 239, 143, 142],
+    "Upper East Side": [236, 263, 262, 237, 141, 140],
+    "Chelsea/Greenwhich market": [
+      246,
+      68,
+      186,
+      90,
+      100,
+      234,
+      158,
+      249,
+      113,
+      249
+    ],
+    "Lower Manhattan": [
+      107,
+      224,
+      114,
+      211,
+      144,
+      148,
+      232,
+      231,
+      45,
+      13,
+      261,
+      209,
+      87,
+      88,
+      12
+    ],
+    "Midtown Manhattan": [
+      50,
+      48,
+      230,
+      163,
+      161,
+      162,
+      229,
+      233,
+      164,
+      170,
+      137,
+      224,
+      107,
+      234
+    ]
+  };
+
 
 
   return (
@@ -193,7 +292,7 @@ const classes = useStyles();
               fullWidth
               className={classes.root}
             >
-              <VenueDetailsModal venue={venueDetails}/>
+              <VenueDetailsModal venue={venueDetails} />
             </Dialog>
 
             <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
@@ -213,7 +312,7 @@ const classes = useStyles();
                     borderRadius: '10px',
                     padding: '30px',
                     width: '100%',
-                    height:'30vh'
+                    height: '30vh'
                   }}>
                     {firstTime && <>
                       <Typography
@@ -248,47 +347,54 @@ const classes = useStyles();
                   </Grid>
 
                   {
-                    (upcomingTrips?.length > 0 || pastTrips?.length > 0) &&
+                    (upcomingTrips?.length >= 0 || pastTrips?.length >= 0) &&
                     <>
                       <Grid item xs={12} md={12} style={{ margin: "15px 0px" }}>
                         <Typography variant="h6" align="left">
                           My Manhattan Itinerary
                         </Typography>
-                        <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '10px 0px' }}>
-                          {upcomingTrips?.length > 0 && <div style={{
-                            width: '20%',
-                            padding: '8px',
-                            cursor: 'pointer',
-                            backgroundColor: tab == 0 ? '#757de8' : 'transparent',
-                            border: tab == 0 ? '2px solid transparent' : '2px solid #757de8',
-                            marginRight: '20px',
-                            textAlign: 'center',
-                            borderRadius: '20px',
-                            color: tab == 0 ? '#ffff' : '#757de8'
-                          }}
-                            onClick={() => setTab(0)}>
-                            Upcoming
-                          </div>}
-                          {pastTrips?.length > 0 && <div style={{
-                            width: '20%',
-                            padding: '8px',
-                            cursor: 'pointer',
-                            backgroundColor: tab == 1 ? '#757de8' : 'transparent',
-                            border: tab == 1 ? '2px solid transparent' : '2px solid #757de8',
-                            textAlign: 'center',
-                            borderRadius: '20px',
-                            color: tab == 1 ? '#ffff' : '#757de8'
-                          }}
-                            onClick={() => setTab(1)}>
-                            Completed
-                          </div>}
-                        </Grid>
-                        <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                          {(pastTrips?.length > 0 && tab == 0) && pastTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => {setVenueFullInfo(item)}} />
-                          )}
-                          {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => {setVenueFullInfo(item)}} />
-                          )}
-                        </Grid>
+                        {(upcomingTrips?.length == 0 && pastTrips?.length == 0) ?
+                          <>
+                            <TripNotFound />
+
+                          </>
+                          : <>
+                            <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '10px 0px' }}>
+                              {upcomingTrips?.length > 0 && <div style={{
+                                width: '20%',
+                                padding: '8px',
+                                cursor: 'pointer',
+                                backgroundColor: tab == 0 ? '#757de8' : 'transparent',
+                                border: tab == 0 ? '2px solid transparent' : '2px solid #757de8',
+                                marginRight: '20px',
+                                textAlign: 'center',
+                                borderRadius: '20px',
+                                color: tab == 0 ? '#ffff' : '#757de8'
+                              }}
+                                onClick={() => setTab(0)}>
+                                Upcoming
+                              </div>}
+                              {pastTrips?.length > 0 && <div style={{
+                                width: '20%',
+                                padding: '8px',
+                                cursor: 'pointer',
+                                backgroundColor: tab == 1 ? '#757de8' : 'transparent',
+                                border: tab == 1 ? '2px solid transparent' : '2px solid #757de8',
+                                textAlign: 'center',
+                                borderRadius: '20px',
+                                color: tab == 1 ? '#ffff' : '#757de8'
+                              }}
+                                onClick={() => setTab(1)}>
+                                Completed
+                              </div>}
+                            </Grid>
+                            <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                              {(pastTrips?.length > 0 && tab == 0) && pastTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />
+                              )}
+                              {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />
+                              )}
+                            </Grid>
+                          </>}
                       </Grid>
                     </>
                   }
@@ -297,7 +403,7 @@ const classes = useStyles();
                       Explore Popular Destinations
                     </Typography>
                     <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
-                      {popularPlacesArr.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => {setVenueFullInfo(item)}} />)}
+                      {popularPlacesArr.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />)}
                     </Grid>
 
                   </div>}
@@ -308,15 +414,53 @@ const classes = useStyles();
                   style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
                   zoom={12}
                   center={[40.7831, -73.9712]}
+                  // center={[37.5004851, -96.2261503]}
+                  maxBoundsViscosity={1.0}
                   zoomControl={false}
+                  scrollWheelZoom={false}
+                  dragging={false}
+                  touchZoom={false}
+                  doubleClickZoom={false}
+                  boxZoom={false}
+                  keyboard={false}
                 >
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                   />
+                  <GeoJSON
+                    data={geoData}
+
+                    style={(feature) => {
+                      const zoneNumber = feature.properties.location_id; // Assuming someProperty holds the zone number
+                      let fillColor = "red"; // Default color
+
+                      // Loop through the zone_grouping object and check if the zone number is in any of the specified zones
+                      for (const [zoneGroup, zoneNumbers] of Object.entries(
+                        venue_zone_grouping
+                      )) {
+                        if (zoneNumbers.includes(zoneNumber)) {
+                          // Assign a specific color based on the zone group
+                          fillColor = getFillColorForZoneGroup(zoneGroup);
+                          break; // Stop checking once a match is found
+                        }
+                      }
+
+                      return {
+                        fillColor,
+                        color: "black",
+                        weight: 2,
+                        dashArray: "5, 5",
+                        fillOpacity: 1
+                      };
+                    }}
+                  //  onEachFeature={onEachCountry}
+                  />
+                  {/* <GeoJSON data={ecomp} pointToLayer={setIcon} /> */}
                 </MapContainer>
               </Grid>
             </Grid>
+
           </>}
 
 
