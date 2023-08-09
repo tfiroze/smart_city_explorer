@@ -3,7 +3,8 @@ import {
   MapContainer,
   TileLayer,
   Marker,
-  Popup
+  Popup,
+  useMap
 } from "react-leaflet";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
@@ -68,7 +69,12 @@ const purpleIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-
+const ResizeMap = () => {
+  const map = useMap();
+  // @ts-ignore -_-
+  map._onResize();
+  return null;
+};
 
 let todayDate = new Date();
 
@@ -147,8 +153,8 @@ export const Questionnaire: React.FC<IProps> = ({
 
 
   const dateUpdate = (dateObject: Dayjs | null) => {
-    
-    if(dateObject){
+
+    if (dateObject) {
       setDateString(dateObject.format('YYYY-MM-DD'))
     }
   };
@@ -489,7 +495,12 @@ export const Questionnaire: React.FC<IProps> = ({
               zoom={13}
               center={[40.7831, -73.9712]}
             >
-              <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png" />
+              <ResizeMap />
+              <TileLayer
+                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+              />
+
               {/* <MarkerClusterGroup> */}
               {zoneGroupItems
                 .filter((x: any) => {

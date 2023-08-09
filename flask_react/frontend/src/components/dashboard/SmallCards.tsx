@@ -1,39 +1,57 @@
-import { Button, Grid, Paper, Typography, useTheme } from "@mui/material";
+import { Button, Grid, Paper, Typography, styled, useTheme } from "@mui/material";
 import React from "react";
 import { toTitleCase } from "../../utils/utility_func";
 
 interface Venue {
     name: string;
     image?: string;
-  }
-  
-  interface IProps {
-    venue: Venue;
-    onClick?: ()=>void
-  }
-export const SmallCards: React.FC<IProps> = ({venue, onClick}) => {
-    const currentTheme = useTheme();
+}
 
+interface IProps {
+    venue: Venue;
+    onClick?: () => void;
+}
+
+const CardGrid = styled(Grid)(({ theme }) => ({
+    cursor: "pointer",
+    padding: theme.spacing(2),
+    width: "100%",
+    backgroundColor: theme.palette.secondary.main,
+    marginRight: theme.spacing(0.5),
+    borderRadius: 10,
+    [theme.breakpoints.up('sm')]: {
+        width: "35%",
+    },
+}));
+
+const VenueImage = styled('img')({
+    width: '100%',
+    borderRadius: 5,
+    aspectRatio: '16/9',
+});
+
+const StyledTypography = styled(Typography)({
+    fontWeight: 600,
+});
+
+export const SmallCards: React.FC<IProps> = ({ venue, onClick }) => {
     return (
-        <Grid
-            style={{ cursor: "pointer", padding: '15px', width: '35%', backgroundColor: currentTheme?.palette?.secondary?.main, marginRight: '5px', borderRadius: '10px' }}
+        <CardGrid
             item
             className="unselectable"
-            onClick={()=>onClick && onClick()}
+            onClick={() => onClick && onClick()}
         >
-            <Grid xs={12} >
-                <img
+            <Grid item xs={12}>
+                <VenueImage
                     src={venue.image}
-                    alt=""
-                    style={{ width: '100%', borderRadius: '5px', aspectRatio:16/9 }}
-                    
+                    alt={`Image of ${venue.name}`}
                 />
             </Grid>
-            <Grid xs={12}>
-                <Typography variant="subtitle2" fontWeight={600}>
+            <Grid item xs={12}>
+                <StyledTypography variant="subtitle2">
                     {toTitleCase(venue.name)}
-                </Typography>
+                </StyledTypography>
             </Grid>
-        </Grid>
+        </CardGrid>
     );
 };

@@ -1,74 +1,78 @@
 import {
     Grid,
     Typography,
-    Paper,
-    Checkbox,
-    Divider,
-    Alert,
-    styled,
     useTheme,
+    styled,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import "leaflet/dist/leaflet.css";
+import React from "react";
 import { CButton } from "../common/button";
 
-
-
 interface IProps {
-    onFirstClick?: ()=>void,
-    onSecondClick?: ()=>void,
+    onFirstClick?: () => void,
+    onSecondClick?: () => void,
     totalButtons?: number,
-    buttonText?:string,
-    message?:string,
+    buttonText?: string,
+    message?: string,
 }
 
-export const MessagePopups :React.FC<IProps> = ({
-  onFirstClick,
-  onSecondClick,
-  totalButtons = 1,
-  buttonText,
-  message
-})  => {
-    
-    const currentTheme = useTheme();
-    const firstButtonClick = ()=> onFirstClick? onFirstClick():console.log('Something went wrong!')
-    const secondButtonClick = ()=>onSecondClick? onSecondClick():console.log('Something went wrong!')
+const MessageGrid = styled(Grid)(({ theme }) => ({
+    cursor: "pointer",
+    padding: theme.spacing(2),
+    borderRadius: 15,
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+}));
+
+const ButtonContainer = styled(Grid)(({ theme }) => ({
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: theme.palette.secondary.main,
+    [theme.breakpoints.down('sm')]: {
+        flexDirection: 'column',
+    }
+}));
+
+const StyledCButton = styled(CButton)(({ theme }) => ({
+    width: '30%',
+    background: '#757de8',
+    color: '#ffffff',
+    borderRadius: 20,
+    padding: theme.spacing(1, 2),
+    fontWeight: 'bold',
+    [theme.breakpoints.down('sm')]: {
+        width: '100%',
+        marginBottom: theme.spacing(1),
+    }
+}));
+
+export const MessagePopups: React.FC<IProps> = ({
+    onFirstClick,
+    onSecondClick,
+    totalButtons = 1,
+    buttonText,
+    message
+}) => {
+
+    const firstButtonClick = () => onFirstClick ? onFirstClick() : console.log('Something went wrong!')
+    const secondButtonClick = () => onSecondClick ? onSecondClick() : console.log('Something went wrong!')
 
     return (
-        <Grid
-            style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
-            item
-            xs={12}
-            onClick={() => {}}
-        >
-            <Typography variant="h6" align="center" style={{margin:'10px 0'}}>{message}</Typography>
-            <Grid container style={{ flexDirection: 'row', justifyContent:totalButtons ==2 ? 'space-around' : 'center', backgroundColor: currentTheme.palette.secondary.main }}>
-                <CButton
-                    title={ buttonText?buttonText : "Select"}
-                    onClick={() => {firstButtonClick()}}
-                    style={{
-                        width: '30%',
-                        background: '#757de8',
-                        color: '#ffffff',
-                        borderRadius: '20px',
-                        padding: '10px 10px',
-                        fontWeight: 'bold',
-                    }}
+        <MessageGrid item xs={12}>
+            <Typography variant="h6" align="center" gutterBottom>
+                {message}
+            </Typography>
+            <ButtonContainer container>
+                <StyledCButton
+                    title={buttonText ? buttonText : "Select"}
+                    onClick={() => { firstButtonClick() }}
                 />
-                {totalButtons==2 && <CButton
-                    title="Cancel"
-                    onClick={() => {secondButtonClick()}}
-                    style={{
-                        width: '30%',
-                        background: '#757de8',
-                        color: '#ffffff',
-                        borderRadius: '20px',
-                        padding: '10px 30px',
-                        fontWeight: 'bold',
-                    }}
-                />}
-            </Grid>
-
-        </Grid>
+                {totalButtons == 2 &&
+                    <StyledCButton
+                        title="Cancel"
+                        onClick={() => { secondButtonClick() }}
+                    />
+                }
+            </ButtonContainer>
+        </MessageGrid>
     )
 }

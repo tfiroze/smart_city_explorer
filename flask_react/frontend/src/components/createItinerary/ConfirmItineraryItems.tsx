@@ -62,8 +62,8 @@ interface IProps {
   // completed: (data: IItinerary) => void;
 }
 
-export const ConfirmItineraryItems: React.FC<IProps> = ({ 
-  data, 
+export const ConfirmItineraryItems: React.FC<IProps> = ({
+  data,
   // completed 
 }) => {
   const [name, setName] = useState("");
@@ -97,25 +97,25 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
 
   return (
     <Grid container justifyContent="center" alignItems="center">
-      <StyledPaper elevation={0} style={{height:'100vh'}}>
+      <StyledPaper elevation={0} style={{ height: '100vh' }}>
         <Typography variant="h6" gutterBottom>
           Confirm Itinerary
         </Typography>
-          <TextField
-            label="Itinerary Name"
-            fullWidth
-            value={name}
-            onChange={handleNameChange}
-            style={{width:'20%'}}
-          />
+        <TextField
+          label="Itinerary Name"
+          fullWidth
+          value={name}
+          onChange={handleNameChange}
+          style={{ width: '20%' }}
+        />
 
-          <StyledButton
-            variant="contained"
-            endIcon={<CheckCircleOutlineIcon />}
-            onClick={handleFinish}
-          >
-            Finish Planning
-          </StyledButton>
+        <StyledButton
+          variant="contained"
+          endIcon={<CheckCircleOutlineIcon />}
+          onClick={handleFinish}
+        >
+          Finish Planning
+        </StyledButton>
         <StyledDisclaimer variant="body2" align="center" mt={2}>
           *Disclaimer: By clicking "Finish Planning," you agree to embark on this amazing adventure with a smile and a sense of humour. Bon voyage!
         </StyledDisclaimer>
