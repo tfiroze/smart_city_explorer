@@ -4,7 +4,7 @@ const userController = require('./controller/userController')
 const tripController = require('./controller/tripController')
 const friendController = require('./controller/friendController');
 const emailVerification = require('./services/emailVerification')
-const distanceModel = require('./services/venue_model/exec_venue_model')
+const recommendationModel = require('./services/exec_venue_model')
 const weather = require('./services/weather/weather')
 const fareModel = require('./services/exec_fare')
 const durationModel = require('./services/exec_duration')
@@ -44,7 +44,7 @@ router.post('/fare', fareModel.getFare)
 router.post('/duration', durationModel.getDuration)
 router.post('/busyness', busynessModel.getVenueBusyness)
 
-router.post('/venues', distanceModel.getRecommendVenues)
+router.post('/venues', recommendationModel.getRecommendVenues)
 
 
 router.post('/checkEmail', friendController.checkEmail);
