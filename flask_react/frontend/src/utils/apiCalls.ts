@@ -404,7 +404,7 @@ updateUserDetails = async function(request: object){
 
 getRecommendation = async function(request: object){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "/venues", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "venues", {
 		  method: "POST",
 		  body: new URLSearchParams({...request}),
 		  credentials: 'include',

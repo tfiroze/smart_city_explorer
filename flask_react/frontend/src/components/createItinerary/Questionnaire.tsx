@@ -1,99 +1,49 @@
 import React, { useState, useEffect } from "react";
-// import data from '../../temp/Manhattan_Taxi_Zones.geojson';
 import {
   MapContainer,
   TileLayer,
   Marker,
-  Popup,
-  GeoJSON,
-  CircleMarker,
-  Tooltip,
-  AttributionControl,
-  Circle,
-  CircleProps,
-  CircleMarkerProps,
-
+  Popup
 } from "react-leaflet";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import {
-  CircularProgress,
-  FormControl,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  LinearProgress,
   Dialog
 } from "@mui/material";
-import { Card, CardContent, CardMedia, CardActions } from "@mui/material";
-// import MarkerClusterGroup from "../map/MarkerClusterGroup";
-import MarkerClusterGroup from "react-leaflet-markercluster";
 import "leaflet/dist/leaflet.css";
 import {
   Grid,
-  Paper,
   Typography,
-  Box,
-  Button,
+
   Container,
-  styled,
-  InputLabel,
-  Rating,
+
   useTheme,
-  Accordion,
-  AccordionSummary,
-  ListItem,
-  List,
-  Divider,
+
 } from "@mui/material";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import {
   DateCalendar,
-  DesktopDatePicker,
-  DesktopTimePicker,
-  StaticDatePicker,
+
 } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import CreditScoreIcon from "@mui/icons-material/CreditScore";
-import StarIcon from "@mui/icons-material/Star";
+
 import IItinerary from "../../models/IItinerary";
-import zoneData from "../../temp/zone_Grouping.json";
 import L from "leaflet";
-import { DatePicker } from "@mui/lab";
-import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
+
 import { CButton } from "../common/button";
 import { toTitleCase } from "../../utils/utility_func";
 import { smartApi } from "../../utils/apiCalls";
 import { Loader } from "../common/loader";
 import zoneCords from "../../temp/zone_Grouping.json";
 import tagMapping from "../../temp/tag_mapping";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useNavigate } from "react-router-dom";
 import { MessagePopups } from "../common/messagePopups";
 
 
-const iconPerson = new L.Icon({
-  iconUrl: "https://media.giphy.com/media/daxA5okS3H9gkpKpjR/giphy.gif",
-  iconRetinaUrl: "https://media.giphy.com/media/f3dRSiajsz8DLmt0KS/giphy.gif",
-  iconSize: new L.Point(60, 75),
-  className: "leaflet-div-icon",
-});
 
-const redIcon = new L.Icon({
-  iconUrl:
-    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41],
-});
 
 const greenIcon = new L.Icon({
   iconUrl:
@@ -117,37 +67,7 @@ const purpleIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const createClusterCustomIcon = function (cluster: any) {
-  return L.divIcon({
-    html: `<span>${cluster.getChildCount()}</span>`,
-    className: "marker-cluster-custom",
-    iconSize: L.point(40, 40, true),
-  });
-};
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  borderRadius: 15,
-  boxShadow: theme.shadows[1],
-  margin: theme.spacing(2),
-}));
-
-const StyledCardContent = styled(CardContent)(({ theme }) => ({
-  paddingBottom: theme.spacing(2),
-}));
-
-const StyledCardMedia = styled(CardMedia)({
-  height: 0,
-  paddingTop: "56.25%", // 16:9
-});
-
-const QuestionnaireTitle = styled(Typography)(({ theme }) => ({
-  marginBottom: theme.spacing(1),
-  color: theme.palette.primary.main,
-}));
-
-const QuestionnaireButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(3),
-}));
 
 let todayDate = new Date();
 
@@ -156,7 +76,7 @@ let tomorrowDate = new Date(todayDate);
 tomorrowDate.setDate(todayDate.getDate() + 1);
 
 interface IProps {
-  updateItinerary: () => void;
+  updateItinerary: (arg: object) => void;
   currentItinerary: IItinerary;
 }
 
@@ -210,8 +130,6 @@ export const Questionnaire: React.FC<IProps> = ({
       .then((results) => {
         setIsLoading(false)
         if (results?.valid && results?.attraction_type && results?.cusine_type) {
-          let restaurantTags = [];
-          let attractionTags = [];
           setTags([...results.attraction_type]);
           setZoneGroup([...results.zone_group]);
           setSubCategory([...results?.cusine_type])
@@ -234,11 +152,10 @@ export const Questionnaire: React.FC<IProps> = ({
     let tagArray = [...selectedTags];
     let index = tagArray.indexOf(item);
     if (index == -1) {
-      if (tagArray.length == 4){
+      if (tagArray.length == 4) {
         handleSelectionError('A maximum of four venue types can be chosen.')
-      }else{
+      } else {
         tagArray.push(item);
-
       }
     } else {
       tagArray.splice(index, 1);
@@ -250,9 +167,9 @@ export const Questionnaire: React.FC<IProps> = ({
     let tagArray = [...selectedSubCategoryTags];
     let index = tagArray.indexOf(item);
     if (index == -1) {
-      if (tagArray.length == 2){
+      if (tagArray.length == 2) {
         handleSelectionError('A maximum of two cusine types can be chosen.')
-      }else{
+      } else {
         tagArray.push(item);
       }
     } else {
@@ -267,86 +184,97 @@ export const Questionnaire: React.FC<IProps> = ({
     let zoneArray = [...selectedZones];
     let index = zoneArray.indexOf(item);
     if (index == -1) {
-      if (zoneArray.length == 2){
+      if (zoneArray.length == 2) {
         handleSelectionError('A maximum of two Zones can be chosen.')
-      }else{
+      } else {
         zoneArray.push(item);
       }
     } else {
       zoneArray.splice(index, 1);
     }
     setSelectedZones(zoneArray);
+    console.log(zoneArray);
+    
     const zoneGroupItems = zoneArray.flatMap((el) => zoneCords.filter((x) => x.zone_group === el));
-    // let zoneGroupItems = zoneCords.filter((x) => x.zone_group === item);
+    console.log(zoneGroupItems);
     setZoneGroupItems([...zoneGroupItems]);
   };
 
   const handleGoBack = () => {
-    // navigate(-1);
-    console.log('HANDLE GO BACK');
-    
     handleTwoSelectionError('Are you sure you want to exit!')
   };
 
-  const setErrorMessage = (message:string)=>{
+  const setErrorMessage = (message: string) => {
     setOneButtonMessage(message)
   }
 
-  const handleOneButtonPopup = () =>{
+  const handleOneButtonPopup = () => {
     setOneButtonModal(!oneButtonModal)
   }
 
-  const handleSelectionError = (message:string)=>{
+  const handleSelectionError = (message: string) => {
     setErrorMessage(message)
     handleOneButtonPopup()
   }
 
-  const handleTwoButtonPopup = () =>{
+  const handleTwoButtonPopup = () => {
     setTwoButtonModal(!twoButtonModal)
   }
 
-  const handleTwoSelectionError = (message:string)=>{
+  const handleTwoSelectionError = (message: string) => {
     setErrorMessage(message)
     handleTwoButtonPopup()
   }
 
-  const handleExit=()=>{
+  const handleExit = () => {
     navigate(-1)
   }
 
-  
+
 
   const finishTripQuestionnaire = () => {
     if (selectedTags.length < 1) {
       handleSelectionError("Please Select atleast 1 Venue Tag")
     } else if (selectedSubCategoryTags.length < 2) {
-       handleSelectionError("Please Select at least 2 Cusine Tags");
+      handleSelectionError("Please Select at least 2 Cusine Tags");
     } else if (selectedZones.length < 2) {
-       handleSelectionError("Please Select at least 2 Zones");
-    }else if (Object.keys(selectedDate).length === 0) {
+      handleSelectionError("Please Select at least 2 Zones");
+    } else if (Object.keys(selectedDate).length === 0) {
       handleSelectionError("Please Select a Date");
-   } else {
-      updateItinerary();
+    } else {
+      submitOptions();
     }
   };
 
-  const submitOptions =()=>{
-    const request = {
-      date: selectedDate,
-      
-    }
+  function replaceSpacesWithUnderscores(inputString: string) {
+    return inputString.replace(/ /g, '_');
+  }
+
+  function replaceUnderscoresWithSpaces(inputString: string) {
+    return inputString.replace(/_/g, ' ');
   }
   
 
+  const submitOptions = () => {
+    const request = {
+      date: selectedDate,
+      zoneGroup: [...selectedZones],
+      attractions: [...selectedTags],
+      cusine: [...selectedSubCategoryTags]
+    }
+    updateItinerary(request)
+  }
+
+
   return (
     <>
-    <Dialog
+      <Dialog
         open={oneButtonModal}
         onClose={handleOneButtonPopup}
         maxWidth="sm"
         fullWidth
       >
-        <MessagePopups totalButtons={1} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleOneButtonPopup}/>
+        <MessagePopups totalButtons={1} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleOneButtonPopup} />
       </Dialog>
       <Dialog
         open={twoButtonModal}
@@ -354,301 +282,238 @@ export const Questionnaire: React.FC<IProps> = ({
         maxWidth="sm"
         fullWidth
       >
-        <MessagePopups totalButtons={2} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleExit}  onSecondClick={handleTwoButtonPopup}/>
+        <MessagePopups totalButtons={2} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleExit} onSecondClick={handleTwoButtonPopup} />
       </Dialog>
-    {isLoading  ? <Loader/> : 
-    <Grid container>
-    <Grid
-      item
-      xs={6}
-      style={{ overflow: "scroll", height: "90vh", padding: "10px" }}
-    >
-      <Container>
-        <Grid
-          container
-          xs={12}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            margin: "10px 0px",
-          }}
-        >
-          <span 
-            onClick={()=>{handleGoBack()}}
-          style={{cursor:'pointer', padding:'5px', border:'2px solid #757de8', borderRadius:'50%', display:'flex', justifyContent:'center', alignItems:'center'}}>
-          <ArrowBackIosNewIcon sx={{color:'#757de8'}}/>
-          </span>
-          <Typography variant="h5" align="center" width={"80%"}>
-            Create Itinerary
-          </Typography>
-        </Grid>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <DemoContainer components={["DateCalendar", "DateCalendar"]}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12}>
-                <DemoItem>
-                  <Typography variant="h6" align="left">
-                    Select Date
-                  </Typography>
-                  <DateCalendar
-                    value={selectedDate}
-                    onChange={(newValue) => dateUpdate(newValue)}
-                    sx={{
-                      backgroundColor: currentTheme.palette.secondary.main,
-                      borderRadius: "15px",
-                    }}
-                  />
-                </DemoItem>
-              </Grid>
-            </Grid>
-          </DemoContainer>
-        </LocalizationProvider>
-
-        <div style={{ width: "100%", marginTop: "20px" }}>
-          <Typography variant="h6" align="left">
-            Select Attraction Type
-          </Typography>
+      {isLoading ? <Loader /> :
+        <Grid container>
           <Grid
             item
-            xs={12}
-            style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
+            xs={6}
+            style={{ overflow: "scroll", height: "90vh", padding: "10px" }}
           >
-            {tags?.map((el, ind) => (
-              <span
-                onClick={() => toggleTags(el)}
+            <Container>
+              <Grid
+                container
+                xs={12}
                 style={{
-                  padding: "10px",
-                  border: "2px solid",
-                  borderColor: "#757de8",
-                  marginRight: "15px",
-                  marginBottom: "10px",
-                  borderRadius: "25px",
-                  cursor: "pointer",
-                  backgroundColor:
-                    selectedTags.indexOf(el) !== -1
-                      ? "#757de8"
-                      : "transparent",
-                  color: selectedTags.indexOf(el) !== -1 ? "#fff" : "#757de8",
+                  display: "flex",
+                  alignItems: "center",
+                  margin: "10px 0px",
                 }}
               >
-                {el}
-              </span>
-            ))}
-          </Grid>
-        </div>
-        <div style={{ width: "100%", marginTop: "20px" }}>
-          <Typography variant="h6" align="left">
-            Select Cuisine Type
-          </Typography>
-          <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
-            {subCategory?.map((el, ind) => (
-              <span
-                onClick={() => toggleCusine(el)}
-                style={{
-                  padding: '10px',
-                  border: '2px solid',
-                  borderColor: '#757de8',
-                  marginRight: '15px',
-                  borderRadius: '25px',
-                  cursor: 'pointer',
-                  marginBottom: '10px',
-                  backgroundColor: selectedSubCategoryTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
-                  color: selectedSubCategoryTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
-                }}>
-                {el}
-              </span>
-            ))}
-          </Grid>
-        </div>
-        <div style={{ width: "100%", marginTop: "20px" }}>
-          <Typography variant="h6" align="left">
-            Select Zone Group
-          </Typography>
-          <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-              {zoneGroup?.map((item, index) => {
-                return (
-                  <Grid
-                    style={{
-                      cursor: "pointer",
-                      padding: '15px',
-                      width: '30%',
-                      backgroundColor: currentTheme?.palette?.secondary?.main,
-                      marginRight: '5px',
-                      borderRadius: '10px',
-                      marginBottom: '10px',
-                      
-                    }}
-                    item
-                    className="unselectable"
-                  >
-                    <Grid xs={12} >
-                      <img
-                        src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                        alt=""
-                        style={{ width: '100%', borderRadius: '5px' }}
-                      />
-                    </Grid>
-                    <Grid xs={12}>
-                      <Typography variant="subtitle2" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom:'10px' }}>
-                        {toTitleCase(item)}
-                      </Typography>
-                    </Grid>
-                    <Grid xs={12} style={{display:'flex', justifyContent:'center', background: currentTheme.palette.secondary.main}}>
-                      <CButton
-                        title="Select"
-                        onClick={()=>handleChange(item)}
-                        style={{
-                          width: '45%',
-                          background: 'transparent',
-                          borderRadius: '20px',
-                          padding: '10px',
-                          fontWeight: 'bold',
-                          height:'30px',
-                          fontSize: '10px',
-                          border:'1px solid #757de8',
-                          backgroundColor:
-                          selectedZones.indexOf(item) !== -1
-                            ? "#757de8"
-                            : "transparent",
-                          color: selectedZones.indexOf(item) !== -1 ? "#fff" : "#757de8",
-                        }}
-                      />
+                <span
+                  onClick={() => { handleGoBack() }}
+                  style={{ cursor: 'pointer', padding: '5px', border: '2px solid #757de8', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <ArrowBackIosNewIcon sx={{ color: '#757de8' }} />
+                </span>
+                <Typography variant="h5" align="center" width={"80%"}>
+                  Create Itinerary
+                </Typography>
+              </Grid>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={["DateCalendar", "DateCalendar"]}>
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12}>
+                      <DemoItem>
+                        <Typography variant="h6" align="left">
+                          Select Date
+                        </Typography>
+                        <DateCalendar
+                          value={selectedDate}
+                          onChange={(newValue) => dateUpdate(newValue)}
+                          sx={{
+                            backgroundColor: currentTheme.palette.secondary.main,
+                            borderRadius: "15px",
+                          }}
+                        />
+                      </DemoItem>
                     </Grid>
                   </Grid>
-                );
-              })}
-            </Grid>
-          {/* <FormControl>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              name="radio-buttons-group"
-            >
-              {zoneGroup?.map((item, index) => {
-                let zoneGroupItems = zoneCords
-                  .filter((x) => {
-                    let valid = false;
-                    for (let [key, value] of Object.entries(tagMapping)) {
-                      if (key == x.venue_type && selectedTags.includes(value))
-                        valid = true;
-                    }
-                    return valid;
-                  })
-                  .filter((x) => x.zone_group === item);
-                return (
-                  <Accordion
-                    expanded={expanded === item}
-                    onChange={handleChange(item)}
-                    style={{ marginBottom: "10px", width: '100%' }}
-                  >
-                    <AccordionSummary
-                      aria-controls="panel1d-content"
-                      id="panel1d-header"
-                      expandIcon={<ExpandMoreIcon />}
+                </DemoContainer>
+              </LocalizationProvider>
+
+              <div style={{ width: "100%", marginTop: "20px" }}>
+                <Typography variant="h6" align="left">
+                  Select Attraction Type
+                </Typography>
+                <Grid
+                  item
+                  xs={12}
+                  style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
+                >
+                  {tags?.map((el, ind) => (
+                    <span
+                      onClick={() => toggleTags(el)}
+                      style={{
+                        padding: "10px",
+                        border: "2px solid",
+                        borderColor: "#757de8",
+                        marginRight: "15px",
+                        marginBottom: "10px",
+                        borderRadius: "25px",
+                        cursor: "pointer",
+                        backgroundColor:
+                          selectedTags.indexOf(el) !== -1
+                            ? "#757de8"
+                            : "transparent",
+                        color: selectedTags.indexOf(el) !== -1 ? "#fff" : "#757de8",
+                      }}
                     >
-                      <Typography>
-                        <FormControlLabel
-                          value={item}
-                          control={<Radio />}
-                          label=""
-                        />
-                        {item}
-                      </Typography>
-                    </AccordionSummary>
-                    <List style={{ cursor: "pointer" }}>
-                      {zoneGroupItems.map((grp, index) => {
-                        return (
-                          <>
-                            <ListItem
-                              key={grp.name + index}
-                              style={{
-                                backgroundColor:
-                                  grp.name === selectedZoneItemToHiglight
-                                    ? "#b8c0ff"
-                                    : "",
-                              }}
-                              onClick={() =>
-                                setSelectedZoneItemToHiglight(grp.name)
-                              }
-                            >
-                              {grp.name}
-                            </ListItem>
-                            <Divider />
-                          </>
-                        );
-                      })}
-                    </List>
-                  </Accordion>
-                );
-              })}
-            </RadioGroup>
-          </FormControl> */}
-        </div>
+                      {el}
+                    </span>
+                  ))}
+                </Grid>
+              </div>
+              <div style={{ width: "100%", marginTop: "20px" }}>
+                <Typography variant="h6" align="left">
+                  Select Cuisine Type
+                </Typography>
+                <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
+                  {subCategory?.map((el, ind) => (
+                    <span
+                      onClick={() => toggleCusine(el)}
+                      style={{
+                        padding: '10px',
+                        border: '2px solid',
+                        borderColor: '#757de8',
+                        marginRight: '15px',
+                        borderRadius: '25px',
+                        cursor: 'pointer',
+                        marginBottom: '10px',
+                        backgroundColor: selectedSubCategoryTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
+                        color: selectedSubCategoryTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
+                      }}>
+                      {el}
+                    </span>
+                  ))}
+                </Grid>
+              </div>
+              <div style={{ width: "100%", marginTop: "20px" }}>
+                <Typography variant="h6" align="left">
+                  Select Zone Group
+                </Typography>
+                <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                  {zoneGroup?.map((item, index) => {
+                    return (
+                      <Grid
+                        style={{
+                          cursor: "pointer",
+                          padding: '15px',
+                          width: '30%',
+                          backgroundColor: currentTheme?.palette?.secondary?.main,
+                          marginRight: '5px',
+                          borderRadius: '10px',
+                          marginBottom: '10px',
 
-        <div
-          style={{ width: "100%", justifyContent: "center", display: "flex" }}
-        >
-          <CButton
-            title="Next"
-            onClick={() => finishTripQuestionnaire()}
-            style={{
-              width: "50%",
-              background: "#757de8",
-              color: "#ffffff",
-              borderRadius: "20px",
-              padding: "10px 30px",
-              fontWeight: "bold",
-            }}
-          />
-        </div>
-      </Container>
-    </Grid>
-    <Grid item xs={6} style={{border:'2px solid black'}}>
-      <MapContainer
-        style={{
-          height: "100%",
-          width: "100%",
-          borderTopLeftRadius: "30px",
-          borderBottomLeftRadius: "30px",
-        }}
-        className="markercluster-map"
-        zoom={13}
-        center={[40.7831, -73.9712]}
-      >
-        <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png" />
-        {/* <MarkerClusterGroup> */}
-        {zoneGroupItems
-          .filter((x: any) => {
-            let valid = false;
-            for (let [key, value] of Object.entries(tagMapping)) {
-              if (key == x.venue_type && selectedTags.includes(value))
-                valid = true;
-            }
-            return valid;
-          })
-          .map((item: any) => {
-            return (
+                        }}
+                        item
+                        className="unselectable"
+                      >
+                        <Grid xs={12} >
+                          <img
+                            src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                            alt=""
+                            style={{ width: '100%', borderRadius: '5px' }}
+                          />
+                        </Grid>
+                        <Grid xs={12}>
+                          <Typography variant="subtitle2" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom: '10px' }}>
+                            {toTitleCase(item)}
+                          </Typography>
+                        </Grid>
+                        <Grid xs={12} style={{ display: 'flex', justifyContent: 'center', background: currentTheme.palette.secondary.main }}>
+                          <CButton
+                            title="Select"
+                            onClick={() => handleChange(item)}
+                            style={{
+                              width: '45%',
+                              background: 'transparent',
+                              borderRadius: '20px',
+                              padding: '10px',
+                              fontWeight: 'bold',
+                              height: '30px',
+                              fontSize: '10px',
+                              border: '1px solid #757de8',
+                              backgroundColor:
+                                selectedZones.indexOf(item) !== -1
+                                  ? "#757de8"
+                                  : "transparent",
+                              color: selectedZones.indexOf(item) !== -1 ? "#fff" : "#757de8",
+                            }}
+                          />
+                        </Grid>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
 
-              <Marker
-                icon={
-                  item.name === selectedZoneItemToHiglight
-                    ? greenIcon
-                    : purpleIcon
-                }
-                position={[item.latitude, item.longitude]}
+              </div>
+
+              <div
+                style={{ width: "100%", justifyContent: "center", display: "flex" }}
               >
-                <Popup>
-                  {item.name} <br /> <strong>Rating:</strong>{item.rating}
-                </Popup>
-              </Marker>
+                <CButton
+                  title="Next"
+                  onClick={() => submitOptions()}
+                  style={{
+                    width: "50%",
+                    background: "#757de8",
+                    color: "#ffffff",
+                    borderRadius: "20px",
+                    padding: "10px 30px",
+                    fontWeight: "bold",
+                  }}
+                />
+              </div>
+            </Container>
+          </Grid>
+          <Grid item xs={6}>
+            <MapContainer
+              style={{
+                height: "100%",
+                width: "100%",
+                borderTopLeftRadius: "30px",
+                borderBottomLeftRadius: "30px",
+              }}
+              className="markercluster-map"
+              zoom={13}
+              center={[40.7831, -73.9712]}
+            >
+              <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png" />
+              {/* <MarkerClusterGroup> */}
+              {zoneGroupItems
+                .filter((x: any) => {
+                  let valid = false;
+                  for (let [key, value] of Object.entries(tagMapping)) {
+                    if (key == x.venue_type && selectedTags.includes(value))
+                      valid = true;
+                  }
+                  return valid;
+                })
+                .map((item: any) => {
+                  return (
+
+                    <Marker
+                      icon={
+                        item.name === selectedZoneItemToHiglight
+                          ? greenIcon
+                          : purpleIcon
+                      }
+                      position={[item.latitude, item.longitude]}
+                    >
+                      <Popup>
+                        {item.name} <br /> <strong>Rating:</strong>{item.rating}
+                      </Popup>
+                    </Marker>
 
 
-            );
-          })}
-        {/* </MarkerClusterGroup> */}
-      </MapContainer>
-    </Grid>
-  </Grid >
-    }
+                  );
+                })}
+              {/* </MarkerClusterGroup> */}
+            </MapContainer>
+          </Grid>
+        </Grid >
+      }
     </>
   );
 };

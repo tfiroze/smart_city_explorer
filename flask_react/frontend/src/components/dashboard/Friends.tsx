@@ -191,7 +191,7 @@ export const FriendsModal = () => {
 									),
 								}}
 								label="Email"
-								placeholder="Please enter your email..."
+								placeholder="Please Enter Friends Email..."
 								variant="outlined"
 								color="primary"
 								fullWidth
@@ -212,7 +212,7 @@ export const FriendsModal = () => {
 							<Grid container spacing={2}>
 								<Grid item xs={12} sm={6}>
 									<CButton
-										title="LOGIN"
+										title="Add Friend"
 										loading={loading}
 										onClick={formValidator}
 										style={{
@@ -232,7 +232,7 @@ export const FriendsModal = () => {
 							</Grid>
 						</Grid>
 					}
-					<span style={{ cursor: 'pointer' }} onClick={handleModalView}><Typography>{'Add Friends'}</Typography></span>
+					<span style={{ cursor: 'pointer' }} onClick={handleModalView}><Typography>{modalView == 1? 'Add Friends' : 'View Friends'}</Typography></span>
 				</Grid>
 			</Paper>
 		</>

@@ -20,8 +20,6 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
 
   return (
     <>
-      {/* <Header setProfileDrawerOpen={setProfileDrawerOpen} /> */}
-      {/* <SliderNav /> */}
       <Routes>
         {auth ? (
           <>

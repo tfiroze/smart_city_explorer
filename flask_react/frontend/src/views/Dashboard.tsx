@@ -445,18 +445,15 @@ export const Dashboard = () => {
                           break; // Stop checking once a match is found
                         }
                       }
-
                       return {
                         fillColor,
                         color: "black",
-                        weight: 2,
+                        weight: 0.8,
                         dashArray: "5, 5",
-                        fillOpacity: 1
+                        fillOpacity: 0.7
                       };
                     }}
-                  //  onEachFeature={onEachCountry}
                   />
-                  {/* <GeoJSON data={ecomp} pointToLayer={setIcon} /> */}
                 </MapContainer>
               </Grid>
             </Grid>
