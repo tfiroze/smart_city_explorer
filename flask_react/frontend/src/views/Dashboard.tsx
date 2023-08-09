@@ -430,6 +430,23 @@ export const Dashboard = () => {
                   />
                   <GeoJSON
                     data={geoData}
+                    onEachFeature={(feature, layer) => {
+                      const zoneNumber = feature.properties.location_id;
+                      for (const [zoneGroup, zoneNumbers] of Object.entries(
+                        venue_zone_grouping
+                      )) {
+                        if (zoneNumbers.includes(zoneNumber)) {
+                          // Assign a specific color based on the zone group
+                          const popupContent = `<div>${zoneGroup}</div>`;
+
+                          // Bind the popup content to the layer
+                          layer.bindPopup(popupContent);
+                        }
+                      }
+
+                      // Create a popup content using the zoneNumber or other properties you want to display
+
+                    }}
 
                     style={(feature) => {
                       const zoneNumber = feature.properties.location_id; // Assuming someProperty holds the zone number
