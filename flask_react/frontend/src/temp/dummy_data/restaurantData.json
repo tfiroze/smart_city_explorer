@@ -1,0 +1,74 @@
+[
+	{
+		"venue_address": "44 W 56th St New York, NY 10019 United States",
+		"venue_id": "ven_304330524e695f70503476526b6f775a6c6e5a713332574a496843",
+		"venue_lat": 40.7629527,
+		"venue_lon": -73.9767421,
+		"selected": false,
+		"venue_name": "The Consulate"
+	},
+	{
+		"venue_address": "517 Columbus Ave, New York, NY 10024",
+		"venue_id": "ven_3046564f552d3633755343526b6f77595649495368324c4a496843",
+		"venue_lat": 40.785675,
+		"venue_lon": -73.9725667,
+		"selected": false,
+		"venue_name": "The Viand"
+	},
+	{
+		"venue_address": "2450 Broadway, New York, NY 10024",
+		"venue_id": "ven_3048674a4764455f76744f526b6f77594a6f5f617658724a496843",
+		"venue_lat": 40.7911087,
+		"venue_lon": -73.9739812,
+		"selected": false,
+		"venue_name": "Carmine's Italian Restaurant - Upper West Side"
+	},
+	{
+		"venue_address": "155 E 42nd St, New York, NY 10017",
+		"venue_id": "ven_304961777454515336474c526b6f775a4e5173735733524a496843",
+		"venue_lat": 40.751164,
+		"venue_lon": -73.974862,
+		"selected": false,
+		"venue_name": "The Capital Grille"
+	},
+	{
+		"venue_address": "474 Columbus Ave, New York, NY 10024",
+		"venue_id": "ven_304d74385a726d4c746449526b6f7759565964796d33514a496843",
+		"venue_lat": 40.7844993,
+		"venue_lon": -73.9738724,
+		"selected": false,
+		"venue_name": "Thyme & Tonic"
+	},
+	{
+		"venue_address": "373 Amsterdam Ave, New York, NY 10024",
+		"venue_id": "ven_304f705a563666457a3258526b6f775a6c7476456754364a496843",
+		"venue_lat": 40.7821972,
+		"venue_lon": -73.9787434,
+		"selected": false,
+		"venue_name": "Chama Mama"
+	},
+	{
+		"venue_address": "10 Lincoln Center Plaza, New York, NY 10023",
+		"venue_id": "ven_30506c5677346630437635526b6f775a78304d533079784a496843",
+		"venue_lat": 40.7727862,
+		"venue_lon": -73.983104,
+		"selected": false,
+		"venue_name": "Tatiana by Kwame Onwuachi"
+	},
+	{
+		"venue_address": "508 Columbus Ave, New York, NY 10024",
+		"venue_id": "ven_30516242387878596e4d41526b6f775a745f427a7766494a496843",
+		"venue_lat": 40.785587,
+		"venue_lon": -73.973045,
+		"selected": false,
+		"venue_name": "Mamoun's Falafel - UWS, Manhattan, NY"
+	},
+	{
+		"venue_address": "50 W 57th St New York, NY 10019 United States",
+		"venue_id": "ven_3068674e6f56796343637a526b6f7759743177664259304a496843",
+		"venue_lat": 40.7638889,
+		"venue_lon": -73.9766667,
+		"selected": false,
+		"venue_name": "Mangia 57th - Midtown Italian Food & Corporate Catering NYC"
+	}
+]
