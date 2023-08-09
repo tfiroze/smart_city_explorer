@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ThemeContext } from '../../utils/ApplicationContext';
 import { AuthContext } from '../../utils/AuthContext';
 import Logo from '../../resources/images/SCE_Logo.png';
-import { Avatar, Divider, Menu, MenuItem, Step, StepLabel, Stepper, Switch, Typography } from '@mui/material';
+import { Avatar, Divider, Menu, MenuItem, Step, StepLabel, Stepper, Switch, Typography, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import NightsStayIcon from '@mui/icons-material/NightsStay';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -48,7 +48,7 @@ export const Header: React.FC<Partial<IProps>> = ({
   const getAvatarColor = () => {
     return themeContext.theme === 'dark' ? '#757de8' : '#757de8';
   };
-
+  const currentTheme = useTheme();
   return (
     <>
       <Menu
@@ -79,7 +79,7 @@ export const Header: React.FC<Partial<IProps>> = ({
           <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '8vh', transition: 'height 0.5s' }} />
         </Grid>
         {steps?.length && <Grid item xs={6}>
-          <Stepper activeStep={activeStep} sx={{ mx: "auto", backgroundColor: "#FAFAFA" }}>
+          <Stepper activeStep={activeStep} sx={{ mx: "auto", backgroundColor:currentTheme.palette.secondary.main }}>
             {steps?.map((label, index) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>

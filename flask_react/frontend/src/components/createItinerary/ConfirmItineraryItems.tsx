@@ -14,6 +14,8 @@ import {
   createStyles,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { useNavigate } from "react-router-dom";
+
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   width: "100%",
@@ -68,13 +70,11 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
   const [note, setNote] = useState("");
   const [open, setOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleFinish = () => {
     setOpen(true);
-    // completed({
-    //   ...data,
-    //   comments: note,
-    //   name: name,
-    // });
+    navigate("/dashboard");
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,32 +96,19 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
   };
 
   return (
-    <Grid container justifyContent="center" spacing={2}>
-      <StyledPaper>
+    <Grid container justifyContent="center" alignItems="center">
+      <StyledPaper elevation={0} style={{height:'100vh'}}>
         <Typography variant="h6" gutterBottom>
           Confirm Itinerary
         </Typography>
-        <Grid item xs={12} sm={10} md={8} lg={6}>
           <TextField
             label="Itinerary Name"
             fullWidth
             value={name}
             onChange={handleNameChange}
+            style={{width:'20%'}}
           />
-        </Grid>
-        <Grid item xs={12} sm={10} md={8} lg={6}>
-          <StyledTextField
-            id="filled-multiline-flexible"
-            label="Notes (Optional)"
-            multiline
-            maxRows={4}
-            variant="filled"
-            fullWidth
-            value={note}
-            onChange={handleNoteChange}
-          />
-        </Grid>
-        <Grid item xs={12} sm={10} md={8} lg={6}>
+
           <StyledButton
             variant="contained"
             endIcon={<CheckCircleOutlineIcon />}
@@ -129,7 +116,6 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
           >
             Finish Planning
           </StyledButton>
-        </Grid>
         <StyledDisclaimer variant="body2" align="center" mt={2}>
           *Disclaimer: By clicking "Finish Planning," you agree to embark on this amazing adventure with a smile and a sense of humour. Bon voyage!
         </StyledDisclaimer>

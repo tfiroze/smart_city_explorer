@@ -81,30 +81,30 @@ export const CreateItinerary: React.FC<IProps> = ({
     .then((results) => {
       console.log(results);
 
-    //   if (results?.valid) {
-    //     const d = new Date(tokenExpirationTime);
-    //     d.setTime(d.getTime());
-    //     let expires = d.toUTCString();
+      // if (results?.valid) {
+      //   const d = new Date(tokenExpirationTime);
+      //   d.setTime(d.getTime());
+      //   let expires = d.toUTCString();
 
-    //     setCookie("token", results.token, expires);
-    //     authContext.authenticate(true, {
-    //       first_name: results.firstname,
-    //       surname: results.surname,
-    //       user_id: results.user_id,
-    //       email: results.email,
-    //     });
-    //     localStorage.setItem("user_id", results.user_id);
-    //     localStorage.setItem("email", results.email);
-    //     localStorage.setItem("first_name", results.firstname);
-    //     localStorage.setItem("surname", results.surname);
-    //     setError('0')
-    //     setLoading(false)
-    //     navigate("/dashboard");
-    //   } else {
-    //     // ... handle the case when results?.valid is falsy ...
-    //     setError(results.errorType)
-    //     setLoading(false)
-    //   }
+      //   setCookie("token", results.token, expires);
+      //   authContext.authenticate(true, {
+      //     first_name: results.firstname,
+      //     surname: results.surname,
+      //     user_id: results.user_id,
+      //     email: results.email,
+      //   });
+      //   localStorage.setItem("user_id", results.user_id);
+      //   localStorage.setItem("email", results.email);
+      //   localStorage.setItem("first_name", results.firstname);
+      //   localStorage.setItem("surname", results.surname);
+      //   setError('0')
+      //   setLoading(false)
+      //   navigate("/dashboard");
+      // } else {
+      //   // ... handle the case when results?.valid is falsy ...
+      //   setError(results.errorType)
+      //   setLoading(false)
+      // }
     })
     .catch((error) => {
       console.log(error);

@@ -438,6 +438,41 @@ getRecommendation = async function(request: object){
   }
 };
 
+addFriendsToTrip = async function(request: object){
+	try {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + "venues", {
+			method: "POST",
+			body: new URLSearchParams({...request}),
+			credentials: 'include',
+		  });
+  
+		if (response.status === 200) {
+			const data = await response.json();
+			console.log('Update UserDetails Request Response: ', data)
+			if (data?.valid) {
+				return {
+					valid: true,
+					errorType: "0",
+				};
+			} else {
+				return {
+					valid: false,
+					errorType: '1'
+				};
+			}
+		} else {
+			return {
+				valid: false,
+				errorType: '2'
+			};
+		}
+	} catch (error) {
+		return {
+			valid: false,
+			errorType: '2'
+		};
+	}
+}
 
 };
 

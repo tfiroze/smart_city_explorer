@@ -256,11 +256,18 @@ export const Questionnaire: React.FC<IProps> = ({
   
 
   const submitOptions = () => {
+
+    let zoneGroupArr = [...selectedZones]
+    let attractionsArr = [...selectedTags]
+    let cusineArr = [...selectedSubCategoryTags]
+
+
+
     const request = {
       date: selectedDate,
-      zoneGroup: [...selectedZones],
-      attractions: [...selectedTags],
-      cusine: [...selectedSubCategoryTags]
+      zoneGroup: zoneGroupArr.map(replaceSpacesWithUnderscores),
+      attractions: attractionsArr.map(replaceSpacesWithUnderscores),
+      cusine: cusineArr.map(replaceSpacesWithUnderscores)
     }
     updateItinerary(request)
   }

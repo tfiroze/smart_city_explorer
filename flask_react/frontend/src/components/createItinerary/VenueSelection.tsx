@@ -184,7 +184,7 @@ const StyledTaxiFareTypography = styled(Typography)`
 //#endregion
 
 interface IProps {
-  updateItinerary: (data: IItinerary) => void;
+  updateItinerary: () => void;
   currentItinerary: IItinerary;
 }
 
@@ -428,40 +428,19 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
           ))}
         </Timeline>
       </Grid>
-      <SpeedDial
-        ariaLabel="Still Blind"
-        sx={{ bottom: 20, right: 10, position: 'absolute' }}
-        icon={<CreateSharpIcon />}
-      >
-        <SpeedDialAction
-          key="Add New Booking"
-          // tooltipOpen
-          icon={<AddSharpIcon />}
-          tooltipTitle="Add New Booking"
-          onClick={handleControlsToggle}
-        />
-        <SpeedDialAction
-          // tooltipOpen
-          key="Batch Edit Time"
-          icon={<AccessAlarmsSharpIcon />}
-          tooltipTitle="Batch Edit Time"
-        />
-        <SpeedDialAction
-          key="Toggle Introvert Mode"
-          icon={
-            introvertMode ? (
-              <SentimentVeryDissatisfiedIcon />
-            ) : (
-              <SentimentVerySatisfiedIcon />
-            )
-          }
-          tooltipTitle={
-            introvertMode ? "Introvert Mode: ON" : "Introvert Mode: OFF"
-          }
-          onClick={handleIntrovertModeToggle}
-        />
-      </SpeedDial>
-
+      <CButton
+        title="Confirm"
+        onClick={() => {updateItinerary()}}
+        style={{
+          width: '30%',
+          background: '#757de8',
+          color: '#ffffff',
+          borderRadius: '20px',
+          padding: '10px 30px',
+          fontWeight: 'bold',
+          margin:'20px 0px'
+        }}
+      />
     </Grid>
   );
 };
