@@ -648,8 +648,30 @@ for venue_type, venue_ids in user_venue_per_type_dict.items():
 
 
 
-# In[107]:
+# In[108]:
 
+
+# top_3_venues = {}
+
+# # Loop through each venue type and its venues
+# for venue_type, venue_data in manipulated_venues.items():
+#     # Sort the venues based on the composite score (fourth element in the tuple, index 3)
+#     if len(venue_data) > 3:
+#         sorted_venues = sorted(venue_data, key=lambda x: x[3], reverse=True)
+    
+#         # Keep only the top 3 venues for each venue type
+#         top_3_venues[venue_type] = sorted_venues[:3]
+#     else:
+#         top_3_venues[venue_type] = venue_data
+
+# # Display the top 3 venues for each venue type
+# # for venue_type, top_venues in top_3_venues.items():
+# #     print(f"Venue Type: {venue_type}")
+# #     for rank, (venue_id, rating, busyness, score) in enumerate(top_venues, start=1):
+# #         print(f"Rank {rank}: Venue ID: {venue_id}, Rating: {rating}, Busyness: {busyness}, Score: {score}")
+# #     print()
+
+# print(top_3_venues)
 
 top_3_venues = {}
 
@@ -671,5 +693,19 @@ for venue_type, venue_data in manipulated_venues.items():
 #         print(f"Rank {rank}: Venue ID: {venue_id}, Rating: {rating}, Busyness: {busyness}, Score: {score}")
 #     print()
 
-print(top_3_venues)
+venue_keys = list(top_3_venues.keys())
+venue_values = list(top_3_venues.values())
+
+final_venues = []
+for i in range(0, len(venue_keys)):
+    # Check if the index is within the bounds of venue_values
+    if i < len(venue_values):
+        final_venues.append({
+            'order': i,
+            'type': venue_keys[i],
+            'values': venue_values[i],
+            'type_cat': 'attraction'
+        })
+
+print(final_venues)
 

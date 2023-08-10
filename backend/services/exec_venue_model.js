@@ -24,38 +24,40 @@ function executeIPythonNotebook(ipynbFileName, parameters) {
 }
 
 let getRecommendVenues = (req, res, next) => {
-  console.log(req.body)
 
   const ipynbFileName = '../data_models/Recommendation_model/recommendation_model.ipynb'
 
   // For example of input: 
   // user_zone_input = ["Upper_West_Side", "Upper_East_Side"]
   // user_input_attractions = ["Neighborhood_Market", "Shopping_Center"]
-  // const user_zone_input = req.body.zoneGroup.replace(/'/g, '"') 
-  // const user_input_attractions = req.body.attractions.replace(/'/g, '"')
 
   const user_zone_input = req.body.zoneGroup
   const user_input_attractions = req.body.attractions
 
-  // const parameters = [JSON.parse(user_zone_input), JSON.parse(user_input_attractions)];
   const parameters = [user_zone_input, user_input_attractions]
 
-  // get a string and convert into json
+  // get a string from python script and convert into json
   const result = executeIPythonNotebook(ipynbFileName, parameters);
-  const str_res = result.replace(/'/g, '"').replace(/\(/g, '[').replace(/\)/g, ']')
-  let json_res = JSON.parse(str_res)
-
-  const venueIds = [];
-
-  for (const venueType in json_res) {
-    const venueTypeData = json_res[venueType];
+  const resString = result.replace(/'/g, '"').replace(/\(/g, '[').replace(/\)/g, ']')
+  let resJSON = JSON.parse(resString)
   
-    for (const venueInfo of venueTypeData) {
-      const venueId = venueInfo[0];
-      venueIds.push(venueId);
+  let venueInfo = {}
+  let venueIds = []  
+  for (let i=0;i<resJSON.length;i++) {
+    venueInfo[resJSON[i]['type']] = []
+    for(let j=0;j<3;j++){
+      venueIds.push(resJSON[i]['values'][j][0])
+      venueInfo[resJSON[i]['type']].push(
+        {
+          venue_id: resJSON[i]['values'][j][0],
+          rating: resJSON[i]['values'][j][1],
+          busyness: resJSON[i]['values'][j][2],
+          score: resJSON[i]['values'][j][3]
+        }
+      )
     }
   }
-  
+
   try {
     let dbOperation = (conn) => {
       const sqlStr = 'select original_ven_id,name,rating,image,description,type_mod,latitude,longitude from venue_static where original_ven_id in (?)'
@@ -66,31 +68,21 @@ let getRecommendVenues = (req, res, next) => {
             return res.status(200).send({valid:false,message:'Failed to get recommendation venues'})
         }
       }).then(([rows]) => {
-        let result = rows
-        for (let i=0;i<result.length;i++) {
-          for(let e in json_res) {
-            for(let j=0;j<json_res[e].length;j++){
-              if(json_res[e][j][0] == result[i]['original_ven_id']){
-                result[i]['busyness'] = json_res[e][j][2]
-                result[i]['score'] = json_res[e][j][3]
+        for (const key in venueInfo) {
+          for(let i=0;i<venueInfo[key].length;i++){
+            for(let j=0;j<rows.length;j++){
+              if(rows[j]['original_ven_id'] === venueInfo[key][i]['venue_id']){
+                venueInfo[key][i]['name'] = rows[j]['name']
+                venueInfo[key][i]['image'] = rows[j]['image']
+                venueInfo[key][i]['latitude'] = rows[j]['latitude']
+                venueInfo[key][i]['longitude'] = rows[j]['longitude']
+                venueInfo[key][i]['description'] = rows[j]['description']
               }
             }
-          }
-        }
-        const categorizedData = {};
-
-        for (const obj of result) {
-          const type = obj.type_mod;
-
-          if (!categorizedData[type]) {
-            categorizedData[type] = [];
-          }
-
-          categorizedData[type].push(obj);
-        }
-
+          } 
+        }       
         conn.end()
-        return res.status(200).send(categorizedData)
+        return res.status(200).send({valid:true, data:venueInfo})
       })
     }
     createSSHTunnel(dbOperation)
@@ -101,43 +93,43 @@ let getRecommendVenues = (req, res, next) => {
   }
 }
 
-// Not used for now
-let checkVenueOpen = (req, res) => {
-  let day = new Date(req.body.date).getDay()
-  let venueIds = []
 
-  for (const venue of req.body.result) {
-    venueIds.push(venue.original_ven_id)
-  }
+// let checkVenueOpen = (req, res) => {
+//   let day = new Date(req.body.date).getDay()
+//   let venueIds = []
 
-  try {
-    let dbOperation = (conn) => {
-      const sqlStr = 'select venue_id from venue_timings where venue_id in (?) and day=? and (opening_time=-1 or opening_time=0)'
-      conn.query(sqlStr, [venueIds, day], (err, result) => {
-        if(err) {
-            console.error(err)
-            conn.end()
-            return res.status(200).send({valid:false,message:'Failed to get recommendation venues'})
-        }
-      }).then(([rows]) => {
-        for(let i=0;i<rows.length;i++){
-          for(let j=0;j<req.body.result.length;j++){
-            if(rows[i]['venue_id'] === req.body.result[j]['original_ven_id']){
-              req.body.result.splice(j, 1)
-            }
-          }
-        }
-        conn.end()
+//   for (const venue of req.body.result) {
+//     venueIds.push(venue.original_ven_id)
+//   }
 
-      })
-    }
-    createSSHTunnel(dbOperation)
-  }catch(err) {
-    console.error(err)
-    conn.end()
-    return res.stauts(200).send({valid:false, message:'Failed to get recommendation venues'})
-  }
-}
+//   try {
+//     let dbOperation = (conn) => {
+//       const sqlStr = 'select venue_id from venue_timings where venue_id in (?) and day=? and (opening_time=-1 or opening_time=0)'
+//       conn.query(sqlStr, [venueIds, day], (err, result) => {
+//         if(err) {
+//             console.error(err)
+//             conn.end()
+//             return res.status(200).send({valid:false,message:'Failed to get recommendation venues'})
+//         }
+//       }).then(([rows]) => {
+//         for(let i=0;i<rows.length;i++){
+//           for(let j=0;j<req.body.result.length;j++){
+//             if(rows[i]['venue_id'] === req.body.result[j]['original_ven_id']){
+//               req.body.result.splice(j, 1)
+//             }
+//           }
+//         }
+//         conn.end()
+
+//       })
+//     }
+//     createSSHTunnel(dbOperation)
+//   }catch(err) {
+//     console.error(err)
+//     conn.end()
+//     return res.stauts(200).send({valid:false, message:'Failed to get recommendation venues'})
+//   }
+// }
 
 module.exports = {
   getRecommendVenues
