@@ -78,7 +78,6 @@ tomorrowDate.setDate(todayDate.getDate() + 1);
 
 interface IProps {
   updateItinerary: (arg: object) => void;
-  currentItinerary: IItinerary;
 }
 
 
@@ -271,7 +270,7 @@ export const Questionnaire: React.FC<IProps> = ({
       date: dateString,
       zoneGroup: zoneGroupArr.map(replaceSpacesWithUnderscores),
       attractions: attractionsArr.map(replaceSpacesWithUnderscores),
-      cusine: cusineArr.map(replaceSpacesWithUnderscores)
+      restaurants: cusineArr.map(replaceSpacesWithUnderscores)
     }
     updateItinerary(request)
   }

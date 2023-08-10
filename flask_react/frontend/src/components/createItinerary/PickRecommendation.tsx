@@ -25,6 +25,8 @@ import IItinerary from "../../models/IItinerary";
 import { VenueCard } from "../common/venueCard";
 import makeStyles from "@mui/styles/makeStyles/makeStyles";
 import { VenueDetailsModal } from "./VenueDetailsModal";
+import { replaceUnderscoresWithSpaces, toTitleCase } from "../../utils/utility_func";
+import { MessagePopups } from "../common/messagePopups";
 
 function MapUpdater() {
     const map = useMap();
@@ -54,37 +56,91 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 interface IProps {
-    currentItinerary: IItinerary;
     attractionValue: any[];
     attractionName: string[];
+    restaurantValue: any[];
+    restaurantName: string[];
+    getFare:(args: string[])=>void
 }
 
-export const PickRecommendation: React.FC<IProps> = ({ currentItinerary, attractionValue, attractionName }) => {
+export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attractionName, restaurantName, restaurantValue, getFare }) => {
     const [attractionNameArr, setAttractionNameArr] = useState<string[]>([]);
     const [attractionValueArr, setAttractionValueArr] = useState<any[]>([]);
+
+    const [restaurantNameArr, setRestaurantNameArr] = useState<string[]>([]);
+    const [restaurantValueArr, setRestaurantValueArr] = useState<any[]>([]);
+
+
     const [openItienaryDetailsModal, setOpenItienaryDetailsModal] = useState<boolean>(false);
     const [modalDetails, setModalDetails] = useState({})
     const [attractionSelection, setAttractionSelection] = useState<AttractionSelectionType>({})
+    const [restaurantSelection, setRestaurantSelection] = useState<AttractionSelectionType>({})
+
+    const [oneButtonModal, setOneButtonModal] = useState<boolean>(false);
+    const [oneButtonMessage, setOneButtonMessage] = useState<string>('');
 
     useEffect(() => {
         setAttractionValueArr(attractionValue);
-        setAttractionNameArr(attractionName)
+        setAttractionNameArr(attractionName);
+        setRestaurantNameArr(restaurantName)
+        setRestaurantValueArr(restaurantValue)
     }, []);
 
-    const handItienraryDetailsModal = (details:any) => {
+    const handItienraryDetailsModal = (details: any) => {
         setModalDetails(details);
         setOpenItienaryDetailsModal(!openItienaryDetailsModal)
     }
 
-    const handleCardSelection = (type: string, id: string) =>{
-        setAttractionSelection({
-            ...attractionSelection,
-            [type]: id
-        })
+    const handleCardSelection = (type: string, id: string) => {
+        if (type.includes("RESTAURANT")) {
+            setRestaurantSelection({
+                ...restaurantSelection,
+                [type]: id
+            })
+        } else {
+            setAttractionSelection({
+                ...attractionSelection,
+                [type]: id
+            })
+        }
+
+    }
+
+    const handleSubmitSelection = () => {
+
+        if (Object.keys(attractionSelection).length == 4 && Object.keys(restaurantSelection).length == 2){
+            console.log(restaurantSelection, attractionSelection);
+            const submissionArray = attractionNameArr.map(key => attractionSelection[key]);
+            let restArr = restaurantNameArr.map(key => restaurantSelection[key]);
+    
+            submissionArray.splice(2, 0, restArr[0]);
+            // Insert the second value of arrayB at the end of arrayA
+            submissionArray.push(restArr[1]);
+
+            getFare(submissionArray)
+        }else{
+            handleSelectionError('Please Select One Venue for Each Attraction')
+        }
+
+
+
     }
 
     const currentTheme = useTheme();
     const classes = useStyles();
+
+    const setErrorMessage = (message: string) => {
+        setOneButtonMessage(message)
+      }
+
+    const handleSelectionError = (message: string) => {
+        setErrorMessage(message)
+        handleOneButtonPopup()
+      }
+    
+      const handleOneButtonPopup = () => {
+        setOneButtonModal(!oneButtonModal)
+      }
 
 
     return (
@@ -96,9 +152,17 @@ export const PickRecommendation: React.FC<IProps> = ({ currentItinerary, attract
                 fullWidth
                 className={classes.root}
             >
-                <VenueDetailsModal venue={modalDetails}/>
+                <VenueDetailsModal venue={modalDetails} />
             </Dialog>
-            {attractionValueArr?.length > 0 && attractionValueArr.map((el: any, index:number) => (
+            <Dialog
+        open={oneButtonModal}
+        onClose={handleOneButtonPopup}
+        maxWidth="sm"
+        fullWidth
+      >
+        <MessagePopups totalButtons={1} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleOneButtonPopup} />
+      </Dialog>
+            {attractionValueArr?.length > 0 && attractionValueArr.map((el: any, index: number) => (
                 <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                     <Grid item xs={12}>
                         <Typography variant="h4" align="center">
@@ -112,30 +176,60 @@ export const PickRecommendation: React.FC<IProps> = ({ currentItinerary, attract
 
                     {el?.venue?.slice(0, 3)?.map((item: any, index: number) => {
                         const isSelected =
-                        Object.keys(attractionSelection).length !== 0 &&
-                        attractionSelection[el.type_att] === item.venue_id;
+                            Object.keys(attractionSelection).length !== 0 &&
+                            attractionSelection[el.type_att] === item.venue_id;
                         return (
-                            <VenueCard 
-                            venDetails={item} 
-                            detailsModalClick={handItienraryDetailsModal} 
-                            venType={el.type_att} 
-                            selectCard={handleCardSelection}
-                            showSelect={true}
-                            isSelected={isSelected}
+                            <VenueCard
+                                venDetails={item}
+                                detailsModalClick={handItienraryDetailsModal}
+                                venType={el.type_att}
+                                selectCard={handleCardSelection}
+                                showSelect={true}
+                                isSelected={isSelected}
                             />
                         );
                     })}
 
                 </Grid>
             ))
+            }
+
+            {restaurantValueArr?.length > 0 && restaurantValueArr.map((el: any, index: number) => (
+                <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
+                    <Grid item xs={12}>
+                        <Typography variant="h4" align="center">
+                            {toTitleCase(replaceUnderscoresWithSpaces(el.type_att))}
+                        </Typography>
+                        <Typography variant="h6" align="center">
+                            Time to Visit: {el.time}
+                        </Typography>
+                    </Grid>
 
 
+                    {el?.venue?.slice(0, 3)?.map((item: any, index: number) => {
+                        const isSelected =
+                            Object.keys(restaurantSelection).length !== 0 &&
+                            restaurantSelection[el.type_att] === item.venue_id;
+                        return (
+                            <VenueCard
+                                venDetails={item}
+                                detailsModalClick={handItienraryDetailsModal}
+                                venType={el.type_att}
+                                selectCard={handleCardSelection}
+                                showSelect={true}
+                                isSelected={isSelected}
+                            />
+                        );
+                    })}
+
+                </Grid>
+            ))
             }
 
             <Grid xs={12} style={{ justifyContent: 'center', display: 'flex' }}>
                 <CButton
                     title="Next"
-                    onClick={() => { }}
+                    onClick={() => { handleSubmitSelection() }}
                     style={{
                         width: '30%',
                         background: '#757de8',
