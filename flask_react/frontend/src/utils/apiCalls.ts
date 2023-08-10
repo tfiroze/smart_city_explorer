@@ -525,6 +525,44 @@ getDuration = async function(request: object){
   }
 };
 
+confirmItienary = async function(request: object){
+
+	try {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "trips", {
+		  method: "POST",
+		  body: new URLSearchParams({...request}),
+		//   credentials: 'include',
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Get Duration Request Response: ', data)
+		//   if (data?.valid) {
+		// 	  return {
+		// 		  valid: true,
+		// 		  errorType: "0",
+		// 		  ...data
+		// 	  };
+		//   } else {
+		// 	  return {
+		// 		  valid: false,
+		// 		  errorType: '1'
+		// 	  };
+		//   }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  } catch (error) {
+	  return {
+		  valid: false,
+		  errorType: '2'
+	  };
+  }
+};
+
 addFriendsToTrip = async function(request: object){
 	try {
 		const response = await fetch('https://csstudent09.ucd.ie/api/' + "venues", {

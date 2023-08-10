@@ -60,6 +60,9 @@ export const CreateItinerary: React.FC<IProps> = ({
 
   const [finalvenueids, setFinalVenueids] = useState<string[]>([])
 
+  const [fareArr, setFareArr] = useState<string[]>([])
+  const [durationArr, setDurationArr] = useState<string[]>([])
+
 
   const updateItinerary = (request: object) => {
     console.log(currentStep);
@@ -97,17 +100,16 @@ export const CreateItinerary: React.FC<IProps> = ({
       date: tripDate
     }
 
-    smartApi.getDuration(req)
+    smartApi.getFare(req)
       .then((results) => {
         console.log(results);
 
-        // if (results?.valid) {
-        //   manipulateRecommendationData(results.attractions, results.attraction_order)
-        //   manipulateRestRecommendationData(results.restaurants, results.restaurant_order)
-        //   setCurrentStep(currentStep + 1);
-        // } else {
-        //   // ... handle the case when results?.valid is falsy ...
-        // }
+        if (results?.valid) {
+          
+          // setCurrentStep(currentStep + 1);
+        } else {
+          // ... handle the case when results?.valid is falsy ...
+        }
       })
       .catch((error) => {
         console.log(error);
