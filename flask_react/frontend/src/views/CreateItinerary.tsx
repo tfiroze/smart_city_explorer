@@ -59,6 +59,7 @@ export const CreateItinerary: React.FC<IProps> = ({
   const [tripDate, setTripDate] = useState<string>("")
 
   const [finalvenueids, setFinalVenueids] = useState<string[]>([])
+  const [finalVenues, setFinalVenues] = useState([])
 
   const [fareArr, setFareArr] = useState<string[]>([])
   const [durationArr, setDurationArr] = useState<string[]>([])
@@ -92,9 +93,10 @@ export const CreateItinerary: React.FC<IProps> = ({
       });
   }
 
-  const handleGetFare = (request: string[]) => {
+  const handleGetFare = (request: string[], reqObj: any) => {
     setFinalVenueids(request)
-    console.log('Called------------', finalvenueids)
+    setFinalVenues(reqObj)
+    console.log('Called------------', reqObj, request)
     let req = {
       venue_id: [...request],
       date: tripDate
@@ -104,8 +106,9 @@ export const CreateItinerary: React.FC<IProps> = ({
       .then((results) => {
         console.log(results);
 
-        if (results?.valid) {
-          
+        if (results?.valid && results?.data) {
+          setFareArr(results.data)
+          handleGetDistance(request)
           // setCurrentStep(currentStep + 1);
         } else {
           // ... handle the case when results?.valid is falsy ...
@@ -128,13 +131,12 @@ export const CreateItinerary: React.FC<IProps> = ({
       .then((results) => {
         console.log(results);
 
-        // if (results?.valid) {
-        //   manipulateRecommendationData(results.attractions, results.attraction_order)
-        //   manipulateRestRecommendationData(results.restaurants, results.restaurant_order)
-        //   setCurrentStep(currentStep + 1);
-        // } else {
-        //   // ... handle the case when results?.valid is falsy ...
-        // }
+        if (results?.valid && results?.data) {
+          setFareArr(results.data)
+          setCurrentStep(currentStep + 1);
+        } else {
+          // ... handle the case when results?.valid is falsy ...
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -194,8 +196,8 @@ export const CreateItinerary: React.FC<IProps> = ({
           restaurantValue={restaurantTypeValue}
           restaurantName={restaurantTypeName}
         />;
-      // case 2:
-      //   return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
+      case 2:
+        return <VenueSelection fareArr={fareArr} duration={durationArr} venues={finalVenues} venids={finalvenueids}/>;
       // case 3:
       //   return <ConfirmItineraryItems
       //     // completed={addItem} 

@@ -44,6 +44,7 @@ let DefaultIcon = L.icon({
 });
 L.Marker.prototype.options.icon = DefaultIcon;
 type AttractionSelectionType = { [key: string]: string };
+type AttractionSelectionTypeObj = { [key: string]: any };
 
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -60,7 +61,7 @@ interface IProps {
     attractionName: string[];
     restaurantValue: any[];
     restaurantName: string[];
-    getFare:(args: string[])=>void
+    getFare:(args: string[], args2:any)=>void
 }
 
 export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attractionName, restaurantName, restaurantValue, getFare }) => {
@@ -73,8 +74,12 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
 
     const [openItienaryDetailsModal, setOpenItienaryDetailsModal] = useState<boolean>(false);
     const [modalDetails, setModalDetails] = useState({})
+
     const [attractionSelection, setAttractionSelection] = useState<AttractionSelectionType>({})
     const [restaurantSelection, setRestaurantSelection] = useState<AttractionSelectionType>({})
+
+    const [attractionSelectionObject, setAttractionSelectionObject] = useState<AttractionSelectionTypeObj>({})
+    const [restaurantSelectionObject, setRestaurantSelectionObject] = useState<AttractionSelectionTypeObj>({})
 
     const [oneButtonModal, setOneButtonModal] = useState<boolean>(false);
     const [oneButtonMessage, setOneButtonMessage] = useState<string>('');
@@ -91,16 +96,24 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
         setOpenItienaryDetailsModal(!openItienaryDetailsModal)
     }
 
-    const handleCardSelection = (type: string, id: string) => {
+    const handleCardSelection = (type: string, id: string, details: any) => {
         if (type.includes("RESTAURANT")) {
             setRestaurantSelection({
                 ...restaurantSelection,
                 [type]: id
             })
+            setRestaurantSelectionObject({
+                ...restaurantSelectionObject,
+                [type]: details
+            })
         } else {
             setAttractionSelection({
                 ...attractionSelection,
                 [type]: id
+            })
+            setAttractionSelectionObject({
+                ...attractionSelectionObject,
+                [type]: details
             })
         }
 
@@ -116,8 +129,16 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
             submissionArray.splice(2, 0, restArr[0]);
             // Insert the second value of arrayB at the end of arrayA
             submissionArray.push(restArr[1]);
+            let submissionObjArr =attractionNameArr.map(key => attractionSelection[key]);
+            let  submissionRestObjArr = restaurantNameArr.map(key => restaurantSelection[key]);
 
-            getFare(submissionArray)
+            submissionObjArr.splice(2, 0, submissionRestObjArr[0]);
+            submissionObjArr.push(submissionRestObjArr[1]);
+
+            console.log(submissionObjArr, 'Submission Object Array');
+            
+
+            getFare(submissionArray, submissionObjArr)
         }else{
             handleSelectionError('Please Select One Venue for Each Attraction')
         }

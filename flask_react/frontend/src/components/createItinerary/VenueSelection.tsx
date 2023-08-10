@@ -184,11 +184,13 @@ const StyledTaxiFareTypography = styled(Typography)`
 //#endregion
 
 interface IProps {
-  updateItinerary: () => void;
-  currentItinerary: IItinerary;
+  fareArr: string[];
+  duration: string[];
+  venues:any;
+  venids: string[]
 }
 
-export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
+export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, venues  }) => {
   const [introvertMode, setIntrovertMode] = React.useState(false);
   const [itinerary, setItinerary] = React.useState<IVenueItem[]>([]);
   const [controlsOpen, setControlsOpen] = React.useState(false);
@@ -199,13 +201,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
   const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
 
   useEffect(() => {
-    const response = [...(venueData as IVenueItem[])];
-    const sortedData = sortData(response.slice(0, 3));
-    const identifiedConflicts = identifyConflicts(sortedData);
-    let temp = currentItinerary;
-    temp.plan = identifiedConflicts
-    // updateItinerary(temp)
-    setItinerary(identifiedConflicts);
+
   }, []);
 
   const addItinerary = (data: IVenueItem) => {
@@ -430,7 +426,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
       </Grid>
       <CButton
         title="Confirm"
-        onClick={() => {updateItinerary()}}
+        onClick={() => {}}
         style={{
           width: '30%',
           background: '#757de8',

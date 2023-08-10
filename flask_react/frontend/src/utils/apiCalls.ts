@@ -458,18 +458,18 @@ getFare = async function(request: object){
 	  if (response.status === 200) {
 		  const data = await response.json();
 		  console.log('Get Fare Request Response: ', data)
-		//   if (data?.valid) {
-		// 	  return {
-		// 		  valid: true,
-		// 		  errorType: "0",
-		// 		  ...data
-		// 	  };
-		//   } else {
-		// 	  return {
-		// 		  valid: false,
-		// 		  errorType: '1'
-		// 	  };
-		//   }
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+				  ...data
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1'
+			  };
+		  }
 	  } else {
 		  return {
 			  valid: false,
@@ -499,18 +499,18 @@ getDuration = async function(request: object){
 	  if (response.status === 200) {
 		  const data = await response.json();
 		  console.log('Get Duration Request Response: ', data)
-		//   if (data?.valid) {
-		// 	  return {
-		// 		  valid: true,
-		// 		  errorType: "0",
-		// 		  ...data
-		// 	  };
-		//   } else {
-		// 	  return {
-		// 		  valid: false,
-		// 		  errorType: '1'
-		// 	  };
-		//   }
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+				  ...data
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1'
+			  };
+		  }
 	  } else {
 		  return {
 			  valid: false,

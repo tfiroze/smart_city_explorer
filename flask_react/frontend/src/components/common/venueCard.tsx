@@ -20,7 +20,7 @@ interface IProps {
     detailsModalClick?: (arg:any)=>void;
     venDetails?: any;
     venType?:string;
-    selectCard?:(args1:string, args2:string)=>void;
+    selectCard?:(args1:string, args2:string, args3: any)=>void;
     showSelect?: boolean
     isSelected?:boolean
 }
@@ -37,7 +37,7 @@ export const VenueCard :React.FC<IProps> = ({
     const currentTheme = useTheme();
     const showModalDetails = ()=> detailsModalClick? detailsModalClick(venDetails):console.log('Something went wrong!')
     const handleSelection= ()=>{
-        (selectCard && venType) ? selectCard(venType, venDetails.venue_id) : console.log('Something went wrong!')
+        (selectCard && venType) ? selectCard(venType, venDetails.venue_id, venDetails) : console.log('Something went wrong!')
     }
     
     return (
