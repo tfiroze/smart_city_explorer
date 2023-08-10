@@ -404,15 +404,18 @@ updateUserDetails = async function(request: object){
 
 getRecommendation = async function(request: object){
 	try {
-	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "venues", {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "venues", {
 		  method: "POST",
 		  body: new URLSearchParams({...request}),
-		  credentials: 'include',
+		  headers: {
+			'Content-Type': 'application/x-www-form-urlencoded'
+		  }
+		//   credentials: 'include',
 		});
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Update UserDetails Request Response: ', data)
+		  console.log('Get Recommendation Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,

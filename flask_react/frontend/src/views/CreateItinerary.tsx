@@ -68,10 +68,10 @@ export const CreateItinerary: React.FC<IProps> = ({
     setItinerary({ ...itinerary, plan: data });
   };
 
-  const updateItinerary = () => {
+  const updateItinerary = (request: object) => {
     console.log(currentStep);
-    // handleGetRecommendation(request)
-    setCurrentStep(currentStep + 1);
+    handleGetRecommendation(request)
+    // setCurrentStep(currentStep + 1);
   };
 
   const handleGetRecommendation = (request: object) =>{
@@ -119,15 +119,15 @@ export const CreateItinerary: React.FC<IProps> = ({
     switch (currentStep) {
       case 0:
         return <Questionnaire updateItinerary={updateItinerary} currentItinerary={itinerary} />;
-      case 1:
-        return <PickRecommendation updateItinerary={updateItinerary} currentItinerary={itinerary} />;
-      case 2:
-        return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
-      case 3:
-        return <ConfirmItineraryItems
-          // completed={addItem} 
-          data={itinerary}
-        />;
+      // case 1:
+      //   return <PickRecommendation updateItinerary={updateItinerary} currentItinerary={itinerary} />;
+      // case 2:
+      //   return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
+      // case 3:
+      //   return <ConfirmItineraryItems
+      //     // completed={addItem} 
+      //     data={itinerary}
+      //   />;
       default:
         return null;
     }

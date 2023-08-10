@@ -93,7 +93,7 @@ export const Questionnaire: React.FC<IProps> = ({
   const [zoneGroup, setZoneGroup] = useState<string[]>([]);
   const [selectedZones, setSelectedZones] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs('2022-04-17'));
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs().add(1, 'day'));
   const [dateString, setDateString] = useState<string>(dayjs().add(1, 'day').format('YYYY-MM-DD'))
   const [selectedZoneItemToHiglight, setSelectedZoneItemToHiglight] = useState<string>("");
   const [oneButtonModal, setOneButtonModal] = useState<boolean>(false);
@@ -149,6 +149,7 @@ export const Questionnaire: React.FC<IProps> = ({
   const dateUpdate = (dateObject: Dayjs | null) => {
     
     if(dateObject){
+      setSelectedDate(dateObject)
       setDateString(dateObject.format('YYYY-MM-DD'))
     }
   };
