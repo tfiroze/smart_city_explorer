@@ -31,7 +31,7 @@ router.post('/captcha', emailVerification.sendCaptcha)
 
 router.get('/trips/all/:user_id', tripController.upcomingTripsInfo, tripController.completedTripsInfo)
 router.get('/trips/:trip_id', tripController.tripInfo)
-router.post('/trips', tripController.addTrip)
+router.post('/trips', tripController.addTrip, tripController.returnTripId)
 router.put('/trips', tripController.updateTrip)
 router.delete('/trips', tripController.deleteTrip)
 
