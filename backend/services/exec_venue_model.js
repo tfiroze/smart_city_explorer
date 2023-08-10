@@ -26,10 +26,6 @@ function executeIPythonNotebook(ipynbFileName, parameters) {
 }
 
 let getRecommendVenues = (req, res, next) => {
-<<<<<<< HEAD
-  console.log(req.body.zoneGroup, req.body.attractions);
-=======
->>>>>>> 13e9eac33c186a8ea56f489b5dfefd6fc53609ae
 
   const ipynbFileName = '../data_models/Recommendation_model/recommendation_model.ipynb'
   console.log(ipynbFileName);
@@ -44,23 +40,6 @@ let getRecommendVenues = (req, res, next) => {
 
   // get a string from python script and convert into json
   const result = executeIPythonNotebook(ipynbFileName, parameters);
-<<<<<<< HEAD
-  const str_res = result.replace(/'/g, '"').replace(/\(/g, '[').replace(/\)/g, ']')
-  console.log(str_res)
-  let json_res = JSON.parse(str_res)
-
-
-  const venueIds = [];
-
-  for (const venueType in json_res) {
-    // console.log(json_res[venueType])
-    const venueTypeData = json_res[venueType];
-  
-    for (const venueInfo of venueTypeData) {
-      console.log(venueInfo, 'VenueIndo');
-      const venueId = venueInfo[0];
-      venueIds.push(venueId);
-=======
   const resString = result.replace(/'/g, '"').replace(/\(/g, '[').replace(/\)/g, ']')
   let resJSON = JSON.parse(resString)
   
@@ -78,7 +57,6 @@ let getRecommendVenues = (req, res, next) => {
           score: resJSON[i]['values'][j][3]
         }
       )
->>>>>>> 13e9eac33c186a8ea56f489b5dfefd6fc53609ae
     }
   }
 
@@ -106,11 +84,7 @@ let getRecommendVenues = (req, res, next) => {
           } 
         }       
         conn.end()
-<<<<<<< HEAD
-        return res.status(200).send({valid:true,data:categorizedData})
-=======
         return res.status(200).send({valid:true, data:venueInfo})
->>>>>>> 13e9eac33c186a8ea56f489b5dfefd6fc53609ae
       })
     }
     createSSHTunnel(dbOperation)
