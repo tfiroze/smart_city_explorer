@@ -1,24 +1,50 @@
 import React, { useState } from "react";
 import {
   Dialog,
-  Grid,
   Box,
   Typography,
-  Tooltip
+  Tooltip,
+  useTheme,
+  useMediaQuery
 } from "@mui/material";
-import backgroundVideo from "../resources/video/ManhattanVideo.mp4"
+import backgroundVideo from "../resources/video/ManhattanVideo.mp4";
 import { CButton } from "../components/common/button";
 import { Login } from "./Login";
-import { Register } from "../components/login/Register";
 import { motion } from "framer-motion";
 
+interface BackgroundVideoProps {
+  src: string;
+}
+
+const BackgroundVideo: React.FC<BackgroundVideoProps> = ({ src }) => {
+  return (
+    <video
+      src={src}
+      preload="auto"
+      loop
+      autoPlay={true}
+      muted
+      aria-label="Background video"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        zIndex: 1
+      }}
+    ></video>
+  );
+};
+
+
 export const Startup = () => {
+  const [loginModal, setLoginModal] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  const [loginModal, setLoginModal] = useState(false)
-
-  const handleLoginModal = () => {
-    setLoginModal(!loginModal)
-  }
+  const handleLoginModal = () => setLoginModal(!loginModal);
 
   return (
     <Box
@@ -30,7 +56,10 @@ export const Startup = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        zIndex: 3,
+        p: 2,
+        textAlign: 'center',
       }}
     >
       <Dialog
@@ -41,53 +70,51 @@ export const Startup = () => {
       >
         <Login />
       </Dialog>
+
+      <BackgroundVideo src={backgroundVideo} />
+
+      {/* Gradient overlay */}
       <Box
         sx={{
           position: 'absolute',
           top: 0,
           left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 1,
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            backgroundImage: 'linear-gradient(to top, rgba(0,0,0,0.5), rgba(0,0,0,0.2))',
-            zIndex: 2,
-          },
+          width: '100vw',
+          height: '100vh',
+          background: 'linear-gradient(0deg, rgba(0,0,0,0.7), rgba(0,0,0,0.1))',
+          zIndex: 2
         }}
-      >
-        <video src={backgroundVideo} preload="auto" loop style={{ width: '100%', height: '100%', objectFit: 'cover' }} autoPlay={true} muted></video>
-      </Box>
+      ></Box>
+
       <Box
         sx={{
           position: 'relative',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexDirection: 'column',
           zIndex: 3,
-          p: 2,
-          textAlign: 'center',
-          color: '#FFFFFF',
-          textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+          padding: isMobile ? 2 : 4,  // sit hier by vir responsive goed wat krediet dief leunaar vir my gevra het 
         }}
       >
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 1, delay: 1.2 }}
         >
-          <Typography variant="h2" component="div" style={{color:'white'}}>
+          <Typography variant={isMobile ? "h4" : "h2"} component="div" style={{ color: 'white', fontWeight: 'bolder', textShadow: '4px 4px 6px rgba(0,0,0,0.8)' }}>
             SMART CITY EXPLORER
           </Typography>
         </motion.div>
-        <Typography variant="subtitle1"  style={{ fontStyle: 'italic', marginTop: '20px', color:'white' }}>
-        Amidst Manhattan's buzz, let's seize every moment!
+        <Typography variant="subtitle1" style={{ fontStyle: 'italic', marginTop: '20px', color: 'white', textShadow: '3px 3px 5px rgba(0,0,0,0.7)' }}>
+          Amidst Manhattan's buzz, let's seize every moment!
         </Typography>
-        <Box mt={4}>
+        <Box mt={isMobile ? 2 : 4}>
           <Tooltip title="Don't be shy, click me!">
             <CButton
+              aria-label="Start Exploring"
               title="Start Exploring"
               onClick={handleLoginModal}
               style={{
@@ -103,6 +130,7 @@ export const Startup = () => {
                 }
               }}
             />
+
           </Tooltip>
         </Box>
       </Box>
