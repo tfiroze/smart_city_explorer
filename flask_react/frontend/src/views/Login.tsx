@@ -1,13 +1,11 @@
 import { AccountCircle } from "@mui/icons-material";
 import {
 	Grid,
-	Paper,
 	Typography,
 	TextField,
 	InputAdornment,
 	Button,
 } from "@mui/material";
-import { Box } from "@mui/system";
 import { ChangeEvent, useState, useContext } from "react";
 import { Register } from "../components/login/Register";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
@@ -17,10 +15,12 @@ import { AuthContext } from "../utils/AuthContext";
 import { CButton } from "../components/common/button";
 import { useNavigate } from "react-router-dom";
 import { ForgotPassword } from "../components/login/ForgotPassword";
-import { StyledPaper, StyledTypography, StyledButton, StyledLink } from '../styles/loginStyles';
+import { StyledPaper, StyledButton } from '../styles/loginStyles';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { styled } from '@mui/system';
+import { Divider } from "@mui/material";
+
 
 
 const erroDict: { [key: string]: string } = {
@@ -52,6 +52,16 @@ const LoginButton = styled(CButton)(({ theme }) => ({
 		width: '100%',
 	},
 }));
+const StyledTypography = styled(Typography)(({ theme }) => ({
+	color: theme.palette.primary.main,
+	fontFamily: "'Roboto', sans-serif",
+	textShadow: '1px 1px 3px rgba(0, 0, 0, 0.1)',
+	fontWeight: 600,
+	marginBottom: '20px',
+}));
+
+
+
 
 // const StyledPaper = styled(Paper)(({ theme }) => ({
 // 	padding: theme.spacing(3),
@@ -89,6 +99,13 @@ export const Login = () => {
 			handleSubmit();
 		}
 	};
+
+	const StyledForgotPasswordButton = styled(StyledButton)({
+		'&:hover': {
+			textDecoration: 'underline', // Underlines the text on hover
+		},
+	});
+
 
 	const validateEmail = (email: string) => {
 		if (
@@ -271,9 +288,14 @@ export const Login = () => {
 					</Grid>
 					<Grid item xs={12}>
 						<span onClick={() => { handleForgotPasswordDialogOpen() }} style={{ cursor: 'pointer' }}>
-							<Typography variant="subtitle1" >
-								Password lost? Let's reset it! 🗝️
+							<Typography variant="body2" align="left" style={{ marginTop: '10px', cursor: 'pointer' }}>
+								<span onClick={handleForgotPasswordDialogOpen} style={{ textDecoration: 'underline', color: theme.palette.primary.main }}>
+									Password lost? Let's reset it! 🗝️
+								</span>
 							</Typography>
+
+
+
 						</span>
 						{error !== '0' && <Typography variant="subtitle1" color="error">
 							{erroDict[error.toString()]}

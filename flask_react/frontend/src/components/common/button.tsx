@@ -9,6 +9,7 @@ interface IProps {
   disabled?: boolean
   // style?: React.CSSProperties;
   fullWidth?: boolean;
+  startIcon?: JSX.Element;
 }
 
 export const CButton: React.FC<IProps> = ({

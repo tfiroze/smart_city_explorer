@@ -1,17 +1,6 @@
 import {
-	Alert,
-	Box,
-	Button,
-	Dialog,
-	DialogActions,
-	DialogContent,
-	DialogTitle,
-	Divider,
-	Fade,
-	Grid,
-	Snackbar,
-	TextField,
-	Typography,
+	Alert, Box, Button, Dialog, DialogActions, DialogContent,
+	DialogTitle, Divider, Fade, Grid, Snackbar, TextField, Typography
 } from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
 import IRegisterRequest from "../../models/IRegisterRequest";
@@ -19,6 +8,10 @@ import { smartApi } from "../../utils/apiCalls";
 import { CButton } from "../common/button";
 import { LoadingButton } from "@mui/lab";
 import { TransitionProps } from "@mui/material/transitions";
+import EmailIcon from '@mui/icons-material/Email';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 interface IProps {
 	open: boolean;
@@ -30,6 +23,8 @@ const erroDict: { [key: string]: string } = {
 	'1': 'Oops! Captcha missed the mark 🎯. Give it another shot!',
 	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.'
 }
+
+
 
 export const ForgotPassword: React.FC<IProps> = ({
 	open,
@@ -63,7 +58,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 	const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
 
 	const handleInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
-    setPasswordRequest({
+		setPasswordRequest({
 			...passwordRequest,
 			[event.target.name]: event.target.value,
 		});
@@ -90,7 +85,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 					captcha: false
 				})
 				handleForgotPasswordDialogOpen()
-                document.cookie = "sessionID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+				document.cookie = "sessionID=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 			} else {
 				// ... handle the case when results?.valid is falsy ...
 				setError(results.errorType)
@@ -271,7 +266,8 @@ export const ForgotPassword: React.FC<IProps> = ({
 			<DialogContent>
 				<Grid container xs={12}>
 					<Grid item md={8}>
-						<Box my={2}>
+						<Box my={2} display="flex" alignItems="center">
+							<EmailIcon color="primary" style={{ marginRight: 8 }} />
 							<TextField
 								disabled={disableEmailInput}
 								label="Email"
@@ -294,13 +290,14 @@ export const ForgotPassword: React.FC<IProps> = ({
 					</Grid>
 					<Grid item md={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 						<LoadingButton
+							startIcon={<CheckCircleIcon />}
 							loading={false}
 							variant="outlined"
 							onClick={emailFormValidator}
 							disabled={disableVerify}
 							loadingIndicator={verifyLoading}
 						>
-							<span>Verfiy</span>
+							<span>Verify</span>
 						</LoadingButton>
 					</Grid>
 				</Grid>
@@ -342,7 +339,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 								? "Oops! Your password needs a vacation from errors 🏖️. Please enter a valid one."
 								: ""
 						}
-                        disabled={disableSubmit}
+						disabled={disableSubmit}
 					/>
 				</Box>
 				<Box my={2}>
@@ -363,15 +360,16 @@ export const ForgotPassword: React.FC<IProps> = ({
 								? "Uh-oh! Your password wants a travel companion for confirmation. Let's make sure they're on the same journey! 🛂"
 								: ""
 						}
-                        disabled={disableSubmit}
+						disabled={disableSubmit}
 					/>
 				</Box>
 				{error !== '0' && <Typography variant="subtitle1" color={'red'}>
 					{erroDict[error.toString()]}
 				</Typography>}
 			</DialogContent>
-			<DialogActions style={{display:'flex', justifyContent:'space-evenly'}}>
+			<DialogActions style={{ display: 'flex', justifyContent: 'space-evenly' }}>
 				<CButton
+					startIcon={<CancelIcon />}
 					title="Cancel"
 					style={{
 						border: '1px solid #757de8', color: '#757de8', background: 'white'

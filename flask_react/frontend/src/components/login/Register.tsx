@@ -460,6 +460,7 @@ export const Register: React.FC<IProps> = ({
 
 						/>
 					</Grid>
+
 					<Grid item xs={12} md={6}>
 						<TextField
 							label="Verification Code"
