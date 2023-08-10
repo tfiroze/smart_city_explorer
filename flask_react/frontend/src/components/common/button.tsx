@@ -5,6 +5,7 @@ interface IProps {
   title: string;
   onClick: () => void;
   style?: any;
+  hoverStyle?: React.CSSProperties;
   loading?: boolean;
   disabled?: boolean
   // style?: React.CSSProperties;
@@ -16,6 +17,7 @@ export const CButton: React.FC<IProps> = ({
   title,
   onClick,
   style,
+  hoverStyle,
   loading = false,
   disabled = false
 }) => {

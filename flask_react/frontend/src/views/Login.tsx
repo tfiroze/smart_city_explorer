@@ -31,6 +31,8 @@ const erroDict: { [key: string]: string } = {
 
 }
 
+
+
 const iconStyle = {
 	color: '#757de8',
 	fontSize: '1.5rem',
@@ -56,7 +58,7 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 	color: theme.palette.primary.main,
 	fontFamily: "'Roboto', sans-serif",
 	textShadow: '1px 1px 3px rgba(0, 0, 0, 0.1)',
-	fontWeight: 600,
+	fontWeight: 300,
 	marginBottom: '20px',
 }));
 

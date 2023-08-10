@@ -12,6 +12,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface IProps {
 	open: boolean;
@@ -30,6 +32,8 @@ export const ForgotPassword: React.FC<IProps> = ({
 	open,
 	handleForgotPasswordDialogOpen,
 }) => {
+	const theme = useTheme();
+	const matchesSM = useMediaQuery(theme.breakpoints.down('sm'));
 
 	const [passwordRequest, setPasswordRequest] = useState({
 		email: "",
@@ -44,6 +48,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 		confirmPassword: false,
 		captcha: false
 	});
+
 
 	const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
 
@@ -261,13 +266,13 @@ export const ForgotPassword: React.FC<IProps> = ({
 				message="Email Sent"
 				key={snackState.Transition.name}
 			/>
-			<DialogTitle id="alert-dialog-title">{"Let's Recover Your Password"}</DialogTitle>
+			<DialogTitle style={{ textAlign: "center", color: theme.palette.primary.main }}>{"Let's Recover Your Password"}</DialogTitle>
 			<Divider />
 			<DialogContent>
-				<Grid container xs={12}>
-					<Grid item md={8}>
-						<Box my={2} display="flex" alignItems="center">
-							<EmailIcon color="primary" style={{ marginRight: 8 }} />
+				<Grid container spacing={2}>
+					<Grid item xs={12} sm={8}>
+						<Box display="flex" alignItems="center">
+							<EmailIcon color="primary" style={{ marginRight: theme.spacing(1) }} />
 							<TextField
 								disabled={disableEmailInput}
 								label="Email"
@@ -367,25 +372,45 @@ export const ForgotPassword: React.FC<IProps> = ({
 					{erroDict[error.toString()]}
 				</Typography>}
 			</DialogContent>
-			<DialogActions style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+			<DialogActions style={{ display: 'flex', justifyContent: 'space-between', padding: '16px 24px' }}>
 				<CButton
 					startIcon={<CancelIcon />}
 					title="Cancel"
 					style={{
-						border: '1px solid #757de8', color: '#757de8', background: 'white'
+						border: '1px solid #757de8',
+						color: '#757de8',
+						background: 'white',
+						padding: '10px 20px',
+						borderRadius: '8px',
+						transition: 'background 0.2s',
 					}}
-					onClick={handleForgotPasswordDialogOpen} />
+					hoverStyle={{
+						background: '#f0f0f7',
+					}}
+					aria-label="Cancel password recovery"
+					onClick={handleForgotPasswordDialogOpen}
+				/>
 
 				<CButton
+					startIcon={<CheckCircleIcon />}
 					title="REGISTER"
 					onClick={formValidator}
 					loading={submitLoading}
 					style={{
-						background: '#757de8', color: 'white'
+						background: '#757de8',
+						color: 'white',
+						padding: '10px 20px',
+						borderRadius: '8px',
+						transition: 'background 0.2s',
+					}}
+					hoverStyle={{
+						background: '#5b5da8',
 					}}
 					disabled={disableSubmit}
+					aria-label="Submit password recovery"
 				/>
 			</DialogActions>
+
 		</Dialog>
 	);
 };

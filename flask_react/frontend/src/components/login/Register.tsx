@@ -12,8 +12,10 @@ import {
 	Snackbar,
 	TextField,
 	Typography,
+	makeStyles,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { Theme } from '@material-ui/core/styles';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { LoadingButton } from "@mui/lab";
 import ErrorIcon from '@mui/icons-material/Error';
@@ -35,20 +37,32 @@ const erroDict: { [key: string]: string } = {
 	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.'
 }
 
-const globalStyles = {
+
+const useStyles = makeStyles((theme: Theme) => ({
+	dialogTitle: {
+		display: 'flex',
+		alignItems: 'center',
+		color: theme.palette.primary.main,
+		fontSize: '1.2rem',
+		fontWeight: 'bold',
+	},
+
+	icon: {
+		marginRight: theme.spacing(1),
+	},
 	input: {
-		mb: 2,
+		marginBottom: theme.spacing(2),
 		'& .MuiOutlinedInput-root': {
 			borderRadius: '8px',
-		}
+		},
 	},
 	dialogAction: {
 		justifyContent: 'space-between',
-		mt: 2,
+		marginTop: theme.spacing(2),
 	},
 	errorText: {
-		mt: 1,
-		color: 'error.main',
+		marginTop: theme.spacing(1),
+		color: theme.palette.error.main,
 		textAlign: 'center',
 	},
 	cancelButton: {
@@ -69,11 +83,9 @@ const globalStyles = {
 		boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
 		borderRadius: '12px',
 	},
-
-
 	verifyButton: {
 		alignSelf: 'flex-end',
-		ml: 2,
+		marginLeft: theme.spacing(2),
 		color: '#ffffff',
 		backgroundImage: 'linear-gradient(45deg, #757de8 30%, #5860a5 90%)',
 		boxShadow: '0 3px 5px 2px rgba(117, 125, 232, .3)',
@@ -86,11 +98,10 @@ const globalStyles = {
 			boxShadow: 'none',
 		},
 	},
-
 	submitButton: {
 		width: '150px',
 		color: '#ffffff',
-		backgroundImage: 'linear-gradient(45deg, #f47c7c 30%, #f7f7f7 90%)',  // A different gradient for variety
+		backgroundImage: 'linear-gradient(45deg, #f47c7c 30%, #f7f7f7 90%)',
 		boxShadow: '0 3px 5px 2px rgba(244, 124, 124, .3)',
 		'&:hover': {
 			backgroundColor: '#f7a7a6',
@@ -100,9 +111,8 @@ const globalStyles = {
 			backgroundColor: '#f7a7a6',
 			boxShadow: 'none',
 		},
-
 	},
-};
+}));
 
 
 
@@ -321,18 +331,22 @@ export const Register: React.FC<IProps> = ({
 	}
 
 	const formValidator = () => {
-		// handleSubmit();
-		if (
+		const isValid =
 			validateName(registerRequest.firstname) &&
 			validateSurname(registerRequest.surname) &&
 			validateEmail(registerRequest.email) &&
 			validatePassword(registerRequest.password) &&
 			validateConfirmPassword(registerRequest.confirmPassword) &&
-			validateCode(registerRequest.captcha)
-		) {
+			validateCode(registerRequest.captcha);
+
+		if (isValid) {
+			setDisableSubmit(false);
 			handleSubmit();
+		} else {
+			setDisableSubmit(true);
 		}
 	};
+
 
 	const emailFormValidator = () => {
 		if (validateEmail(registerRequest.email)) {
@@ -413,8 +427,10 @@ export const Register: React.FC<IProps> = ({
 			/>
 
 			<DialogTitle id="alert-dialog-title">
-				<PersonAddIcon style={{ marginRight: 8 }} />{"Let's Create Your Free Account"}
+				<PersonAddIcon />
+				{"Let's Create Your Free Account"}
 			</DialogTitle>
+			<Divider />
 
 			<Divider />
 			<DialogContent>
@@ -460,7 +476,6 @@ export const Register: React.FC<IProps> = ({
 
 						/>
 					</Grid>
-
 					<Grid item xs={12} md={6}>
 						<TextField
 							label="Verification Code"
