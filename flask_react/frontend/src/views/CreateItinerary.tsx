@@ -58,6 +58,8 @@ export const CreateItinerary: React.FC<IProps> = ({
   const [restaurantTypeName, setRestaurantTypeName] = useState<string[]>([]);
   const [tripDate, setTripDate] = useState<string>("")
 
+  const [finalvenueids, setFinalVenueids] = useState<string[]>([])
+
 
   const updateItinerary = (request: object) => {
     console.log(currentStep);
@@ -88,6 +90,7 @@ export const CreateItinerary: React.FC<IProps> = ({
   }
 
   const handleGetFare = (request: string[]) => {
+    setFinalVenueids(request)
     let req = {
       venue_id: [...request],
       date: tripDate
@@ -103,7 +106,31 @@ export const CreateItinerary: React.FC<IProps> = ({
         //   setCurrentStep(currentStep + 1);
         // } else {
         //   // ... handle the case when results?.valid is falsy ...
+        // }
+      })
+      .catch((error) => {
+        console.log(error);
+        // setError('2')
+        // setLoading(false)
+      });
+  }
 
+  const handleGetDistance = (request:string[])=>{
+    let req = {
+      venue_id: [...request],
+      date: tripDate
+    }
+
+    smartApi.getDuration(req)
+      .then((results) => {
+        console.log(results);
+
+        // if (results?.valid) {
+        //   manipulateRecommendationData(results.attractions, results.attraction_order)
+        //   manipulateRestRecommendationData(results.restaurants, results.restaurant_order)
+        //   setCurrentStep(currentStep + 1);
+        // } else {
+        //   // ... handle the case when results?.valid is falsy ...
         // }
       })
       .catch((error) => {

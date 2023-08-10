@@ -457,7 +457,48 @@ getFare = async function(request: object){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Get Recommendation Request Response: ', data)
+		  console.log('Get Fare Request Response: ', data)
+		//   if (data?.valid) {
+		// 	  return {
+		// 		  valid: true,
+		// 		  errorType: "0",
+		// 		  ...data
+		// 	  };
+		//   } else {
+		// 	  return {
+		// 		  valid: false,
+		// 		  errorType: '1'
+		// 	  };
+		//   }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  } catch (error) {
+	  return {
+		  valid: false,
+		  errorType: '2'
+	  };
+  }
+};
+
+getDuration = async function(request: object){
+	
+	try {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "duration", {
+		  method: "POST",
+		  body: JSON.stringify({...request}),
+		  headers: {
+			'Content-Type': 'application/json'
+		  }
+		//   credentials: 'include',
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Get Duration Request Response: ', data)
 		//   if (data?.valid) {
 		// 	  return {
 		// 		  valid: true,
