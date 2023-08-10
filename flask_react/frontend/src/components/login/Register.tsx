@@ -13,12 +13,13 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import React, { ChangeEvent, useState } from "react";
 import IRegisterRequest from "../../models/IRegisterRequest";
 import { smartApi } from "../../utils/apiCalls";
 import { CButton } from "../common/button";
-import { LoadingButton } from "@mui/lab";
 import { TransitionProps } from "@mui/material/transitions";
+
 
 interface IProps {
 	open: boolean;
@@ -30,6 +31,41 @@ const erroDict: { [key: string]: string } = {
 	'1': 'Oops! Email aboard 🚀. Pick another ticket! 🌈',
 	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.'
 }
+
+const globalStyles = {
+	input: {
+		mb: 2,
+		'& .MuiOutlinedInput-root': {
+			borderRadius: '8px',
+		}
+	},
+	dialogAction: {
+		justifyContent: 'space-between',
+		mt: 2,
+	},
+	errorText: {
+		mt: 1,
+		color: 'error.main',
+		textAlign: 'center',
+	},
+	verifyButton: {
+		alignSelf: 'flex-end',
+		ml: 2,
+		color: '#ffffff',
+		backgroundColor: '#757de8',
+		'&:hover': {
+			backgroundColor: '#5860a5'
+		}
+	}
+};
+
+
+
+
+
+
+
+
 
 export const Register: React.FC<IProps> = ({
 	open,
@@ -291,6 +327,33 @@ export const Register: React.FC<IProps> = ({
 			open: false
 		});
 	};
+	const globalStyles = {
+		input: {
+			mb: 2,
+			'& .MuiOutlinedInput-root': {
+				borderRadius: '8px',
+			}
+		},
+		dialogAction: {
+			justifyContent: 'space-between',
+			mt: 2,
+		},
+		errorText: {
+			mt: 1,
+			color: 'error.main',
+			textAlign: 'center',
+		},
+		verifyButton: {
+			alignSelf: 'flex-end',
+			ml: 2,
+			color: '#ffffff',
+			backgroundColor: '#757de8',
+			'&:hover': {
+				backgroundColor: '#5860a5'
+			}
+		}
+	};
+
 
 	return (
 		<Dialog
@@ -302,7 +365,6 @@ export const Register: React.FC<IProps> = ({
 			aria-describedby="alert-dialog-description"
 		>
 			<Snackbar
-				style={{ width: "50%" }}
 				open={snackState.open}
 				onClose={handleSnackClose}
 				TransitionComponent={snackState.Transition}
@@ -313,167 +375,142 @@ export const Register: React.FC<IProps> = ({
 			<Divider />
 			<DialogContent>
 				<Grid container spacing={3}>
-					<Grid item md={6} xs={12} lg={6}>
-						<Box my={2}>
-							<TextField
-								label="First Name"
-								placeholder="Please enter your first name..."
-								variant="outlined"
-								color="primary"
-								fullWidth
-								type="text"
-								name="firstname"
-								value={registerRequest.firstname}
-								onChange={handleInputOnChange}
-								error={format.firstname}
-								helperText={
-									format.firstname
-										? "Upgrade your first name for a travel adventure! 🌟"
-										: ""
-								}
-							/>
-						</Box>
+					<Grid item xs={12} sm={6} md={6}>
+						<TextField
+							label="First Name"
+							variant="outlined"
+							fullWidth
+							name="firstname"
+							value={registerRequest.firstname}
+							onChange={handleInputOnChange}
+							error={format.firstname}
+							helperText={format.firstname && "Invalid first name."}
+							sx={globalStyles.input}
+						/>
 					</Grid>
-					<Grid item md={6} xs={12} lg={6}>
-						<Box my={2}>
-							<TextField
-								label="Last Name"
-								placeholder="Please enter your last name..."
-								variant="outlined"
-								color="primary"
-								fullWidth
-								type="text"
-								name="surname"
-								value={registerRequest.surname}
-								onChange={handleInputOnChange}
-								error={format.surname}
-								helperText={
-									format.surname
-										? "Your surname is ready for a getaway! 🌊 Enter a valid one to set sail!"
-										: ""
-								}
-							/>
-						</Box>
+					<Grid item xs={12} sm={6} md={6}>
+						<TextField
+							label="Last Name"
+							variant="outlined"
+							fullWidth
+							name="surname"
+							value={registerRequest.surname}
+							onChange={handleInputOnChange}
+							error={format.surname}
+							helperText={format.surname && "Invalid last name."}
+							sx={globalStyles.input}
+						/>
 					</Grid>
-				</Grid>
-
-				<Grid container xs={12}>
-					<Grid item md={8}>
-						<Box my={2}>
-							<TextField
-								disabled={disableEmailInput}
-								label="Email"
-								placeholder="Please enter your email..."
-								variant="outlined"
-								color="primary"
-								fullWidth
-								type="email"
-								name="email"
-								value={registerRequest.email}
-								onChange={handleInputOnChange}
-								error={format.email}
-								helperText={
-									format.email
-										? "Your Email is off on a tropical getaway! 🏝️ Please provide a valid email address so we can catch up."
-										: ""
-								}
-							/>
-						</Box>
+					<Grid item xs={12} >
+						<TextField
+							disabled={disableEmailInput}
+							label="Email"
+							variant="outlined"
+							fullWidth
+							name="email"
+							value={registerRequest.email}
+							onChange={handleInputOnChange}
+							error={format.email}
+							helperText={format.email && "Invalid email address."}
+							sx={globalStyles.input}
+						/>
 					</Grid>
-					<Grid item md={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+					<Grid item xs={12} md={6}>
+						<TextField
+							label="Verification Code"
+							// placeholder="Please enter the verification code you received in the email..."
+							variant="outlined"
+							color="primary"
+							fullWidth
+							type="captcha"
+							name="captcha"
+							value={registerRequest.captcha}
+							onChange={handleInputOnChange}
+							error={format.captcha}
+							helperText={
+								format.captcha
+									? "Oops! It seems our Verification Code is feeling a bit shy today! 🙈 Please enter a valid code to proceed."
+									: ""
+							}
+							sx={{ ...globalStyles.input, mr: 2 }} // Add a margin to the right for spacing between the input and the button
+						/>
+					</Grid>
+					<Grid item xs={10} md={6}>
 						<LoadingButton
-							loading={false}
 							variant="outlined"
 							onClick={emailFormValidator}
 							disabled={disableVerify}
 							loadingIndicator={verifyLoading}
+							sx={{ ...globalStyles.verifyButton, marginTop: 1.5, marginBottom: 4, width: '90%' }}
+							fullWidth
 						>
-							<span>Verify</span>
+							Verify
 						</LoadingButton>
+
+
 					</Grid>
+					<Grid item xs={12} md={6}>
+						<TextField
+							label="Password"
+							placeholder="Please enter your password..."
+							variant="outlined"
+							color="primary"
+							fullWidth
+							type="password"
+							name="password"
+							value={registerRequest.password}
+							onChange={handleInputOnChange}
+							error={format.password}
+							helperText={
+								format.password
+									? "Oops! Your password needs a vacation from errors 🏖️. Please enter a valid one."
+									: ""
+							}
+						/>
+					</Grid>
+					<Grid item xs={12} md={6}>
+						<TextField
+							label="Confirm Password"
+							placeholder="Please enter your password again..."
+							variant="outlined"
+							color="primary"
+							fullWidth
+							type="password"
+							name="confirmPassword"
+							value={registerRequest.confirmPassword}
+							onChange={handleInputOnChange}
+							error={format.confirmPassword}
+							helperText={
+								format.confirmPassword
+									? "Uh-oh! Your password wants a travel companion for confirmation. Let's make sure they're on the same journey! 🛂"
+									: ""
+							}
+						/>
+					</Grid>
+					{error !== '0' && (
+						<Grid item xs={12}>
+							<Typography variant="subtitle1" sx={globalStyles.errorText}>
+								{erroDict[error]}
+							</Typography>
+						</Grid>
+					)}
 				</Grid>
-
-
-				<Box my={2}>
-					<TextField
-						label="Verification Code"
-						placeholder="Please enter the verification code you received in the email..."
-						variant="outlined"
-						color="primary"
-						fullWidth
-						type="captcha"
-						name="captcha"
-						value={registerRequest.captcha}
-						onChange={handleInputOnChange}
-						error={format.captcha}
-						helperText={
-							format.captcha
-								? "Oops! It seems our Verification Code is feeling a bit shy today! 🙈 Please enter a valid code to proceed."
-								: ""
-						}
-					/>
-				</Box>
-				<Box my={2}>
-					<TextField
-						label="Password"
-						placeholder="Please enter your password..."
-						variant="outlined"
-						color="primary"
-						fullWidth
-						type="password"
-						name="password"
-						value={registerRequest.password}
-						onChange={handleInputOnChange}
-						error={format.password}
-						helperText={
-							format.password
-								? "Oops! Your password needs a vacation from errors 🏖️. Please enter a valid one."
-								: ""
-						}
-					/>
-				</Box>
-				<Box my={2}>
-					<TextField
-						// change logic
-						label="Confirm Password"
-						placeholder="Please enter your password..."
-						variant="outlined"
-						color="primary"
-						fullWidth
-						type="password"
-						name="confirmPassword"
-						value={registerRequest.confirmPassword}
-						onChange={handleInputOnChange}
-						error={format.confirmPassword}
-						helperText={
-							format.confirmPassword
-								? "Uh-oh! Your password wants a travel companion for confirmation. Let's make sure they're on the same journey! 🛂"
-								: ""
-						}
-					/>
-				</Box>
-				{error !== '0' && <Typography variant="subtitle1" color={'red'}>
-					{erroDict[error.toString()]}
-				</Typography>}
 			</DialogContent>
-			<DialogActions style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+			<DialogActions sx={globalStyles.dialogAction}>
 				<CButton
 					title="Cancel"
-					style={{
-						border: '1px solid #757de8', color: '#757de8', background: 'white'
-					}}
-					onClick={handleRegisterDialogOpen} />
-
+					onClick={handleRegisterDialogOpen}
+					style={{ border: '1px solid #757de8', color: '#757de8', background: 'white' }}
+				/>
 				<CButton
 					title="REGISTER"
 					onClick={formValidator}
 					loading={submitLoading}
-					style={{
-						background: '#757de8', color: 'white'
-					}}
-					disabled={disableSubmit}
+					style={{ background: '#757de8', color: 'white' }}
 				/>
 			</DialogActions>
 		</Dialog>
 	);
 };
+
+export default Register;

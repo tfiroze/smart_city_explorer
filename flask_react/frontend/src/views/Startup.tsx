@@ -102,13 +102,13 @@ export const Startup = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 1.2 }}
+          transition={{ duration: 2, delay: 0.5 }}
         >
-          <Typography variant={isMobile ? "h4" : "h2"} component="div" style={{ color: 'white', fontWeight: 'bolder', textShadow: '4px 4px 6px rgba(0,0,0,0.8)' }}>
+          <Typography variant="h2" component="div" style={{ color: 'white' }}>
             SMART CITY EXPLORER
           </Typography>
         </motion.div>
-        <Typography variant="subtitle1" style={{ fontStyle: 'italic', marginTop: '20px', color: 'white', textShadow: '3px 3px 5px rgba(0,0,0,0.7)' }}>
+        <Typography variant="subtitle1" style={{ fontStyle: 'italic', marginTop: '20px', color: 'white' }}>
           Amidst Manhattan's buzz, let's seize every moment!
         </Typography>
         <Box mt={isMobile ? 2 : 4}>
