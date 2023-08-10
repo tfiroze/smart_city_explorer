@@ -24,6 +24,8 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { VenueSelectionControls } from "../components/createItinerary/VenueSelectionControls";
 import { Header } from "../components/dashboard/Header";
 import { smartApi } from "../utils/apiCalls";
+import { Loader } from "../components/common/loader";
+import { ErrorPage } from "./ErrorPage";
 
 const steps = [
   "Trip Information",
@@ -64,18 +66,20 @@ export const CreateItinerary: React.FC<IProps> = ({
   const [fareArr, setFareArr] = useState<string[]>([])
   const [durationArr, setDurationArr] = useState<string[]>([])
 
+  const [loader, setLoader] = useState<boolean>(false)
+  const [error, setError] = useState<string>("0")
+
 
   const updateItinerary = (request: object) => {
-    console.log(currentStep);
     handleGetRecommendation(request)
   };
 
   const handleGetRecommendation = (request: any) => {
-    console.log(request);
+    setLoader(true)
     setTripDate(request.date)
     smartApi.getRecommendation(request)
       .then((results) => {
-        console.log(results);
+        setLoader(false)
 
         if (results?.valid) {
           manipulateRecommendationData(results.attractions, results.attraction_order)
@@ -83,20 +87,20 @@ export const CreateItinerary: React.FC<IProps> = ({
           setCurrentStep(currentStep + 1);
         } else {
           // ... handle the case when results?.valid is falsy ...
+          setError(results.errorType)
 
         }
       })
       .catch((error) => {
         console.log(error);
-        // setError('2')
-        // setLoading(false)
+        setError('2')
       });
   }
 
   const handleGetFare = (request: string[], reqObj: any) => {
     setFinalVenueids(request)
     setFinalVenues(reqObj)
-    console.log('Called------------', reqObj, request)
+    setLoader(true)
     let req = {
       venue_id: [...request],
       date: tripDate
@@ -112,11 +116,14 @@ export const CreateItinerary: React.FC<IProps> = ({
           // setCurrentStep(currentStep + 1);
         } else {
           // ... handle the case when results?.valid is falsy ...
+          setLoader(false)
+          setError(results.errorType)
+
         }
       })
       .catch((error) => {
         console.log(error);
-        // setError('2')
+        setError('2')
         // setLoading(false)
       });
   }
@@ -126,21 +133,21 @@ export const CreateItinerary: React.FC<IProps> = ({
       venue_id: [...request],
       date: tripDate
     }
-
+    
     smartApi.getDuration(req)
       .then((results) => {
-        console.log(results);
-
+        setLoader(false)
         if (results?.valid && results?.data) {
-          setFareArr(results.data)
+          setDurationArr(results.data)
           setCurrentStep(currentStep + 1);
         } else {
           // ... handle the case when results?.valid is falsy ...
+          setError(results.errorType)
         }
       })
       .catch((error) => {
         console.log(error);
-        // setError('2')
+        setError('2')
         // setLoading(false)
       });
   }
@@ -182,6 +189,10 @@ export const CreateItinerary: React.FC<IProps> = ({
     setRestaurantTypeName(Object.keys(data))
   }
 
+  const handleConfirmation = ()=>{
+    setCurrentStep(currentStep + 1);
+  }
+
 
 
   const renderStep = () => {
@@ -197,12 +208,13 @@ export const CreateItinerary: React.FC<IProps> = ({
           restaurantName={restaurantTypeName}
         />;
       case 2:
-        return <VenueSelection fareArr={fareArr} duration={durationArr} venues={finalVenues} venids={finalvenueids}/>;
-      // case 3:
-      //   return <ConfirmItineraryItems
-      //     // completed={addItem} 
-      //     data={itinerary}
-      //   />;
+        return <VenueSelection fareArr={fareArr} duration={durationArr} venues={finalVenues} venids={finalvenueids} finalize={handleConfirmation}/>;
+      case 3:
+        return <ConfirmItineraryItems
+          // completed={addItem} 
+          venids={finalvenueids}
+          date= {tripDate}
+        />;
       default:
         return null;
     }
@@ -221,13 +233,18 @@ export const CreateItinerary: React.FC<IProps> = ({
 
 
   return (
-    <Grid container style={{ backgroundColor: '#ffff' }}>
+    <>
+    {loader && true ? <Loader /> :
+    error !== '0' ? <ErrorPage /> : 
+      <Grid container style={{ backgroundColor: '#ffff' }}>
       <Grid item xs={12} style={{ width: '100%', height: '10vh', display: 'flex', alignItems: 'center' }}>
         <Header activeStep={currentStep} steps={steps} />
       </Grid>
       <Grid item xs={12} style={{ padding: '0px' }}>
         {renderStep()}
       </Grid>
-    </Grid>
+    </Grid>}
+    </>
+    
   );
 };

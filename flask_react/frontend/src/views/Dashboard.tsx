@@ -269,7 +269,7 @@ export const Dashboard = () => {
 
   return (
     <>
-      {loader && false ? <Loader /> :
+      {loader && true ? <Loader /> :
         error !== '0' ? <ErrorPage /> :
           <>
             <ProfileDrawer open={profileDrawerOpen} handleClose={handleClose} />

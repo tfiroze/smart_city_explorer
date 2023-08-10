@@ -97,6 +97,8 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
     }
 
     const handleCardSelection = (type: string, id: string, details: any) => {
+        console.log(details);
+        
         if (type.includes("RESTAURANT")) {
             setRestaurantSelection({
                 ...restaurantSelection,
@@ -129,8 +131,8 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
             submissionArray.splice(2, 0, restArr[0]);
             // Insert the second value of arrayB at the end of arrayA
             submissionArray.push(restArr[1]);
-            let submissionObjArr =attractionNameArr.map(key => attractionSelection[key]);
-            let  submissionRestObjArr = restaurantNameArr.map(key => restaurantSelection[key]);
+            let submissionObjArr =attractionNameArr.map(key => attractionSelectionObject[key]);
+            let  submissionRestObjArr = restaurantNameArr.map(key => restaurantSelectionObject[key]);
 
             submissionObjArr.splice(2, 0, submissionRestObjArr[0]);
             submissionObjArr.push(submissionRestObjArr[1]);

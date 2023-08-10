@@ -58,12 +58,14 @@ const StyledDisclaimer = styled(Typography)(({ theme }) => ({
 }));
 
 interface IProps {
-  data: IItinerary;
+  venids:string[], 
+  date: string
   // completed: (data: IItinerary) => void;
 }
 
 export const ConfirmItineraryItems: React.FC<IProps> = ({ 
-  data, 
+  venids,
+  date
   // completed 
 }) => {
   const [name, setName] = useState("");

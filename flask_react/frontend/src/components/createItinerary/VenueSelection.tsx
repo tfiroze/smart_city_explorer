@@ -187,7 +187,8 @@ interface IProps {
   fareArr: string[];
   duration: string[];
   venues:any;
-  venids: string[]
+  venids: string[];
+  finalize: ()=>void
 }
 
 export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, venues  }) => {
@@ -301,7 +302,7 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
       </Dialog>
       <Grid item xs={12} style={{ overflowY: "scroll" }}>
         <Timeline position="alternate-reverse">
-          {itinerary.map((item, index) => (
+          {venues.map((item:any, index:number) => (
             <>
               <TimelineItem key={index} >
                 <TimelineOppositeContent
@@ -310,7 +311,7 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
                   variant="body2"
                   color="text.secondary"
                 >
-                  Time To Visit: Between 9am to 11am
+                  Time To Visit: {index == 0 ? '9:00 Am To 11 Am' : index == 1 ? '11 Am to 1 Pm' : index == 2 ? '1 Pm to 3 Pm' : index == 3 ? '3 Pm to 5 Pm' : index == 4? '5 Pm to 7 Pm' : '7 Pm to 9 Pm'}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
                   <TimelineDot sx={{ backgroundColor: currentTheme.palette.secondary.main }}>
@@ -331,12 +332,12 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
                     }}
                   >
                     <Typography variant="h6" align="left">
-                      {item.title}
+                      {item.name}
                     </Typography>
                     <CardMedia
                       component="img"
                       alt="times square"
-                      image={item.imgLink}
+                      image={item.image}
                       sx={{
                         height: 200,
                         aspectRatio: 16 / 9,
@@ -357,32 +358,20 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
                       }}
                       align="left"
                     >
-                      Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
+                      {item.description}
                     </Typography>
                     <Divider sx={{ margin: '10px 0' }} />
                     <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
                       <Typography>
-                        Rating: <span>4</span>
+                        Rating: <span>{item.rating}</span>
                       </Typography>
 
                       <Typography>
-                        Busyness: <span>Moderate</span>
+                        Busyness: <span>{(item.busyness >= 40 && item.busyness < 80) ? ' Moderate' : (item.busyness >= 80) ? ' High' : ' Low' }</span>
                       </Typography>
                     </Grid>
                     <Divider sx={{ margin: '10px 0' }} />
                     <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main }}>
-                      {/* <CButton
-                          title="Select"
-                          onClick={() => { }}
-                          style={{
-                            width: '30%',
-                            background: '#757de8',
-                            color: '#ffffff',
-                            borderRadius: '20px',
-                            padding: '10px 20px',
-                            fontWeight: 'bold',
-                          }}
-                        /> */}
                       <CButton
                         title="View"
                         onClick={() => { }}
@@ -399,12 +388,12 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
                   </Card>
                 </TimelineContent>
               </TimelineItem>
-              <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
+              {index !== (venues.length-1) && <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
                 <div style={{ width: '48%' }}>
                   <Typography variant="h6" align="right">
                     Estimated Fare
                   </Typography>
-                  <Typography align="right">40 Dollars</Typography>
+                  <Typography align="right">$ {Math.ceil(parseInt(fareArr[index]))}</Typography>
 
                 </div>
                 <div style={{ width: '4%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -416,10 +405,10 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
                   <Typography variant="h6" component="span">
                     Drive For
                   </Typography>
-                  <Typography>30 mins</Typography>
+                  <Typography>{Math.ceil(parseInt(duration[index])/60)} Minutes</Typography>
                 </div>
 
-              </div>
+              </div>}
             </>
           ))}
         </Timeline>

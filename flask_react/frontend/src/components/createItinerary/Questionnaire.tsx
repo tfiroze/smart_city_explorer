@@ -42,6 +42,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useNavigate } from "react-router-dom";
 import { MessagePopups } from "../common/messagePopups";
 import { log } from "console";
+import { ErrorPage } from "../../views/ErrorPage";
 
 
 
@@ -98,6 +99,9 @@ export const Questionnaire: React.FC<IProps> = ({
   const [oneButtonModal, setOneButtonModal] = useState<boolean>(false);
   const [oneButtonMessage, setOneButtonMessage] = useState<string>('');
   const [twoButtonModal, setTwoButtonModal] = useState<boolean>(false);
+  const [error, setError] = useState<string>("0")
+  const [loader, setLoader] = useState<boolean>(false)
+
 
   const currentTheme = useTheme();
   const navigate = useNavigate();
@@ -126,20 +130,23 @@ export const Questionnaire: React.FC<IProps> = ({
 
   function questionnaire(token: string) {
     setIsLoading(true)
+    setLoader(true)
     smartApi
       .getQuestionnaire(token)
       .then((results) => {
         setIsLoading(false)
+        setLoader(false)
         if (results?.valid && results?.attraction_type && results?.cusine_type) {
           setTags([...results.attraction_type]);
           setZoneGroup([...results.zone_group]);
           setSubCategory([...results?.cusine_type])
         } else {
           // ... handle the case when results?.valid is falsy ...
+          setError(results.errorType)
         }
       })
       .catch((error) => {
-        console.log(error);
+        setError('2')
         setIsLoading(false)
       });
   }
@@ -277,6 +284,9 @@ export const Questionnaire: React.FC<IProps> = ({
 
 
   return (
+    <>
+    {loader && true ? <Loader /> :
+    error !== '0' ? <ErrorPage /> : 
     <>
       <Dialog
         open={oneButtonModal}
@@ -524,6 +534,7 @@ export const Questionnaire: React.FC<IProps> = ({
           </Grid>
         </Grid >
       }
+    </>}
     </>
   );
 };
