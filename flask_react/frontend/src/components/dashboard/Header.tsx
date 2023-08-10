@@ -1,112 +1,295 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ThemeContext } from '../../utils/ApplicationContext';
-import { AuthContext } from '../../utils/AuthContext';
-import Logo from '../../resources/images/SCE_Logo.png';
-import { Avatar, Divider, Menu, MenuItem, Step, StepLabel, Stepper, Switch, Typography, useTheme } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import NightsStayIcon from '@mui/icons-material/NightsStay';
-import LogoutIcon from '@mui/icons-material/Logout';
-import SettingsIcon from '@mui/icons-material/Settings';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import { useLocation } from 'react-router-dom';
-import { ProfileDrawer } from "../../components/navigation/ProfileDrawer";
-import { useNavigate } from "react-router-dom";
+import React, { useContext, useState, useCallback } from "react";
+import { ThemeContext } from "../../utils/ApplicationContext";
+import { AuthContext } from "../../utils/AuthContext";
+import Logo from "../../resources/images/SCE_Logo.png";
+import {
+  Avatar,
+  Divider,
+  Menu,
+  MenuItem,
+  Step,
+  StepLabel,
+  Stepper,
+  Switch,
+  Typography,
+  useTheme,
+  Grid,
+  styled,
+  Button,
+  TextField,
+} from "@mui/material";
+import NightsStayIcon from "@mui/icons-material/NightsStay";
+import LogoutIcon from "@mui/icons-material/Logout";
+import SettingsIcon from "@mui/icons-material/Settings";
+import { useLocation, useNavigate } from "react-router-dom";
+import Badge from "@mui/material/Badge";
+import MailIcon from "@mui/icons-material/Mail";
+import IconButton from "@mui/material/IconButton";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import InputAdornment from "@mui/material/InputAdornment";
 interface IProps {
-  activeStep: number | undefined;
-  steps: null | string[];
+  activeStep?: number;
+  steps?: string[];
 }
 
+const primaryColor = "#757de8";
+const hoverColor = "#5966c1";
+
+const toSentenceCase = (str: string) => {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+const LogoImage = styled(Grid)({
+  justifyContent: "center",
+  alignItems: "center",
+  display: "flex",
+  cursor: "pointer",
+});
+
+const WelcomeText = styled(Typography)({
+  fontFamily: "'Poppins', sans-serif",
+  fontWeight: 600,
+  marginRight: "10px",
+  color: primaryColor,
+  transition: "color 0.3s",
+  "&:hover": {
+    color: hoverColor,
+  },
+});
+
+const HeaderContainer = styled(Grid)({
+  padding: "10px 20px", // Add padding for better spacing
+  boxShadow: "0px 0px 10px rgba(0,0,0,0.1)", // A subtle shadow for depth
+});
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+  cursor: "pointer",
+  backgroundColor: primaryColor,
+  marginRight: "10px",
+  boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
+  width: "40px",
+  height: "40px",
+  border: `2px solid ${primaryColor}`,
+  transition: "transform 0.3s, background-color 0.3s",
+  "&:hover": {
+    backgroundColor: hoverColor,
+    transform: "scale(1.05)",
+  },
+}));
 
 export const Header: React.FC<Partial<IProps>> = ({
-  activeStep,
-  steps
+  activeStep = 0,
+  steps = [],
 }) => {
-  const pathname = useLocation();
-  const authContext = useContext(AuthContext);
-  const themeContext = useContext(ThemeContext);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [showTimeline, setShowTimeLine] = useState<boolean>(false);
   const navigate = useNavigate();
-  useEffect(() => {
-    pathname.pathname === '/createItinerary' ? setShowTimeLine(true) : setShowTimeLine(false);
-  }, []);
-
-  const open = Boolean(anchorEl);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleThemeChange = () => {
-    themeContext.onChange();
-  };
-
-  const getAvatarColor = () => {
-    return themeContext.theme === 'dark' ? '#757de8' : '#757de8';
-  };
+  const { userInfo } = useContext(AuthContext);
+  const themeContext = useContext(ThemeContext);
   const currentTheme = useTheme();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [friendAnchorEl, setfriendAnchorEl] = useState<null | HTMLElement>(
+    null
+  );
+  const [friendRequest, setFriendRequest] = useState<string[]>([
+    " Jane Doe",
+    " Thea Jaeger",
+    " John Doe",
+    " :(",
+  ]);
+
+  const handleThemeChange = useCallback(() => {
+    themeContext.onChange();
+    setAnchorEl(null); // Close dropdown after changing theme
+  }, [themeContext]);
+
+  const handleActionFriend = (index: number, action: "accept" | "reject") => {
+    let tempLst = friendRequest;
+    tempLst.splice(index, 1);
+    setFriendRequest([...tempLst]);
+  };
+
   return (
     <>
       <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        anchorEl={friendAnchorEl}
+        open={Boolean(friendAnchorEl)}
+        onClose={() => setfriendAnchorEl(null)}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={() => navigate("/editProfile")}>
+        <div style={{ minWidth: "550px", maxWidth: "550px" }}>
+          <Typography display="flex" variant="body1" justifyContent="center">
+            Friend Requests
+          </Typography>
+          <Grid container style={{ marginBottom: '10px' }}>
+            <Grid item xs={12} display='flex' justifyContent='center'>
+              <TextField
+                label="Add Friend"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <span style={{ marginRight: '30px !important' }}>
+                        <AccountCircle />
+                      </span>
+                    </InputAdornment>
+                  ),
+                }}
+                variant="outlined"
+                style={{ margin: "10px", width: "80%" }}
+              />
+              <Button>Add</Button>
+            </Grid>
+          </Grid>
+
+          {friendRequest.length == 0 && (
+            <Typography display="flex" variant="body1" justifyContent="center">
+              No pending Friend Requests
+            </Typography>
+          )}
+          <Grid container style={{ minWidth: "200px" }}>
+            {friendRequest.map((item, index) => {
+              return (
+                <>
+                  <Grid
+                    item
+                    xs={8}
+                    display="flex"
+                    justifyContent="left"
+                    alignContent="center"
+                  >
+                    <Avatar style={{ marginLeft: "5px" }} />
+                    <Typography
+                      display="flex"
+                      variant="body1"
+                      justifyContent="center"
+                    >
+                      {item}
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={4}
+                    display="flex"
+                    justifyContent="right"
+                    alignContent="center"
+                    style={{ marginBottom: "10px" }}
+                  >
+                    <Button
+                      variant="outlined"
+                      color="error"
+                      style={{ marginRight: "5px" }}
+                      onClick={() => handleActionFriend(index, "reject")}
+                    >
+                      <CloseIcon />
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="success"
+                      style={{ marginRight: "5px" }}
+                      onClick={() => handleActionFriend(index, "accept")}
+                    >
+                      <CheckIcon />
+                    </Button>
+                  </Grid>
+                </>
+              );
+            })}
+          </Grid>
+        </div>
+      </Menu>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={() => setAnchorEl(null)}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+      >
+        <MenuItem
+          onClick={() => {
+            navigate("/editProfile");
+            setAnchorEl(null);
+          }}
+        >
           <SettingsIcon />
           <Typography variant="subtitle1">User Settings</Typography>
         </MenuItem>
         <Divider />
+
         <MenuItem>
           <NightsStayIcon />
           <Typography>Dark Mode</Typography>
-          <Switch checked={themeContext.theme === 'dark'} onChange={handleThemeChange} />
+          <Switch
+            checked={themeContext.theme === "dark"}
+            onChange={handleThemeChange}
+          />
         </MenuItem>
         <Divider />
-        <MenuItem>
+        <MenuItem
+          onClick={() => {
+						/* Add logout functionality here */ setAnchorEl(null);
+          }}
+        >
           <LogoutIcon />
           <Typography variant="subtitle1">Log Out</Typography>
         </MenuItem>
       </Menu>
-      <Grid container alignItems="center" xs={12}>
-        <Grid item xs={2} style={{ justifyContent: 'center', display: 'flex' }}>
-          <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '8vh', transition: 'height 0.5s' }} />
-        </Grid>
-        {steps?.length && <Grid item xs={6}>
-          <Stepper activeStep={activeStep} sx={{ mx: "auto", backgroundColor:currentTheme.palette.secondary.main }}>
-            {steps?.map((label, index) => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Grid>}
-        <Grid item xs={steps?.length ? 4 : 10} style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
-          <Typography variant="h5" align='left' style={{ fontFamily: "Georgia, serif", fontWeight: 600, marginRight: '10px', color: "#757de8" }}>
-            Welcome {authContext.userInfo?.first_name}! 👋
-          </Typography>
-          <Avatar
+      <HeaderContainer container alignItems="center">
+        <LogoImage item xs={2} onClick={() => navigate("/")}>
+          <img
+            src={Logo}
+            alt="logo"
             style={{
-              cursor: 'pointer',
-              backgroundColor: getAvatarColor(),
-              marginRight: '10px',
-              boxShadow: "0px 0px 5px rgba(0,0,0,0.2)",
-              width: '40px',
-              height: '40px',
-              border: '2px solid #757de8',
-              transition: 'transform 0.3s'
+              aspectRatio: "16/9",
+              height: "5vh",
+              transition: "height 0.5s",
             }}
-            onClick={handleClick}
-
           />
+        </LogoImage>
+        {steps.length > 0 && (
+          <Grid item xs={6}>
+            <Stepper
+              activeStep={activeStep}
+              sx={{
+                mx: "auto",
+                // backgroundColor: currentTheme.palette.secondary.main,
+                padding: "5px",
+              }}
+            >
+              {steps.map((label, index) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          </Grid>
+        )}
+
+        <Grid
+          item
+          xs={steps.length ? 4 : 10}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+          }}
+        >
+          {/* <WelcomeText variant="h5" align='left'>
+            Welcome {toSentenceCase(userInfo?.first_name || '')}! 👋
+          </WelcomeText> */}
+
+          <Badge
+            badgeContent={friendRequest.length}
+            color="primary"
+            style={{ marginRight: "15px", cursor: "pointer" }}
+            onClick={(event) => setfriendAnchorEl(event.currentTarget)}
+          >
+            <MailIcon color="action" />
+          </Badge>
+          <StyledAvatar onClick={(event) => setAnchorEl(event.currentTarget)} />
         </Grid>
-      </Grid>
+      </HeaderContainer>
     </>
   );
 };

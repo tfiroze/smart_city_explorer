@@ -9,13 +9,18 @@ import {
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import {
-  Dialog
+  Alert,
+  Dialog,
+  Divider
 } from "@mui/material";
 import "leaflet/dist/leaflet.css";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Grid,
   Typography,
-
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Container,
 
   useTheme,
@@ -99,7 +104,7 @@ export const Questionnaire: React.FC<IProps> = ({
   const [zoneGroup, setZoneGroup] = useState<string[]>([]);
   const [selectedZones, setSelectedZones] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs('2022-04-17'));
+  const [selectedDate, setSelectedDate] = useState(dayjs());
   const [dateString, setDateString] = useState<string>(dayjs().add(1, 'day').format('YYYY-MM-DD'))
   const [selectedZoneItemToHiglight, setSelectedZoneItemToHiglight] = useState<string>("");
   const [oneButtonModal, setOneButtonModal] = useState<boolean>(false);
@@ -179,7 +184,7 @@ export const Questionnaire: React.FC<IProps> = ({
     let index = tagArray.indexOf(item);
     if (index == -1) {
       if (tagArray.length == 2) {
-        handleSelectionError('A maximum of two cusine types can be chosen.')
+        handleSelectionError('A maximum of two cuisine types can be chosen.')
       } else {
         tagArray.push(item);
       }
@@ -212,7 +217,7 @@ export const Questionnaire: React.FC<IProps> = ({
   };
 
   const handleGoBack = () => {
-    handleTwoSelectionError('Are you sure you want to exit!')
+    handleTwoSelectionError('Are you sure you want to exit?')
   };
 
   const setErrorMessage = (message: string) => {
@@ -245,9 +250,9 @@ export const Questionnaire: React.FC<IProps> = ({
 
   const finishTripQuestionnaire = () => {
     if (selectedTags.length < 1) {
-      handleSelectionError("Please Select atleast 1 Venue Tag")
+      handleSelectionError("Please Select at least 1 Venue Tag")
     } else if (selectedSubCategoryTags.length < 2) {
-      handleSelectionError("Please Select at least 2 Cusine Tags");
+      handleSelectionError("Please Select at least 2 Cuisine Tags");
     } else if (selectedZones.length < 2) {
       handleSelectionError("Please Select at least 2 Zones");
     } else {
@@ -278,6 +283,7 @@ export const Questionnaire: React.FC<IProps> = ({
       attractions: attractionsArr.map(replaceSpacesWithUnderscores),
       cusine: cusineArr.map(replaceSpacesWithUnderscores)
     }
+
     updateItinerary(request)
   }
 
@@ -326,148 +332,181 @@ export const Questionnaire: React.FC<IProps> = ({
                   Create Itinerary
                 </Typography>
               </Grid>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={["DateCalendar", "DateCalendar"]}>
-                  <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12}>
-                      <DemoItem>
-                        <Typography variant="h6" align="left">
-                          Select Date
-                        </Typography>
-                        <DateCalendar
-                          value={selectedDate}
-                          onChange={(newValue) => dateUpdate(newValue)}
-                          sx={{
-                            backgroundColor: currentTheme.palette.secondary.main,
-                            borderRadius: "15px",
-                          }}
-                        />
-                      </DemoItem>
-                    </Grid>
-                  </Grid>
-                </DemoContainer>
-              </LocalizationProvider>
-
-              <div style={{ width: "100%", marginTop: "20px" }}>
-                <Typography variant="h6" align="left">
-                  Select Attraction Type
-                </Typography>
-                <Grid
-                  item
-                  xs={12}
-                  style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
+              <Alert severity="info">Select the date for your trip to Manhattan.</Alert>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="date-picker-content"
+                  id="date-picker-header"
                 >
-                  {tags?.map((el, ind) => (
-                    <span
-                      onClick={() => toggleTags(el)}
-                      style={{
-                        padding: "10px",
-                        border: "2px solid",
-                        borderColor: "#757de8",
-                        marginRight: "15px",
-                        marginBottom: "10px",
-                        borderRadius: "25px",
-                        cursor: "pointer",
-                        backgroundColor:
-                          selectedTags.indexOf(el) !== -1
-                            ? "#757de8"
-                            : "transparent",
-                        color: selectedTags.indexOf(el) !== -1 ? "#fff" : "#757de8",
-                      }}
-                    >
-                      {el}
-                    </span>
-                  ))}
-                </Grid>
-              </div>
-              <div style={{ width: "100%", marginTop: "20px" }}>
-                <Typography variant="h6" align="left">
-                  Select Cuisine Type
-                </Typography>
-                <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
-                  {subCategory?.map((el, ind) => (
-                    <span
-                      onClick={() => toggleCusine(el)}
-                      style={{
-                        padding: '10px',
-                        border: '2px solid',
-                        borderColor: '#757de8',
-                        marginRight: '15px',
-                        borderRadius: '25px',
-                        cursor: 'pointer',
-                        marginBottom: '10px',
-                        backgroundColor: selectedSubCategoryTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
-                        color: selectedSubCategoryTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
-                      }}>
-                      {el}
-                    </span>
-                  ))}
-                </Grid>
-              </div>
-              <div style={{ width: "100%", marginTop: "20px" }}>
-                <Typography variant="h6" align="left">
-                  Select Zone Group
-                </Typography>
-                <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                  {zoneGroup?.map((item, index) => {
-                    return (
-                      <Grid
-                        style={{
-                          cursor: "pointer",
-                          padding: '15px',
-                          width: '30%',
-                          backgroundColor: currentTheme?.palette?.secondary?.main,
-                          marginRight: '5px',
-                          borderRadius: '10px',
-                          marginBottom: '10px',
+                  <Typography variant="h6">Select Date</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
 
-                        }}
-                        item
-                        className="unselectable"
-                      >
-                        <Grid xs={12} >
-                          <img
-                            src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                            alt=""
-                            style={{ width: '100%', borderRadius: '5px' }}
-                          />
-                        </Grid>
-                        <Grid xs={12}>
-                          <Typography variant="subtitle2" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom: '10px' }}>
-                            {toTitleCase(item)}
-                          </Typography>
-                        </Grid>
-                        <Grid xs={12} style={{ display: 'flex', justifyContent: 'center', background: currentTheme.palette.secondary.main }}>
-                          <CButton
-                            title="Select"
-                            onClick={() => handleChange(item)}
-                            style={{
-                              width: '45%',
-                              background: 'transparent',
-                              borderRadius: '20px',
-                              padding: '10px',
-                              fontWeight: 'bold',
-                              height: '30px',
-                              fontSize: '10px',
-                              border: '1px solid #757de8',
-                              backgroundColor:
-                                selectedZones.indexOf(item) !== -1
-                                  ? "#757de8"
-                                  : "transparent",
-                              color: selectedZones.indexOf(item) !== -1 ? "#fff" : "#757de8",
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DemoContainer components={["DateCalendar", "DateCalendar"]}>
+                      <Grid container spacing={2} alignItems="center">
+                        <Grid item xs={12}>
+                          <DateCalendar
+                            value={selectedDate}
+                            onChange={(newValue) => dateUpdate(newValue)}
+                            sx={{
+                              width: '100%',
+                              backgroundColor: 'secondary.main',
+                              borderRadius: "15px",
                             }}
                           />
                         </Grid>
                       </Grid>
-                    );
-                  })}
-                </Grid>
+                    </DemoContainer>
+                  </LocalizationProvider>
+                </AccordionDetails>
+              </Accordion>
+              <Alert severity="info">Select the Attraction types which you are interested in seeing</Alert>
+              <div style={{ width: "100%", marginTop: "20px" }}>
 
+                <Accordion>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1a-content"
+                    id="panel1a-header"
+                  >
+
+                    <Typography variant="h6" align="left">
+                      Select Attraction Type
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography variant="subtitle1" style={{ marginBottom: "10px", color: "#757de8" }}>
+                      Tap on the categories that match your interests.
+                    </Typography>
+                    <Grid
+                      item
+                      xs={12}
+                      style={{ margin: "15px 0px", display: "flex", flexWrap: "wrap" }}
+                    >
+                      {tags?.map((el, ind) => (
+                        <span
+                          onClick={() => toggleTags(el)}
+                          style={{
+                            padding: "10px",
+                            border: "2px solid",
+                            borderColor: "#757de8",
+                            marginRight: "15px",
+                            marginBottom: "10px",
+                            borderRadius: "25px",
+                            cursor: "pointer",
+                            backgroundColor:
+                              selectedTags.indexOf(el) !== -1
+                                ? "#757de8"
+                                : "transparent",
+                            color: selectedTags.indexOf(el) !== -1 ? "#fff" : "#757de8",
+                          }}
+                        >
+                          {el}
+                        </span>
+                      ))}
+                    </Grid>
+                  </AccordionDetails>
+                </Accordion>
               </div>
+              <div style={{ width: "100%", marginTop: "20px" }}>
+                <Divider />
+                <Alert severity="info">Choose your preferred cuisine for the trip.</Alert>
+                <Accordion style={{ marginTop: '20px' }}>
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography variant="h6">Select Cuisine Type</Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Grid item xs={12} style={{ margin: '15px 0px', display: 'flex', flexWrap: 'wrap' }}>
+                      {subCategory?.map((el, ind) => (
+                        <span
+                          onClick={() => toggleCusine(el)}
+                          style={{
+                            padding: '10px',
+                            border: '2px solid',
+                            borderColor: '#757de8',
+                            marginRight: '15px',
+                            borderRadius: '25px',
+                            cursor: 'pointer',
+                            marginBottom: '10px',
+                            backgroundColor: selectedSubCategoryTags.indexOf(el) !== -1 ? '#757de8' : 'transparent',
+                            color: selectedSubCategoryTags.indexOf(el) !== -1 ? '#fff' : '#757de8'
+                          }}>
+                          {el}
+                        </span>
+                      ))}
+                    </Grid>
+                  </AccordionDetails>
+                </Accordion>
+              </div>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="zone-group-content"
+                  id="zone-group-header"
+                >
+                  <Typography variant="h6">Select Zone Group</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography variant="subtitle1" style={{ marginBottom: "15px", color: '#757de8' }}>
+                    Explore the vibrant zones of Manhattan. Please select the areas you'd like to visit.
+                  </Typography>
 
-              <div
-                style={{ width: "100%", justifyContent: "center", display: "flex" }}
-              >
+                  <Grid container spacing={2} alignItems="center">
+                    <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                      {zoneGroup?.map((item, index) => (
+                        <Grid
+                          style={{
+                            cursor: "pointer",
+                            padding: '15px',
+                            width: '30%',
+                            backgroundColor: currentTheme?.palette?.secondary?.main,
+                            marginRight: '5px',
+                            borderRadius: '10px',
+                            marginBottom: '10px',
+                          }}
+                          item
+                          className="unselectable"
+                        >
+                          <Grid xs={12}>
+                            <img
+                              src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                              alt=""
+                              style={{ width: '100%', borderRadius: '5px' }}
+                            />
+                          </Grid>
+                          <Grid xs={12}>
+                            <Typography variant="subtitle2" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom: '10px' }}>
+                              {toTitleCase(item)}
+                            </Typography>
+                          </Grid>
+                          <Grid xs={12} style={{ display: 'flex', justifyContent: 'center', background: currentTheme.palette.secondary.main }}>
+                            <CButton
+                              title="Select"
+                              onClick={() => handleChange(item)}
+                              style={{
+                                width: '45%',
+                                background: 'transparent',
+                                borderRadius: '20px',
+                                padding: '10px',
+                                fontWeight: 'bold',
+                                height: '30px',
+                                fontSize: '10px',
+                                border: '1px solid #757de8',
+                                backgroundColor: selectedZones.indexOf(item) !== -1 ? "#757de8" : "transparent",
+                                color: selectedZones.indexOf(item) !== -1 ? "#fff" : "#757de8",
+                              }}
+                            />
+                          </Grid>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Grid>
+                </AccordionDetails>
+              </Accordion>
+
+              <div style={{ width: "100%", justifyContent: "center", display: "flex", marginTop: "20px" }}>
                 <CButton
                   title="Next"
                   onClick={() => submitOptions()}
@@ -481,6 +520,7 @@ export const Questionnaire: React.FC<IProps> = ({
                   }}
                 />
               </div>
+
             </Container>
           </Grid>
           <Grid item xs={6}>

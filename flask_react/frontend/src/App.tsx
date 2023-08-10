@@ -1,15 +1,11 @@
 import { ThemeProvider } from "@mui/material/styles";
 import "./app.css";
-import { Login } from "./views/Login";
 import { BrowserRouter } from "react-router-dom";
-import { Dashboard } from "./views/Dashboard";
 import { ThemeContext } from "./utils/ApplicationContext";
 import darkTheme from "./utils/Themes/darkTheme";
 import lightTheme from "./utils/Themes/lightTheme";
 import { AuthStack } from "./utils/AuthStack";
-import { ErrorPage } from './views/ErrorPage';
 import { useEffect, useState } from "react";
-import MapTest from "./views/MapTest";
 
 function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");

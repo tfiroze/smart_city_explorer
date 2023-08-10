@@ -325,28 +325,28 @@ const Profile = () => {
     };
 
 
-    const handlegetTripDetails = () =>{
+    const handlegetTripDetails = () => {
         if (userRequest?.user_id) {
             smartApi.allTrips(userRequest.user_id)
-              .then((results) => {
-                console.log(results);
-                // setLoader(false)
-                if (results?.valid) {
-                  setPastTrips([...results.completedTrips])
-                  setUpcomingTrips([...results.upcomingTrips])
-                //   getPopularPlaces()
-                } else {
-                  // ... handle the case when results?.valid is falsy ...
-                  setError(results.errorType)
-      
-                }
-              })
-              .catch((error) => {
-                console.log(error);
-                // setError('2')
-                // setLoader(false)
-              });
-          }
+                .then((results) => {
+                    console.log(results);
+                    // setLoader(false)
+                    if (results?.valid) {
+                        setPastTrips([...results.completedTrips])
+                        setUpcomingTrips([...results.upcomingTrips])
+                        //   getPopularPlaces()
+                    } else {
+                        // ... handle the case when results?.valid is falsy ...
+                        setError(results.errorType)
+
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                    // setError('2')
+                    // setLoader(false)
+                });
+        }
     }
 
     return (
@@ -368,7 +368,7 @@ const Profile = () => {
                     <Divider />
                     <List>
                         {['Home', 'Update Details', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Dashboard', 'Weather'].map((text, index) => (
-                            <ListItem button key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => {text === 'Dashboard'?navigate('/dashboard'): setActiveOption(text)}}>
+                            <ListItem button key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => { text === 'Dashboard' ? navigate('/dashboard') : setActiveOption(text) }}>
                                 <ListItemIcon>
                                     {index === 0 ? <HomeIcon /> :
                                         index === 1 ? <AdminPanelSettingsOutlinedIcon /> :
@@ -377,7 +377,7 @@ const Profile = () => {
                                                     index === 4 ? <HistoryIcon /> :
                                                         index === 5 ? <LuggageIcon /> :
                                                             index === 6 ? <LocalAirportIcon /> :
-                                                            <WbSunnyIcon />}
+                                                                <WbSunnyIcon />}
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItem>
@@ -548,8 +548,8 @@ const Profile = () => {
                     </>}
                     {activeOption == 'Past Trips' && <>
 
-                        <Grid container md={12} style={{height:'100%', display:'flex', flexWrap:'wrap', overflow:'scroll', border:'2px solid black'}}>
-                            
+                        <Grid container md={12} style={{ height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll', border: '2px solid black' }}>
+
                         </Grid>
                     </>}
                 </Box>

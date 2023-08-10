@@ -420,7 +420,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
                   <Typography variant="h6" component="span">
                     Drive For
                   </Typography>
-                  <Typography>30 mins</Typography>
+                  <Typography>30 minutes</Typography>
                 </div>
 
               </div>
@@ -430,7 +430,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
       </Grid>
       <CButton
         title="Confirm"
-        onClick={() => {updateItinerary()}}
+        onClick={() => { updateItinerary() }}
         style={{
           width: '30%',
           background: '#757de8',
@@ -438,7 +438,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
           borderRadius: '20px',
           padding: '10px 30px',
           fontWeight: 'bold',
-          margin:'20px 0px'
+          margin: '20px 0px'
         }}
       />
     </Grid>

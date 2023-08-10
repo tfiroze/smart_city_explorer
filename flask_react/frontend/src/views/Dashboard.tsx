@@ -114,6 +114,31 @@ export const Dashboard = () => {
   const [error, setError] = useState<string>("0")
 
   const currentTheme = useTheme();
+  const Legend = ({ onZoneClick }) => {
+    return (
+      <div style={{ background: 'rgba(255, 255, 255, 0.8)', padding: '10px' }}>
+        {Object.keys(venue_zone_grouping).map(zone => (
+          <div
+            key={zone}
+            style={{ marginBottom: '5px', cursor: 'pointer' }}
+            onClick={() => onZoneClick(zone)}
+          >
+            <span
+              style={{
+                display: 'inline-block',
+                width: '20px',
+                height: '20px',
+                marginRight: '5px',
+                backgroundColor: getFillColorForZoneGroup(zone)
+              }}
+            ></span>
+            {zone}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
 
 
 
@@ -471,6 +496,9 @@ export const Dashboard = () => {
                       };
                     }}
                   />
+                  {/* <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                    <Legend onZoneClick={(zone) => { (zone); }} />
+                  </div> */}
                 </MapContainer>
               </Grid>
             </Grid>
