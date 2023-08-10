@@ -609,12 +609,12 @@ for attraction, timing in itinerary.items():
             if venue_info['opening_time'].iloc[0] == -1 or venue_info['closing_time'].iloc[0] == -1:
                 continue
 
-        filtered_venue_info = venue_info.loc[(venue_info['day'] == today_day_num) 
-                                             & (venue_info['opening_time'] <= start_hour)
-                                             & (venue_info['closing_time'] >= end_hour)]
-        if not filtered_venue_info.empty:
-            valid_venues.append(venue_id)
-                
+            filtered_venue_info = venue_info.loc[(venue_info['day'] == today_day_num) 
+                                                 & (venue_info['opening_time'] <= start_hour)
+                                                 & (venue_info['closing_time'] >= end_hour)]
+            if not filtered_venue_info.empty:
+                valid_venues.append(venue_id)
+        
     if valid_venues:
         filtered_venues[attraction] = valid_venues
 
