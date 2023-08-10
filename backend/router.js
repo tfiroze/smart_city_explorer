@@ -45,7 +45,7 @@ router.post('/fare', fareModel.getFare)
 router.post('/duration', durationModel.getDuration)
 router.post('/busyness', busynessModel.getVenueBusyness)
 
-router.post('/venues', recommendationModel.getRecommendVenues)
+router.post('/venues', recommendationModel.getAttractionInfo, recommendationModel.getRestInfo)
 
 
 router.post('/checkEmail', friendController.checkEmail);
