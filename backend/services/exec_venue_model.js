@@ -24,16 +24,21 @@ function executeIPythonNotebook(ipynbFileName, parameters) {
 }
 
 let getRecommendVenues = (req, res, next) => {
+  console.log(req.body)
 
   const ipynbFileName = '../data_models/Recommendation_model/recommendation_model.ipynb'
 
   // For example of input: 
-  // let user_zone_input = ["Upper_West_Side", "Upper_East_Side"]
-  // let user_input_attractions = ["Neighborhood_Market", "Shopping_Center"]
-  user_zone_input = req.body.zoneGroup.replace(/'/g, '"'); 
-  user_input_attractions = req.body.attractions.replace(/'/g, '"'); 
+  // user_zone_input = ["Upper_West_Side", "Upper_East_Side"]
+  // user_input_attractions = ["Neighborhood_Market", "Shopping_Center"]
+  // const user_zone_input = req.body.zoneGroup.replace(/'/g, '"') 
+  // const user_input_attractions = req.body.attractions.replace(/'/g, '"')
 
-  const parameters = [JSON.parse(user_zone_input), JSON.parse(user_input_attractions)];
+  const user_zone_input = req.body.zoneGroup
+  const user_input_attractions = req.body.attractions
+
+  // const parameters = [JSON.parse(user_zone_input), JSON.parse(user_input_attractions)];
+  const parameters = [user_zone_input, user_input_attractions]
 
   // get a string and convert into json
   const result = executeIPythonNotebook(ipynbFileName, parameters);
@@ -96,7 +101,7 @@ let getRecommendVenues = (req, res, next) => {
   }
 }
 
-
+// Not used for now
 let checkVenueOpen = (req, res) => {
   let day = new Date(req.body.date).getDay()
   let venueIds = []
