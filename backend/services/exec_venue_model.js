@@ -40,6 +40,13 @@ let getRecommendVenues = (req, res, next) => {
   const result = executeIPythonNotebook(ipynbFileName, parameters);
   const resString = result.replace(/'/g, '"').replace(/\(/g, '[').replace(/\)/g, ']')
   let resJSON = JSON.parse(resString)
+
+  const result_order = resJSON.map(item => ({
+    order: item.order,
+    type: item.type
+  }));
+  
+  
   
   let venueInfo = {}
   let venueIds = []  
@@ -57,6 +64,7 @@ let getRecommendVenues = (req, res, next) => {
       )
     }
   }
+  
 
   try {
     let dbOperation = (conn) => {
@@ -82,7 +90,7 @@ let getRecommendVenues = (req, res, next) => {
           } 
         }       
         conn.end()
-        return res.status(200).send({valid:true, data:venueInfo})
+        return res.status(200).send({valid:true, data:venueInfo, order: result_order})
       })
     }
     createSSHTunnel(dbOperation)
@@ -92,6 +100,7 @@ let getRecommendVenues = (req, res, next) => {
     return res.stauts(200).send({valid:false, message:'Failed to get recommendation venues'})
   }
 }
+
 
 
 // let checkVenueOpen = (req, res) => {
