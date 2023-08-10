@@ -17,18 +17,28 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
 }));
 
 interface IProps {
-    detailsModalClick?: ()=>void;
-    venDetails?: any
+    detailsModalClick?: (arg:any)=>void;
+    venDetails?: any;
+    venType?:string;
+    selectCard?:(args1:string, args2:string)=>void;
+    showSelect?: boolean
+    isSelected?:boolean
 }
 
 export const VenueCard :React.FC<IProps> = ({
   detailsModalClick,
-  venDetails
+  venDetails,
+  venType,
+  selectCard,
+  showSelect = false,
+  isSelected = false
 })  => {
     
     const currentTheme = useTheme();
-    const showModalDetails = ()=> detailsModalClick? detailsModalClick():console.log('Something went wrong!')
-    console.log(venDetails);
+    const showModalDetails = ()=> detailsModalClick? detailsModalClick(venDetails):console.log('Something went wrong!')
+    const handleSelection= ()=>{
+        (selectCard && venType) ? selectCard(venType, venDetails.venue_id) : console.log('Something went wrong!')
+    }
     
     return (
         <Grid
@@ -38,7 +48,7 @@ export const VenueCard :React.FC<IProps> = ({
             onClick={() => { }}
         // className="unselectable"
         >
-            <StyledVenueName noWrap>{venDetails.namw}</StyledVenueName>
+            <StyledVenueName noWrap>{venDetails.name}</StyledVenueName>
 
             {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
                     <Checkbox checked={item.selected} />
@@ -46,7 +56,7 @@ export const VenueCard :React.FC<IProps> = ({
 
             <Grid xs={12} item >
                 <img
-                    src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+                    src={venDetails.image}
                     alt=""
                     style={{ width: '100%', borderRadius: '5px' }}
 
@@ -59,39 +69,40 @@ export const VenueCard :React.FC<IProps> = ({
                 WebkitLineClamp: '3',
                 WebkitBoxOrient: 'vertical',
             }}>
-                Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
+                {venDetails.description}
             </Typography>
             <Divider sx={{ margin: '10px 0' }} />
             <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
                 <Typography>
-                    Rating: <span>4</span>
+                    Rating: {venDetails.rating}
                 </Typography>
 
                 <Typography>
-                    Busyness: <span>Moderate</span>
+                    Busyness: {(venDetails.busyness >= 40 && venDetails.busyness < 80) ? ' Moderate' : (venDetails.busyness >= 80) ? ' High' : ' Low' }
                 </Typography>
             </Grid>
             <Divider sx={{ margin: '10px 0' }} />
             <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                <CButton
+                {showSelect && <CButton
                     title="Select"
-                    onClick={() => { }}
+                    onClick={handleSelection}
                     style={{
                         width: '30%',
-                        background: '#757de8',
-                        color: '#ffffff',
+                        background:isSelected? '#757de8' : '#ffffff',
+                        color: isSelected?'#ffffff': '#757de8',
                         borderRadius: '20px',
                         padding: '10px 20px',
                         fontWeight: 'bold',
+                        border: '2px solid #757de8'
                     }}
-                />
+                />}
                 <CButton
                     title="View"
                     onClick={() => showModalDetails()}
                     style={{
                         width: '30%',
-                        background: '#757de8',
-                        color: '#ffffff',
+                        background:showSelect?  currentTheme.palette.secondary.main : '#757de8',
+                        color: '#757de8',
                         borderRadius: '20px',
                         padding: '10px 30px',
                         fontWeight: 'bold',

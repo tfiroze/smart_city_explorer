@@ -7,6 +7,8 @@ import {
     Alert,
     styled,
     useTheme,
+    Dialog,
+    Theme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
@@ -21,6 +23,8 @@ import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { CButton } from "../common/button";
 import IItinerary from "../../models/IItinerary";
 import { VenueCard } from "../common/venueCard";
+import makeStyles from "@mui/styles/makeStyles/makeStyles";
+import { VenueDetailsModal } from "./VenueDetailsModal";
 
 function MapUpdater() {
     const map = useMap();
@@ -37,90 +41,101 @@ let DefaultIcon = L.icon({
     shadowUrl: iconShadow,
 });
 L.Marker.prototype.options.icon = DefaultIcon;
+type AttractionSelectionType = { [key: string]: string };
 
-const StyledPaper = styled(Paper)(({ theme }) => ({
-    padding: theme.spacing(2),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
-    borderRadius: theme.spacing(2),
-}));
 
-const StyledHeading = styled(Typography)(({ theme }) => ({
-    fontWeight: "bold",
-    marginBottom: theme.spacing(2),
-}));
-
-const StyledVenueName = styled(Typography)(({ theme }) => ({
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: "bold",
-    marginBottom: theme.spacing(1),
+const useStyles = makeStyles((theme: Theme) => ({
+    root: {
+        "& .MuiPaper-root": {
+            backgroundColor: "transparent",
+            boxShadow: '0 0 0 rgba(0, 0, 0, 0.3)',
+        }
+    }
 }));
 
 interface IProps {
     currentItinerary: IItinerary;
-    attractionName: string[];
     attractionValue: any[];
-  }
+    attractionName: string[];
+}
 
-export const PickRecommendation : React.FC<IProps> = ({  currentItinerary, attractionName, attractionValue }) => {
+export const PickRecommendation: React.FC<IProps> = ({ currentItinerary, attractionValue, attractionName }) => {
     const [attractionNameArr, setAttractionNameArr] = useState<string[]>([]);
     const [attractionValueArr, setAttractionValueArr] = useState<any[]>([]);
+    const [openItienaryDetailsModal, setOpenItienaryDetailsModal] = useState<boolean>(false);
+    const [modalDetails, setModalDetails] = useState({})
+    const [attractionSelection, setAttractionSelection] = useState<AttractionSelectionType>({})
 
     useEffect(() => {
-        setAttractionNameArr(attractionName)
         setAttractionValueArr(attractionValue);
+        setAttractionNameArr(attractionName)
     }, []);
 
-    // const selectThingsTodo = (index: number) => {
-    //     let tempData = thingsTodo;
-    //     tempData[index].selected = !tempData[index].selected;
-    //     setThingsTodo([...tempData]);
-    // };
+    const handItienraryDetailsModal = (details:any) => {
+        setModalDetails(details);
+        setOpenItienaryDetailsModal(!openItienaryDetailsModal)
+    }
 
-    // const selectShoppingTodo = (index: number) => {
-    //     let tempData = shoppingTodo;
-    //     tempData[index].selected = !tempData[index].selected;
-    //     setShoppingTodo([...tempData]);
-    // };
-
-    // const selectResturantTodo = (index: number) => {
-    //     let tempData = resturantTodo;
-    //     tempData[index].selected = !tempData[index].selected;
-    //     setResturantTodo([...tempData]);
-    // };
-
+    const handleCardSelection = (type: string, id: string) =>{
+        setAttractionSelection({
+            ...attractionSelection,
+            [type]: id
+        })
+    }
 
     const currentTheme = useTheme();
+    const classes = useStyles();
+
 
     return (
         <>
-            { attractionNameArr?.length>0 && attractionNameArr?.slice(0,3).map((el, index)=>(
+            <Dialog
+                open={openItienaryDetailsModal}
+                onClose={handItienraryDetailsModal}
+                maxWidth="md"
+                fullWidth
+                className={classes.root}
+            >
+                <VenueDetailsModal venue={modalDetails}/>
+            </Dialog>
+            {attractionValueArr?.length > 0 && attractionValueArr.map((el: any, index:number) => (
                 <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
-                <Grid item xs={12}>
-                    <Typography variant="h6" align="center">
-                        {el}
-                    </Typography>
-                </Grid>
+                    <Grid item xs={12}>
+                        <Typography variant="h4" align="center">
+                            {el.type_att}
+                        </Typography>
+                        <Typography variant="h6" align="center">
+                            Time to Visit: {el.time}
+                        </Typography>
+                    </Grid>
 
-                
-                {attractionValueArr[index]?.slice(0, 3)?.map((item:any, index:number) => {
-                    return (
-                        <VenueCard venDetails = {item}/>
-                    );
-                })}
-                
-            </Grid>
+
+                    {el?.venue?.slice(0, 3)?.map((item: any, index: number) => {
+                        const isSelected =
+                        Object.keys(attractionSelection).length !== 0 &&
+                        attractionSelection[el.type_att] === item.venue_id;
+                        return (
+                            <VenueCard 
+                            venDetails={item} 
+                            detailsModalClick={handItienraryDetailsModal} 
+                            venType={el.type_att} 
+                            selectCard={handleCardSelection}
+                            showSelect={true}
+                            isSelected={isSelected}
+                            />
+                        );
+                    })}
+
+                </Grid>
             ))
-            
-            
+
+
             }
 
-            <Grid xs={12} style={{justifyContent: 'center', display: 'flex' }}>
+            <Grid xs={12} style={{ justifyContent: 'center', display: 'flex' }}>
                 <CButton
                     title="Next"
-                    onClick={()=>{}}
+                    onClick={() => { }}
                     style={{
                         width: '30%',
                         background: '#757de8',
@@ -128,7 +143,7 @@ export const PickRecommendation : React.FC<IProps> = ({  currentItinerary, attra
                         borderRadius: '20px',
                         padding: '10px 30px',
                         fontWeight: 'bold',
-                        margin:'20px 0px'
+                        margin: '20px 0px'
                     }}
                 />
             </Grid>

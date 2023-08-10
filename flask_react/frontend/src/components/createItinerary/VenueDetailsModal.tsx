@@ -77,12 +77,12 @@ export const VenueDetailsModal: React.FC<IProps> = ({venue, onClick}) => {
 							<Typography variant="subtitle1" style={{marginLeft:'10px'}}>Ratings: </Typography>
 							{venue.rating &&  new Array(Math.floor(venue.rating)).fill(0).map((_, index) => <StarRateRoundedIcon sx={{color: '#FFC93A'}}/>)}
 						</div>
-						<div style={{width:'100%', marginBottom:'10px', display:'flex'}}>
+						{venue.opening_time && <div style={{width:'100%', marginBottom:'10px', display:'flex'}}>
 							<AccessTimeFilledRoundedIcon/>
-							<Typography variant="subtitle2" style={{marginLeft:'10px'}}>Timings: </Typography>
+							<Typography variant="subtitle2" style={{marginLeft:'10px'}}>Time to Visit: </Typography>
 							{(venue.opening_time && venue.opening_time !== -1) ? 
 							<Typography variant="subtitle2">{venue.opening_time}:00  to {venue.closing_time}:00</Typography> : 'Closed'}
-						</div>
+						</div>}
 						{venue.busyness && <div style={{width:'100%', marginBottom:'10px', display:'flex'}}>
 							<Groups2RoundedIcon/>
 							<Typography variant="subtitle2" style={{marginLeft:'10px'}}>Busyness: </Typography>

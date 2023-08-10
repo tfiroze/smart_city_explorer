@@ -61,8 +61,8 @@ export const CreateItinerary: React.FC<IProps> = ({
     name: "",
     plan: [],
   });
-  const [attractionTypeName, setAttractionTypeName] = useState<string[]>([]);
   const [attractionTypeValue, setAttractionTypeValue] = useState<any[]>([]);
+  const [attractionTypeName, setAttractionTypeName] = useState<string[]>([])
 
   const finelize = (data: IVenueItem[]) => {
     setVenueItems(data);
@@ -72,36 +72,49 @@ export const CreateItinerary: React.FC<IProps> = ({
 
   const updateItinerary = (request: object) => {
     console.log(currentStep);
-    handleGetRecommendation(request) 
+    handleGetRecommendation(request)
   };
 
-  const handleGetRecommendation = (request: object) =>{
+  const handleGetRecommendation = (request: object) => {
     console.log(request);
-    
+
     smartApi.getRecommendation(request)
-    .then((results) => {
-      console.log(results);
+      .then((results) => {
+        console.log(results);
 
-      if (results?.valid) {
-        manipulateRecommendationData(results.data)
-        setCurrentStep(currentStep + 1);
-      } else {
-        // ... handle the case when results?.valid is falsy ...
+        if (results?.valid) {
+          manipulateRecommendationData(results.data, results.order)
+          setCurrentStep(currentStep + 1);
+        } else {
+          // ... handle the case when results?.valid is falsy ...
 
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-      // setError('2')
-      // setLoading(false)
-    });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        // setError('2')
+        // setLoading(false)
+      });
   }
 
-  const manipulateRecommendationData = (data:object)=>{
-    let attractionTypeKeyArr = Object.keys(data)
-    let attractionTypeValuesArr = Object.values(data)
-    setAttractionTypeName(attractionTypeKeyArr)
-    setAttractionTypeValue(attractionTypeValuesArr)
+  const manipulateRecommendationData = (data: any, order:any) => {
+    order.sort((a:any, b:any) => a.order - b.order);
+
+    // Extract only the 'type' property
+    const typesArray = order.map((item:any) => item.type);
+
+    const dataManipulation:any[] = []
+    typesArray.map((element:any, index:number)=>{
+        dataManipulation.push({
+          'type_att': element,
+          'venue': data[element],
+          'order': index,
+          'time': index == 0 ? '9:00 Am To 11 Am' : index == 1 ? '11 Am to 1 Pm' : index == 2 ? '3 Pm to 5 Pm' : '5 Pm to 7pm'
+        })
+    })
+
+    setAttractionTypeValue(dataManipulation)
+    setAttractionTypeName(Object.keys(data))
   }
 
 
@@ -111,7 +124,7 @@ export const CreateItinerary: React.FC<IProps> = ({
       case 0:
         return <Questionnaire updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       case 1:
-        return <PickRecommendation  currentItinerary={itinerary} attractionName = {attractionTypeName} attractionValue = {attractionTypeValue}/>;
+        return <PickRecommendation currentItinerary={itinerary} attractionValue={attractionTypeValue} attractionName={attractionTypeName}/>;
       // case 2:
       //   return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       // case 3:
