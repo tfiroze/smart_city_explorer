@@ -593,16 +593,18 @@ for attraction, timing in itinerary.items():
     for venue_id in user_venue_per_type_dict.get(attraction, []):  # Only work with venues in user input
         venue_info = df_venue_timings.loc[df_venue_timings['venue_id'] == venue_id]
         
-        # Check if the venue is closed for the day
-        if venue_info['opening_time'].iloc[0] == -1 or venue_info['closing_time'].iloc[0] == -1:
-            continue
+        if not venue_info.empty:
+            # Check if the venue is closed for the day
+            if venue_info['opening_time'].iloc[0] == -1 or venue_info['closing_time'].iloc[0] == -1:
+                continue
 
-        filtered_venue_info = venue_info.loc[(venue_info['day'] == today_day_num) 
-                                             & (venue_info['opening_time'] <= start_hour)
-                                             & (venue_info['closing_time'] >= end_hour)]
-        if not filtered_venue_info.empty:
-            valid_venues.append(venue_id)
-                
+            filtered_venue_info = venue_info.loc[(venue_info['day'] == today_day_num) 
+                                                 & (venue_info['opening_time'] <= start_hour)
+                                                 & (venue_info['closing_time'] >= end_hour)]
+            if not filtered_venue_info.empty:
+                valid_venues.append(venue_id)
+
+        
     if valid_venues:
         filtered_venues[attraction] = valid_venues
 

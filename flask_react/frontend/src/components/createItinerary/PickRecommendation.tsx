@@ -20,6 +20,7 @@ import L from "leaflet";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { CButton } from "../common/button";
 import IItinerary from "../../models/IItinerary";
+import { VenueCard } from "../common/venueCard";
 
 function MapUpdater() {
     const map = useMap();
@@ -58,296 +59,68 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
 }));
 
 interface IProps {
-    updateItinerary: () => void;
     currentItinerary: IItinerary;
+    attractionName: string[];
+    attractionValue: any[];
   }
 
-export const PickRecommendation : React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
-    const [thingsTodo, setThingsTodo] = useState<any[]>([]);
-    const [shoppingTodo, setShoppingTodo] = useState<any[]>([]);
-    const [resturantTodo, setResturantTodo] = useState<any[]>([]);
+export const PickRecommendation : React.FC<IProps> = ({  currentItinerary, attractionName, attractionValue }) => {
+    const [attractionNameArr, setAttractionNameArr] = useState<string[]>([]);
+    const [attractionValueArr, setAttractionValueArr] = useState<any[]>([]);
 
     useEffect(() => {
-        setThingsTodo([...thingsTodoDummyData]);
-        setShoppingTodo([...shoppingDummyData]);
-        setResturantTodo([...restaurantDummyData]);
+        setAttractionNameArr(attractionName)
+        setAttractionValueArr(attractionValue);
     }, []);
 
-    const selectThingsTodo = (index: number) => {
-        let tempData = thingsTodo;
-        tempData[index].selected = !tempData[index].selected;
-        setThingsTodo([...tempData]);
-    };
+    // const selectThingsTodo = (index: number) => {
+    //     let tempData = thingsTodo;
+    //     tempData[index].selected = !tempData[index].selected;
+    //     setThingsTodo([...tempData]);
+    // };
 
-    const selectShoppingTodo = (index: number) => {
-        let tempData = shoppingTodo;
-        tempData[index].selected = !tempData[index].selected;
-        setShoppingTodo([...tempData]);
-    };
+    // const selectShoppingTodo = (index: number) => {
+    //     let tempData = shoppingTodo;
+    //     tempData[index].selected = !tempData[index].selected;
+    //     setShoppingTodo([...tempData]);
+    // };
 
-    const selectResturantTodo = (index: number) => {
-        let tempData = resturantTodo;
-        tempData[index].selected = !tempData[index].selected;
-        setResturantTodo([...tempData]);
-    };
+    // const selectResturantTodo = (index: number) => {
+    //     let tempData = resturantTodo;
+    //     tempData[index].selected = !tempData[index].selected;
+    //     setResturantTodo([...tempData]);
+    // };
 
-    const finishRecommendation = ()=>{
-        updateItinerary()
-    }
 
     const currentTheme = useTheme();
 
     return (
         <>
-            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
+            { attractionNameArr?.length>0 && attractionNameArr?.slice(0,3).map((el, index)=>(
+                <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                 <Grid item xs={12}>
                     <Typography variant="h6" align="center">
-                        Things To Do
+                        {el}
                     </Typography>
                 </Grid>
-                {thingsTodo?.slice(0, 3)?.map((item, index) => {
+
+                
+                {attractionValueArr[index]?.slice(0, 3)?.map((item:any, index:number) => {
                     return (
-                        <Grid
-                            style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
-                            item
-                            xs={12}
-                            md={3}
-                            onClick={() => selectThingsTodo(index)}
-                        // className="unselectable"
-                        >
-                            <StyledVenueName noWrap>{item.venue_name}</StyledVenueName>
-
-                            {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
-                                        <Checkbox checked={item.selected} />
-                                    </Grid> */}
-
-                            <Grid xs={12} item >
-                                <img
-                                    src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                                    alt=""
-                                    style={{ width: '100%', borderRadius: '5px' }}
-
-                                />
-                            </Grid>
-                            <Typography variant="subtitle2" sx={{
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                display: '-webkit-box',
-                                WebkitLineClamp: '3',
-                                WebkitBoxOrient: 'vertical',
-                            }}>
-                                Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
-                            </Typography>
-                            <Divider sx={{ margin: '10px 0' }} />
-                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                                <Typography>
-                                    Rating: <span>4</span>
-                                </Typography>
-
-                                <Typography>
-                                    Busyness: <span>Moderate</span>
-                                </Typography>
-                            </Grid>
-                            <Divider sx={{ margin: '10px 0' }} />
-                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                                <CButton
-                                    title="Select"
-                                    onClick={() => { }}
-                                    style={{
-                                        width: '30%',
-                                        background: '#757de8',
-                                        color: '#ffffff',
-                                        borderRadius: '20px',
-                                        padding: '10px 20px',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                                <CButton
-                                    title="View"
-                                    onClick={() => { }}
-                                    style={{
-                                        width: '30%',
-                                        background: '#757de8',
-                                        color: '#ffffff',
-                                        borderRadius: '20px',
-                                        padding: '10px 30px',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                            </Grid>
-
-                        </Grid>
+                        <VenueCard venDetails = {item}/>
                     );
                 })}
+                
             </Grid>
-            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
-                <Grid item xs={12}>
-                    <Typography variant="h6" align="center">
-                        Restaurants
-                    </Typography>
-                </Grid>
-                {resturantTodo?.slice(0, 3)?.map((item, index) => {
-                    return (
-                        <Grid
-                            style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
-                            item
-                            xs={12}
-                            md={3}
-                            onClick={() => selectThingsTodo(index)}
-                        // className="unselectable"
-                        >
+            ))
+            
+            
+            }
 
-                            <StyledVenueName noWrap>{item.venue_name}</StyledVenueName>
-
-                            {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
-                                        <Checkbox checked={item.selected} />
-                                    </Grid> */}
-
-                            <Grid xs={12} item >
-                                <img
-                                    src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                                    alt=""
-                                    style={{ width: '100%', borderRadius: '5px' }}
-
-                                />
-                            </Grid>
-                            <Typography variant="subtitle2" sx={{
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                display: '-webkit-box',
-                                WebkitLineClamp: '3',
-                                WebkitBoxOrient: 'vertical',
-                            }}>
-                                Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
-                            </Typography>
-                            <Divider sx={{ margin: '10px 0' }} />
-                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                                <Typography>
-                                    Rating: <span>4</span>
-                                </Typography>
-
-                                <Typography>
-                                    Busyness: <span>Moderate</span>
-                                </Typography>
-                            </Grid>
-                            <Divider sx={{ margin: '10px 0' }} />
-                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                                <CButton
-                                    title="Select"
-                                    onClick={() => { }}
-                                    style={{
-                                        width: '30%',
-                                        background: '#757de8',
-                                        color: '#ffffff',
-                                        borderRadius: '20px',
-                                        padding: '10px 20px',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                                <CButton
-                                    title="View"
-                                    onClick={() => { }}
-                                    style={{
-                                        width: '30%',
-                                        background: '#757de8',
-                                        color: '#ffffff',
-                                        borderRadius: '20px',
-                                        padding: '10px 30px',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                            </Grid>
-
-                        </Grid>
-                    );
-                })}
-            </Grid>
-            <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
-                <Grid item xs={12}>
-                    <Typography variant="h6" align="center">
-                        Shopping
-                    </Typography>
-                </Grid>
-                {shoppingTodo?.slice(0, 3)?.map((item, index) => {
-                    return (
-                        <Grid
-                            style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
-                            item
-                            xs={12}
-                            md={3}
-                            onClick={() => selectThingsTodo(index)}
-                        // className="unselectable"
-                        >
-
-                            <StyledVenueName noWrap>{item.venue_name}</StyledVenueName>
-
-                            {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
-                                        <Checkbox checked={item.selected} />
-                                    </Grid> */}
-
-                            <Grid xs={12} item >
-                                <img
-                                    src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                                    alt=""
-                                    style={{ width: '100%', borderRadius: '5px' }}
-
-                                />
-                            </Grid>
-                            <Typography variant="subtitle2" sx={{
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                display: '-webkit-box',
-                                WebkitLineClamp: '3',
-                                WebkitBoxOrient: 'vertical',
-                            }}>
-                                Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
-                            </Typography>
-                            <Divider sx={{ margin: '10px 0' }} />
-                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                                <Typography>
-                                    Rating: <span>4</span>
-                                </Typography>
-
-                                <Typography>
-                                    Busyness: <span>Moderate</span>
-                                </Typography>
-                            </Grid>
-                            <Divider sx={{ margin: '10px 0' }} />
-                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                                <CButton
-                                    title="Select"
-                                    onClick={() => { }}
-                                    style={{
-                                        width: '30%',
-                                        background: '#757de8',
-                                        color: '#ffffff',
-                                        borderRadius: '20px',
-                                        padding: '10px 20px',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                                <CButton
-                                    title="View"
-                                    onClick={() => { }}
-                                    style={{
-                                        width: '30%',
-                                        background: '#757de8',
-                                        color: '#ffffff',
-                                        borderRadius: '20px',
-                                        padding: '10px 30px',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                            </Grid>
-
-                        </Grid>
-                    );
-                })}
-            </Grid>
             <Grid xs={12} style={{justifyContent: 'center', display: 'flex' }}>
                 <CButton
                     title="Next"
-                    onClick={updateItinerary}
+                    onClick={()=>{}}
                     style={{
                         width: '30%',
                         background: '#757de8',
@@ -362,3 +135,70 @@ export const PickRecommendation : React.FC<IProps> = ({ updateItinerary, current
         </>
     );
 };
+
+
+{/* <Grid
+style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
+item
+xs={12}
+md={3}
+onClick={() => {}}
+// className="unselectable"
+>
+<StyledVenueName noWrap>{item}</StyledVenueName>
+<Grid xs={12} item >
+    <img
+        src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
+        alt=""
+        style={{ width: '100%', borderRadius: '5px' }}
+
+    />
+</Grid>
+<Typography variant="subtitle2" sx={{
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    display: '-webkit-box',
+    WebkitLineClamp: '3',
+    WebkitBoxOrient: 'vertical',
+}}>
+    Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
+</Typography>
+<Divider sx={{ margin: '10px 0' }} />
+<Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+    <Typography>
+        Rating: <span>4</span>
+    </Typography>
+
+    <Typography>
+        Busyness: <span>Moderate</span>
+    </Typography>
+</Grid>
+<Divider sx={{ margin: '10px 0' }} />
+<Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+    <CButton
+        title="Select"
+        onClick={() => { }}
+        style={{
+            width: '30%',
+            background: '#757de8',
+            color: '#ffffff',
+            borderRadius: '20px',
+            padding: '10px 20px',
+            fontWeight: 'bold',
+        }}
+    />
+    <CButton
+        title="View"
+        onClick={() => { }}
+        style={{
+            width: '30%',
+            background: '#757de8',
+            color: '#ffffff',
+            borderRadius: '20px',
+            padding: '10px 30px',
+            fontWeight: 'bold',
+        }}
+    />
+</Grid>
+
+</Grid> */}

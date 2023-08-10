@@ -406,9 +406,9 @@ getRecommendation = async function(request: object){
 	try {
 	  const response = await fetch('http://127.0.0.1:5000/api/' + "venues", {
 		  method: "POST",
-		  body: new URLSearchParams({...request}),
+		  body: JSON.stringify({...request}),
 		  headers: {
-			'Content-Type': 'application/x-www-form-urlencoded'
+			'Content-Type': 'application/json'
 		  }
 		//   credentials: 'include',
 		});
@@ -420,6 +420,7 @@ getRecommendation = async function(request: object){
 			  return {
 				  valid: true,
 				  errorType: "0",
+				  ...data
 			  };
 		  } else {
 			  return {

@@ -10,10 +10,11 @@ function executeIPythonNotebook(ipynbFileName, parameters) {
 
     // 2. get the name of .py file
     const scriptFileName = ipynbFileName.replace('.ipynb', '.py');
-    console.log(scriptFileName,'----COMMAND---');
+    
     // create the command about executing
     const command = `python ${scriptFileName} ${parameters.join(' ')}`;
-   
+
+    console.log(command, '-------------------')
     // execute Python script and get the result
     const result = execSync(command, { encoding: 'utf8' });
 
@@ -25,7 +26,7 @@ function executeIPythonNotebook(ipynbFileName, parameters) {
 }
 
 let getRecommendVenues = (req, res, next) => {
-  console.log(req.body);
+  console.log(req.body.zoneGroup, req.body.attractions);
 
   const ipynbFileName = '../data_models/Recommendation_model/recommendation_model.ipynb'
   console.log(ipynbFileName);
@@ -44,19 +45,23 @@ let getRecommendVenues = (req, res, next) => {
   // get a string and convert into json
   const result = executeIPythonNotebook(ipynbFileName, parameters);
   const str_res = result.replace(/'/g, '"').replace(/\(/g, '[').replace(/\)/g, ']')
+  console.log(str_res)
   let json_res = JSON.parse(str_res)
+
 
   const venueIds = [];
 
   for (const venueType in json_res) {
+    // console.log(json_res[venueType])
     const venueTypeData = json_res[venueType];
   
     for (const venueInfo of venueTypeData) {
+      console.log(venueInfo, 'VenueIndo');
       const venueId = venueInfo[0];
       venueIds.push(venueId);
     }
   }
-  
+
   try {
     let dbOperation = (conn) => {
       const sqlStr = 'select original_ven_id,name,rating,image,description,type_mod from venue_static where original_ven_id in (?)'
@@ -91,7 +96,7 @@ let getRecommendVenues = (req, res, next) => {
         }
 
         conn.end()
-        return res.status(200).send(categorizedData)
+        return res.status(200).send({valid:true,data:categorizedData})
       })
     }
     createSSHTunnel(dbOperation)

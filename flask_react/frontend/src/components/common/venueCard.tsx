@@ -1,25 +1,13 @@
 import {
     Grid,
     Typography,
-    Paper,
-    Checkbox,
     Divider,
-    Alert,
     styled,
     useTheme,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import thingsTodoDummyData from "../../temp/dummy_data/thingsTodo.json";
-import shoppingDummyData from "../../temp/dummy_data/shoppingData.json";
-import restaurantDummyData from "../../temp/dummy_data/restaurantData.json";
-import { MapContainer, TileLayer, Popup, useMap, Marker } from "react-leaflet";
-import { Map, LatLngLiteral, LatLng } from "leaflet";
+import React from "react";
 import "leaflet/dist/leaflet.css";
-import icon from "leaflet/dist/images/marker-icon.png";
-import L from "leaflet";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { CButton } from "../common/button";
-import IItinerary from "../../models/IItinerary";
 
 
 const StyledVenueName = styled(Typography)(({ theme }) => ({
@@ -30,24 +18,27 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
 
 interface IProps {
     detailsModalClick?: ()=>void;
+    venDetails?: any
 }
 
 export const VenueCard :React.FC<IProps> = ({
-  detailsModalClick
+  detailsModalClick,
+  venDetails
 })  => {
     
     const currentTheme = useTheme();
     const showModalDetails = ()=> detailsModalClick? detailsModalClick():console.log('Something went wrong!')
-
+    console.log(venDetails);
+    
     return (
         <Grid
             style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
             item
-            xs={12}
+            xs={3}
             onClick={() => { }}
         // className="unselectable"
         >
-            <StyledVenueName noWrap>{'Name'}</StyledVenueName>
+            <StyledVenueName noWrap>{venDetails.namw}</StyledVenueName>
 
             {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
                     <Checkbox checked={item.selected} />

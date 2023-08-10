@@ -61,6 +61,8 @@ export const CreateItinerary: React.FC<IProps> = ({
     name: "",
     plan: [],
   });
+  const [attractionTypeName, setAttractionTypeName] = useState<string[]>([]);
+  const [attractionTypeValue, setAttractionTypeValue] = useState<any[]>([]);
 
   const finelize = (data: IVenueItem[]) => {
     setVenueItems(data);
@@ -70,8 +72,7 @@ export const CreateItinerary: React.FC<IProps> = ({
 
   const updateItinerary = (request: object) => {
     console.log(currentStep);
-    handleGetRecommendation(request)
-    // setCurrentStep(currentStep + 1);
+    handleGetRecommendation(request) 
   };
 
   const handleGetRecommendation = (request: object) =>{
@@ -81,30 +82,13 @@ export const CreateItinerary: React.FC<IProps> = ({
     .then((results) => {
       console.log(results);
 
-      // if (results?.valid) {
-      //   const d = new Date(tokenExpirationTime);
-      //   d.setTime(d.getTime());
-      //   let expires = d.toUTCString();
+      if (results?.valid) {
+        manipulateRecommendationData(results.data)
+        setCurrentStep(currentStep + 1);
+      } else {
+        // ... handle the case when results?.valid is falsy ...
 
-      //   setCookie("token", results.token, expires);
-      //   authContext.authenticate(true, {
-      //     first_name: results.firstname,
-      //     surname: results.surname,
-      //     user_id: results.user_id,
-      //     email: results.email,
-      //   });
-      //   localStorage.setItem("user_id", results.user_id);
-      //   localStorage.setItem("email", results.email);
-      //   localStorage.setItem("first_name", results.firstname);
-      //   localStorage.setItem("surname", results.surname);
-      //   setError('0')
-      //   setLoading(false)
-      //   navigate("/dashboard");
-      // } else {
-      //   // ... handle the case when results?.valid is falsy ...
-      //   setError(results.errorType)
-      //   setLoading(false)
-      // }
+      }
     })
     .catch((error) => {
       console.log(error);
@@ -113,14 +97,21 @@ export const CreateItinerary: React.FC<IProps> = ({
     });
   }
 
+  const manipulateRecommendationData = (data:object)=>{
+    let attractionTypeKeyArr = Object.keys(data)
+    let attractionTypeValuesArr = Object.values(data)
+    setAttractionTypeName(attractionTypeKeyArr)
+    setAttractionTypeValue(attractionTypeValuesArr)
+  }
+
 
 
   const renderStep = () => {
     switch (currentStep) {
       case 0:
         return <Questionnaire updateItinerary={updateItinerary} currentItinerary={itinerary} />;
-      // case 1:
-      //   return <PickRecommendation updateItinerary={updateItinerary} currentItinerary={itinerary} />;
+      case 1:
+        return <PickRecommendation  currentItinerary={itinerary} attractionName = {attractionTypeName} attractionValue = {attractionTypeValue}/>;
       // case 2:
       //   return <VenueSelection updateItinerary={updateItinerary} currentItinerary={itinerary} />;
       // case 3:
