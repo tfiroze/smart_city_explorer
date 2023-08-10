@@ -4,6 +4,7 @@ let path = require('path')
 let router = require('./router')
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
+const bodyParser = require('body-parser')
 
 let app = express()
 
@@ -16,8 +17,8 @@ const corsOptions = {
   origin: 'http://localhost:3000',
   credentials: true
 }
-
-app.use(cors(corsOptions));
+app.use(bodyParser.json())
+app.use(cors(corsOptions))
 
 app.use(cookieParser('Smart_City_Explorer'))
 app.use(session({

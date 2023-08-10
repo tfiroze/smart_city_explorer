@@ -1,4 +1,5 @@
 const express = require('express')
+const bodyParser = require('body-parser')
 const router = express.Router()
 const userController = require('./controller/userController')
 const tripController = require('./controller/tripController')
@@ -12,7 +13,7 @@ const busynessModel = require('./services/exec_busyness')
 
 
 
-
+router.use(bodyParser.json())
 router.use(express.urlencoded({ extended:false }))
 router.use(express.json())
 
