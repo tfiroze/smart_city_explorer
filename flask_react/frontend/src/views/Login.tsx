@@ -5,30 +5,28 @@ import {
 	Typography,
 	TextField,
 	InputAdornment,
-	FormControlLabel,
-	Checkbox,
 	Button,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { ChangeEvent, useState, useContext, useEffect } from "react";
+import { ChangeEvent, useState, useContext } from "react";
 import { Register } from "../components/login/Register";
-import { isMobile } from "react-device-detect";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import background from "../resources/images/login-background.jpg";
 import ILoginRequest from "../models/ILoginRequest";
 import { smartApi } from "../utils/apiCalls";
 import { AuthContext } from "../utils/AuthContext";
 import { CButton } from "../components/common/button";
 import { useNavigate } from "react-router-dom";
-import { Alert } from "@mui/lab";
-import { Card, CardContent, CardActions, Snackbar } from "@mui/material";
 import { ForgotPassword } from "../components/login/ForgotPassword";
+import { paperStyle, typographyStyle, buttonStyle } from '../styles/loginStyles';
+
 
 
 const erroDict: { [key: string]: string } = {
 	'0': '',
 	'1': 'Oops! Your Email or password is not ready for the journey. 🌊 Please check and try again!',
-	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.'
+	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.',
+	'3': 'An unknown error occurred. Please try again later.'
+
 }
 
 
@@ -124,13 +122,11 @@ export const Login = () => {
 			});
 	};
 
-	function setCookie(
-		name: string,
-		value: string | null | undefined,
-		expires: string
-	) {
-		document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+	function setCookie(name: string, value: string | null | undefined, expires: string) {
+		const secure = window.location.protocol === 'https:'; // check if it's a secure origin
+		document.cookie = `${name}=${value}; expires=${expires}; path=/;${secure ? 'secure;' : ''} HttpOnly; SameSite=Strict`;
 	}
+
 
 	const nagvigateToDashboard = (token: string, tokenExpirationTime: string) => {
 		smartApi.dashboard(token)
@@ -254,7 +250,7 @@ export const Login = () => {
 								}
 							/>
 						</Box>
-						<span onClick={() => {handleForgotPasswordDialogOpen()}} style={{ cursor: 'pointer' }}>
+						<span onClick={() => { handleForgotPasswordDialogOpen() }} style={{ cursor: 'pointer' }}>
 							<Typography variant="subtitle1" >
 								Password lost? Let's reset it! 🗝️
 							</Typography>
