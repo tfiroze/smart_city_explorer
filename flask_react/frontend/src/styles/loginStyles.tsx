@@ -1,15 +1,35 @@
 import { SxProps } from '@mui/system';
-import { Theme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
+import {
+    Grid,
+    Paper,
+    Typography,
+    TextField,
+    InputAdornment,
+    Button,
+} from "@mui/material";
+import { CButton } from "../components/common/button";
 
-export const paperStyle: SxProps<Theme> = {
-    background: '#f7f7f7',
-};
 
-export const typographyStyle: SxProps<Theme> = {
-    margin: "20px 0"
-};
+export const StyledPaper = styled(Paper)(({ theme }) => ({
+    // background: '#f7f7f7',
+    padding: theme.spacing(3),
+    [theme.breakpoints.down('xs')]: {
+        padding: theme.spacing(2),
+    },
+}));
 
-export const buttonStyle: SxProps<Theme> = {
+export const StyledTypography = styled(Typography)(({ theme }) => ({
+    margin: theme.spacing(2, 0),
+}));
+
+export const StyledButton = styled(CButton)(({ theme }) => ({
     background: '#757de8',
-    color: 'white'
-};
+    color: 'white',
+}));
+
+export const StyledLink = styled(Typography)({
+    cursor: 'pointer',
+});
+
+

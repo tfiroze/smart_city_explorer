@@ -17,8 +17,10 @@ import { AuthContext } from "../utils/AuthContext";
 import { CButton } from "../components/common/button";
 import { useNavigate } from "react-router-dom";
 import { ForgotPassword } from "../components/login/ForgotPassword";
-import { paperStyle, typographyStyle, buttonStyle } from '../styles/loginStyles';
-
+import { StyledPaper, StyledTypography, StyledButton, StyledLink } from '../styles/loginStyles';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { styled } from '@mui/system';
 
 
 const erroDict: { [key: string]: string } = {
@@ -28,6 +30,33 @@ const erroDict: { [key: string]: string } = {
 	'3': 'An unknown error occurred. Please try again later.'
 
 }
+
+const iconStyle = {
+	color: '#757de8',
+	fontSize: '1.5rem',
+};
+const LoginButton = styled(CButton)(({ theme }) => ({
+	background: '#757de8',
+	color: 'white',
+	padding: '10px 20px',
+	borderRadius: '4px',
+	transition: 'all 0.3s ease',
+	fontSize: '1rem',
+	fontWeight: 600,
+	boxShadow: '0px 2px 15px rgba(0, 0, 0, 0.1)',
+	'&:hover': {
+		background: '#6066d0', // Slightly darkened color for hover effect
+		boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.12)',
+	},
+	[theme.breakpoints.down('xs')]: {
+		width: '100%',
+	},
+}));
+
+// const StyledPaper = styled(Paper)(({ theme }) => ({
+// 	padding: theme.spacing(3),
+// }));
+
 
 
 export const Login = () => {
@@ -40,7 +69,8 @@ export const Login = () => {
 	});
 	const [error, setError] = useState<string>("0")
 	const [loading, setLoading] = useState(false)
-
+	const theme = useTheme();
+	const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
 
 	const navigate = useNavigate();
 
@@ -180,82 +210,72 @@ export const Login = () => {
 				open={forgotPasswordOpen}
 				handleForgotPasswordDialogOpen={handleForgotPasswordDialogOpen}
 			/>
-			<Paper
-				elevation={0}
-				style={{
-					background: '#f7f7f7',
-
-				}}
-			>
-				<Grid container style={{ padding: '20px' }}>
-					<Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
-						<Typography
-							variant="h4"
-							align="center"
-							color="textSecondary"
-							gutterBottom
-							style={{ margin: "20px 0" }}
-						>
+			<StyledPaper>
+				<Grid container spacing={3}>
+					<Grid item xs={12}>
+						<StyledTypography variant="h4" align="center">
 							Welcome
-						</Typography>
-						<Box my={2}>
-							<TextField
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<AccountCircle />
-										</InputAdornment>
-									),
-								}}
-								label="Email"
-								placeholder="Please enter your email..."
-								variant="outlined"
-								color="primary"
-								fullWidth
-								type="email"
-								name="email"
-								value={loginRequest.email}
-								onChange={handleInputOnChange}
-								error={format.email}
-								helperText={
-									format.email
-										? "Your Email is off on a tropical getaway! 🏝️ Please provide a valid email address so we can catch up."
-										: ""
-								}
-							/>
-						</Box>
-						<Box my={2}>
-							<TextField
-								InputProps={{
-									startAdornment: (
-										<InputAdornment position="start">
-											<LockOpenIcon />
-										</InputAdornment>
-									),
-								}}
-								label="Password"
-								placeholder="Please enter your password..."
-								variant="outlined"
-								color="primary"
-								fullWidth
-								type="password"
-								name="password"
-								value={loginRequest.password}
-								error={format.password}
-								onChange={handleInputOnChange}
-								helperText={
-									format.password
-										? "Oops! Your password needs a vacation from errors 🏖️. Please enter a valid one."
-										: ""
-								}
-							/>
-						</Box>
+						</StyledTypography>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start" style={iconStyle}>
+										<AccountCircle />
+									</InputAdornment>
+								),
+							}}
+							label="Email"
+							placeholder="Please enter your email..."
+							variant="outlined"
+							color="primary"
+							fullWidth
+							type="email"
+							name="email"
+							value={loginRequest.email}
+							onChange={handleInputOnChange}
+							error={format.email}
+							helperText={
+								format.email
+									? "Your Email is off on a tropical getaway! 🏝️ Please provide a valid email address so we can catch up."
+									: ""
+							}
+						/>
+					</Grid>
+					<Grid item xs={12}>
+						<TextField
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<LockOpenIcon />
+									</InputAdornment>
+								),
+							}}
+							label="Password"
+							placeholder="Please enter your password..."
+							variant="outlined"
+							color="primary"
+							fullWidth
+							type="password"
+							name="password"
+							value={loginRequest.password}
+							error={format.password}
+							onChange={handleInputOnChange}
+							helperText={
+								format.password
+									? "Oops! Your password needs a vacation from errors 🏖️. Please enter a valid one."
+									: ""
+							}
+						/>
+					</Grid>
+					<Grid item xs={12}>
 						<span onClick={() => { handleForgotPasswordDialogOpen() }} style={{ cursor: 'pointer' }}>
 							<Typography variant="subtitle1" >
 								Password lost? Let's reset it! 🗝️
 							</Typography>
 						</span>
-						{error !== '0' && <Typography variant="subtitle1" color={'red'}>
+						{error !== '0' && <Typography variant="subtitle1" color="error">
 							{erroDict[error.toString()]}
 						</Typography>}
 						{/* <FormControlLabel
@@ -267,31 +287,24 @@ export const Login = () => {
 							}
 							label="Remember Me?"
 						/> */}
-						<Box mt={3}>
-							<Grid container spacing={2}>
-								<Grid item xs={12} sm={6}>
-									<CButton
-										title="LOGIN"
-										loading={loading}
-										onClick={formValidator}
-										style={{
-											background: '#757de8', color: 'white'
-										}}
-									/>
-								</Grid>
-								<Grid item xs={12} sm={6}>
-									<Button
-										style={{ float: "right" }}
-										onClick={handleRegisterDialogOpen}
-									>
-										Need an account?
-									</Button>
-								</Grid>
-							</Grid>
-						</Box>
 					</Grid>
+					<Grid item xs={12} container direction="row" justifyContent="flex-start" alignItems="center">
+						<Grid item>
+							<LoginButton
+								title="LOGIN"
+								loading={loading}
+								onClick={formValidator}
+							/>
+						</Grid>
+						<Grid item style={{ flexGrow: 1, textAlign: 'right' }}>
+							<Button onClick={handleRegisterDialogOpen}>
+								Need an account?
+							</Button>
+						</Grid>
+					</Grid>
+
 				</Grid>
-			</Paper>
+			</StyledPaper >
 		</>
 	);
 };

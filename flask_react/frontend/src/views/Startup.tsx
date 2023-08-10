@@ -102,7 +102,7 @@ export const Startup = () => {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 2, delay: 0.5 }}
+          transition={{ duration: 2, delay: 0.2 }}
         >
           <Typography variant="h2" component="div" style={{ color: 'white' }}>
             SMART CITY EXPLORER

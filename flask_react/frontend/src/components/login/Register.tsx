@@ -13,7 +13,10 @@ import {
 	TextField,
 	Typography,
 } from "@mui/material";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import { LoadingButton } from "@mui/lab";
+import ErrorIcon from '@mui/icons-material/Error';
 import React, { ChangeEvent, useState } from "react";
 import IRegisterRequest from "../../models/IRegisterRequest";
 import { smartApi } from "../../utils/apiCalls";
@@ -48,22 +51,58 @@ const globalStyles = {
 		color: 'error.main',
 		textAlign: 'center',
 	},
+	cancelButton: {
+		padding: "5px",
+		color: '#ffffff',
+		backgroundColor: '#ff6b6b',
+		transition: '0.3s',
+		'&:hover': {
+			backgroundColor: '#ff8e8e',
+			borderColor: '#ffffff',
+			transform: 'scale(1.05)',
+		},
+		'&:active': {
+			backgroundColor: '#ff4d4d',
+			transform: 'scale(0.95)',
+		},
+		border: '2px solid #ff8e8e',
+		boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.2)',
+		borderRadius: '12px',
+	},
+
+
 	verifyButton: {
 		alignSelf: 'flex-end',
 		ml: 2,
 		color: '#ffffff',
-		backgroundColor: '#757de8',
+		backgroundImage: 'linear-gradient(45deg, #757de8 30%, #5860a5 90%)',
+		boxShadow: '0 3px 5px 2px rgba(117, 125, 232, .3)',
 		'&:hover': {
-			backgroundColor: '#5860a5'
-		}
-	}
+			backgroundColor: '#5860a5',
+			boxShadow: '0 5px 7px 3px rgba(117, 125, 232, .3)',
+		},
+		'&:active': {
+			backgroundColor: '#5860a5',
+			boxShadow: 'none',
+		},
+	},
+
+	submitButton: {
+		width: '150px',
+		color: '#ffffff',
+		backgroundImage: 'linear-gradient(45deg, #f47c7c 30%, #f7f7f7 90%)',  // A different gradient for variety
+		boxShadow: '0 3px 5px 2px rgba(244, 124, 124, .3)',
+		'&:hover': {
+			backgroundColor: '#f7a7a6',
+			boxShadow: '0 5px 7px 3px rgba(244, 124, 124, .3)',
+		},
+		'&:active': {
+			backgroundColor: '#f7a7a6',
+			boxShadow: 'none',
+		},
+
+	},
 };
-
-
-
-
-
-
 
 
 
@@ -89,6 +128,7 @@ export const Register: React.FC<IProps> = ({
 		confirmPassword: false,
 		captcha: false
 	});
+
 
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -368,10 +408,14 @@ export const Register: React.FC<IProps> = ({
 				open={snackState.open}
 				onClose={handleSnackClose}
 				TransitionComponent={snackState.Transition}
-				message="Email Sent"
+				message={<><PersonAddIcon style={{ marginRight: 8 }} />Account Created Successfully!</>}
 				key={snackState.Transition.name}
 			/>
-			<DialogTitle id="alert-dialog-title">{"Let's Create Your Free Account"}</DialogTitle>
+
+			<DialogTitle id="alert-dialog-title">
+				<PersonAddIcon style={{ marginRight: 8 }} />{"Let's Create Your Free Account"}
+			</DialogTitle>
+
 			<Divider />
 			<DialogContent>
 				<Grid container spacing={3}>
@@ -413,6 +457,7 @@ export const Register: React.FC<IProps> = ({
 							error={format.email}
 							helperText={format.email && "Invalid email address."}
 							sx={globalStyles.input}
+
 						/>
 					</Grid>
 					<Grid item xs={12} md={6}>
@@ -443,9 +488,12 @@ export const Register: React.FC<IProps> = ({
 							loadingIndicator={verifyLoading}
 							sx={{ ...globalStyles.verifyButton, marginTop: 1.5, marginBottom: 4, width: '90%' }}
 							fullWidth
+							startIcon={<CheckCircleIcon />}
 						>
 							Verify
 						</LoadingButton>
+
+
 
 
 					</Grid>
@@ -490,24 +538,37 @@ export const Register: React.FC<IProps> = ({
 					{error !== '0' && (
 						<Grid item xs={12}>
 							<Typography variant="subtitle1" sx={globalStyles.errorText}>
-								{erroDict[error]}
+								<ErrorIcon fontSize="small" /> {erroDict[error]}
 							</Typography>
 						</Grid>
 					)}
+
 				</Grid>
 			</DialogContent>
 			<DialogActions sx={globalStyles.dialogAction}>
-				<CButton
-					title="Cancel"
+				<Button
 					onClick={handleRegisterDialogOpen}
-					style={{ border: '1px solid #757de8', color: '#757de8', background: 'white' }}
-				/>
-				<CButton
-					title="REGISTER"
-					onClick={formValidator}
-					loading={submitLoading}
-					style={{ background: '#757de8', color: 'white' }}
-				/>
+					sx={(globalStyles as any).cancelButton}
+				>
+					Cancel
+				</Button>
+
+
+				<LoadingButton
+					variant="outlined"
+					onClick={handleSubmit}
+					disabled={disableSubmit}
+					loadingIndicator={submitLoading}
+					sx={{ marginTop: 1.5, marginBottom: 4, width: '300px' }}
+					fullWidth
+					startIcon={<PersonAddIcon />}
+
+				>
+					Register
+				</LoadingButton>
+
+
+
 			</DialogActions>
 		</Dialog>
 	);

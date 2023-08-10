@@ -7,6 +7,8 @@ interface IProps {
   style?: any;
   loading?: boolean;
   disabled?: boolean
+  // style?: React.CSSProperties;
+  fullWidth?: boolean;
 }
 
 export const CButton: React.FC<IProps> = ({
