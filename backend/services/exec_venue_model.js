@@ -57,40 +57,6 @@ let getAttractionInfo = (req, res, next) => {
   }))
   
 
-  // let attractionInfo = {}
-  // let attractionIds = []  
-  // for (let i=0;i<resVenJSON.length;i++) {
-  //   attractionInfo[resVenJSON[i]['type']] = []
-  //   for(let j=0;j<3;j++){
-  //     attractionIds.push(resVenJSON[i]['values'][j][0])
-  //     attractionInfo[resVenJSON[i]['type']].push(
-  //       {
-  //         venue_id: resVenJSON[i]['values'][j][0],
-  //         rating: resVenJSON[i]['values'][j][1],
-  //         busyness: resVenJSON[i]['values'][j][2],
-  //         score: resVenJSON[i]['values'][j][3]
-  //       }
-  //     )
-  //   }
-  // }
-
-  // let restInfo = {}
-  // let restIds = []  
-  // for (let i=0;i<resRestJSON.length;i++) {
-  //   restInfo[resRestJSON[i]['type']] = []
-  //   for(let j=0;j<3;j++){
-  //     restIds.push(resRestJSON[i]['values'][j][0])
-  //     restInfo[resRestJSON[i]['type']].push(
-  //       {
-  //         venue_id: resRestJSON[i]['values'][j][0],
-  //         rating: resRestJSON[i]['values'][j][1],
-  //         busyness: resRestJSON[i]['values'][j][2],
-  //         score: resRestJSON[i]['values'][j][3]
-  //       }
-  //     )
-  //   }
-  // }
-
   let attractionInfo = {}
   let attractionIds = []  
   for (let i=0;i<resVenJSON.length;i++) {

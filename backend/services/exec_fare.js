@@ -55,6 +55,7 @@ function start(req, res) {
     createSSHTunnel(dbOperation)
   } catch (err) {
     console.error(err)
+    return res.status(200).send({valid:false, message:'Failed to get fares'})
   }
 }
 
@@ -193,7 +194,7 @@ function exec_py(dataToSendString) {
 }
 
 let getFare = (req, res) => {
-  req.body.venue_id = JSON.parse(req.body.venue_id.replace(/'/g, '"'));
+  // req.body.venue_id = JSON.parse(req.body.venue_id.replace(/'/g, '"'));
   start(req, res)
 }
 
