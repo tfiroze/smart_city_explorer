@@ -5,14 +5,7 @@ import numpy as np
 import sys
 import os
 
-# current_file_path = os.path.abspath(_file_)
-# current_directory = os.path.dirname(current_file_path)
 
-# print("Current File Path:", current_file_path)
-# print("Current File Directory:", current_directory)
-
-
-# model = joblib.load('./lgbm_model_fare.joblib')
 current_file_path = os.path.abspath(__file__)
 current_directory = os.path.dirname(current_file_path)
 
@@ -21,8 +14,6 @@ joblib_file_path = os.path.join(current_directory, 'lgbm_model_fare.joblib')
 
 # Load the model
 model = joblib.load(joblib_file_path)
-
-# model = joblib.load('../data_models/lgbm_model_fare.joblib')
 
 data_received = sys.argv[1]
 

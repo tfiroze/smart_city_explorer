@@ -25,6 +25,21 @@ let weather_description = 0
 
 let durationArray = []
 
+function clearVariables() {
+  zoneIdArray = []
+  venueLocArray = []
+
+  all_trip_distance = []
+  all_pickup_zone = []
+  all_dropoff_zone = []
+  temp = 24
+  all_pickup_hour = [11, 13, 15, 17, 19]
+  pickup_weekday_num = 0
+  weather_description = 0
+
+  fareArray = []
+}
+
 function start(req, res) {
   try {
     let dbOperation = (conn) => {
@@ -172,7 +187,7 @@ async function prepareJSON(res) {
     durationArray[i] = durationArray[i].replace(/\r?\n|\r/g, ''); 
   }
   // return a array
-  return res.status(200).send(durationArray); 
+  return res.status(200).send({valid:true, data:durationArray}); 
 }
 
 // execute .py file
@@ -200,7 +215,8 @@ function exec_py(dataToSendString) {
 }
 
 let getDuration = (req, res) => {
-  req.body.venue_id = JSON.parse(req.body.venue_id.replace(/'/g, '"'));
+  // req.body.venue_id = JSON.parse(req.body.venue_id.replace(/'/g, '"'));
+  clearVariables()
   start(req, res)
 }
 
