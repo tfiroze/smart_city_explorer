@@ -104,8 +104,8 @@ let updateTrip = (req, res) => {
 let addTrip = (req, res) => {
     try {
         let dbOperation = (conn) => {
-            let sqlStr = 'insert into trip_info (trip_name, trip_owner, trip_date, trip_status, trip_part_1, trip_part_2, trip_part_3, trip_part_4, trip_ven_1, trip_ven_2, trip_ven_3, trip_ven_4, trip_rest_1, trip_rest_2) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-            conn.query(sqlStr, [req.body.trip_name, ], (err, result) => {
+            let sqlStr = 'insert into trip_info (trip_name, trip_owner, trip_date, trip_ven_1, trip_ven_2, trip_ven_3, trip_ven_4, trip_rest_1, trip_rest_2) values (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+            conn.query(sqlStr, [req.body.trip_name, req.body.user_id, req.body.date, req.body.ven_1, req.body.ven_2, req.body.ven_3, req.body.ven_4, req.body.rest_1, req.body.rest_2 ], (err, result) => {
                 if(err) {
                     console.error(err)
                     conn.end()
