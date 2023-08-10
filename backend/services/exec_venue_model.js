@@ -58,7 +58,7 @@ let getRecommendVenues = (req, res, next) => {
   
   try {
     let dbOperation = (conn) => {
-      const sqlStr = 'select original_ven_id,name,rating,image,description,type_mod from venue_static where original_ven_id in (?)'
+      const sqlStr = 'select original_ven_id,name,rating,image,description,type_mod,latitude,longitude from venue_static where original_ven_id in (?)'
       conn.query(sqlStr, [venueIds], (err, result) => {
         if(err) {
             console.error(err)
