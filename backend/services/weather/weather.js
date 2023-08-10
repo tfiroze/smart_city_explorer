@@ -1,4 +1,5 @@
 // Weather Forcast Data for next 14 days
+// Required: selectedDate
 // Manhattan information:
   // {
   //   "wmo": "72506",

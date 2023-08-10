@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[37]:
+# In[1]:
 
 
 # import modules
@@ -33,7 +33,7 @@ import spacy
 nlp = spacy.load("en_core_web_md")
 
 
-# In[38]:
+# In[2]:
 
 
 ssh_host = '137.43.49.79'
@@ -81,7 +81,7 @@ with SSHTunnelForwarder(
     conn.close()
 
 
-# In[39]:
+# In[3]:
 
 
 df_venue_merged['merged_time'] = pd.to_datetime(df_venue_merged['merged_time'])
@@ -93,7 +93,7 @@ df_venue_merged['day_of_week'] = df_venue_merged['merged_time'].dt.dayofweek
 df_venue_merged['hour_integer'] = df_venue_merged['merged_time'].dt.hour
 
 
-# In[40]:
+# In[4]:
 
 
 venue_mapping = {
@@ -128,7 +128,7 @@ venue_mapping = {
 df_venue_static['venue_mod_type'] = df_venue_static['venue_type'].replace(venue_mapping)
 
 
-# In[41]:
+# In[5]:
 
 
 venue_zone_grouping = {
@@ -141,7 +141,7 @@ venue_zone_grouping = {
 }
 
 
-# In[42]:
+# In[6]:
 
 
 # venue_zone_grouping dictionary
@@ -165,19 +165,19 @@ def map_zone_group(zone_number):
 df_venue_static['zone_group'] = df_venue_static['zone_id'].apply(map_zone_group)
 
 
-# In[43]:
+# In[7]:
 
 
-df_venue_static.to_csv('services/venue_model/zone_Grouping.csv', index=False)
+# df_venue_static.to_csv('services/venue_model/zone_Grouping.csv', index=False)
 
 
-# In[44]:
+# In[8]:
 
 
 unique_type_values = df_venue_static['venue_mod_type'].unique()
 
 
-# In[45]:
+# In[9]:
 
 
 specific_venue_types = ['Nature Attractions', 'Shopping Center', 'Tourist Destination', 'Cultural Heritage', 'Neighborhood Market', 'Fashion Convenience', 'Library', 'Scenic Landmarks', 'Art', 'Religious', 'Park', 'Gifts & Souvenirs']
@@ -186,7 +186,7 @@ specific_venue_types = ['Nature Attractions', 'Shopping Center', 'Tourist Destin
 df_venue_static_att = df_venue_static[df_venue_static['venue_mod_type'].isin(specific_venue_types)]
 
 
-# In[46]:
+# In[10]:
 
 
 import sys
@@ -200,14 +200,17 @@ substrings = params[1].split(',')
 user_input_attractions = substrings
 user_input_attractions = [attraction.replace('_', ' ') for attraction in user_input_attractions]
 
+# user_zone_input = ["Upper West Side", "Upper East Side"]
+# user_input_attractions = ["Neighborhood Market", "Park", "Art"]
 
-# In[48]:
+
+# In[11]:
 
 
 unique_type_values_att = df_venue_static_att['venue_mod_type'].unique()
 
 
-# In[49]:
+# In[12]:
 
 
 if len(user_input_attractions) < 4:
@@ -228,7 +231,7 @@ if len(user_input_attractions) < 4:
     user_input_attractions = user_input_attractions + slice_most_similar_tags
 
 
-# In[50]:
+# In[13]:
 
 
 priority_table = pd.DataFrame({
@@ -281,7 +284,7 @@ for attraction, timing in itinerary.items():
     itinerary_timing.append(attraction)
 
 
-# In[51]:
+# In[14]:
 
 
 zone_group = []
@@ -290,7 +293,7 @@ for group in user_zone_input:
         zone_group.append(zone)
 
 
-# In[52]:
+# In[15]:
 
 
 venue_type_dict = {}
@@ -299,7 +302,7 @@ for venue_type in itinerary_timing:
     venue_type_dict[venue_type] = list(matched_zones)
 
 
-# In[53]:
+# In[16]:
 
 
 time_index = 0
@@ -320,7 +323,7 @@ for venue_type, venue_ids in venue_type_dict.items():
         time_index+=1
 
 
-# In[54]:
+# In[17]:
 
 
 manipulated_venues = {}
@@ -346,7 +349,7 @@ for venue_type, venue_ids in venue_type_dict.items():
         manipulated_venues[venue_type] = valid_venues
 
 
-# In[55]:
+# In[18]:
 
 
 top_3_venues = {}

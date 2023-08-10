@@ -1,4 +1,4 @@
-// Params need: venue_id, date
+// Params need: venue_id[6], date(string)
 
 const { spawn } = require('child_process');
 const path = require('path')
@@ -17,11 +17,13 @@ let all_trip_distance = []
 let all_pickup_zone = []
 let all_dropoff_zone = []
 let temp = 24
+let rain_3h = 0
+let snow_3h = 0
 let all_pickup_hour = [11, 13, 15, 17, 19]
 let pickup_weekday_num = 0
 let weather_description = 0
 
-let fareArray = []
+let durationArray = []
 
 function clearVariables() {
   zoneIdArray = []
@@ -70,7 +72,6 @@ function start(req, res) {
     createSSHTunnel(dbOperation)
   } catch (err) {
     console.error(err)
-    return res.status(200).send({valid:false, message:'Failed to get fares'})
   }
 }
 
@@ -107,6 +108,8 @@ function getWeather(req) {
         if(newDate === weatherData['6_hourly_forecast'][i]['FCTTIME']){
           symbolText = weatherData['6_hourly_forecast'][i]['symbol_text']
           temp = weatherData['6_hourly_forecast'][i]['temp']
+          console.log(temp)
+          rain_3h = weatherData['6_hourly_forcast'][i]['rain']
 
           // convert symbolText to weathercode
           let last8 = symbolText.slice(-8);
@@ -155,6 +158,7 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return distance;
 }
 
+
 // prepare data
 async function prepareJSON(res) {
 
@@ -164,6 +168,8 @@ async function prepareJSON(res) {
       pickup_zone: all_pickup_zone[i],
       dropoff_zone: all_dropoff_zone[i],
       temp: temp,
+      rain_3h: rain_3h,
+      snow_3h: snow_3h,
       pickup_hour: all_pickup_hour[i],
       pickup_weekday_num: pickup_weekday_num,
       weather_description: weather_description
@@ -172,22 +178,22 @@ async function prepareJSON(res) {
 
     try {
       const result = await exec_py(dataToSendString);
-      fareArray.push(result);
+      durationArray.push(result);
     } catch (error) {
       console.error('Error from Python:', error);
     }
   }
-  for (let i = 0; i < fareArray.length; i++) {
-    fareArray[i] = fareArray[i].replace(/\r?\n|\r/g, ''); 
+  for (let i = 0; i < durationArray.length; i++) {
+    durationArray[i] = durationArray[i].replace(/\r?\n|\r/g, ''); 
   }
-  // return a array 
-  return res.status(200).send({valid:true, data:fareArray}); 
+  // return a array
+  return res.status(200).send({valid:true, data:durationArray}); 
 }
 
 // execute .py file
 function exec_py(dataToSendString) {
   return new Promise((resolve, reject) => {
-    const pythonProcess = spawn('python', [path.join(__dirname, '../../data_models', 'trip_fare_prediction.py'), dataToSendString]);
+    const pythonProcess = spawn('python', [path.join(__dirname, '../../data_models', 'trip_duration_prediction.py'), dataToSendString]);
     let result = '';
 
     pythonProcess.stdout.on('data', (data) => {
@@ -208,12 +214,12 @@ function exec_py(dataToSendString) {
   });
 }
 
-let getFare = (req, res) => {
+let getDuration = (req, res) => {
   // req.body.venue_id = JSON.parse(req.body.venue_id.replace(/'/g, '"'));
   clearVariables()
   start(req, res)
 }
 
 module.exports = {
-  getFare
+  getDuration
 }
