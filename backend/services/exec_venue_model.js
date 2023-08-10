@@ -63,7 +63,7 @@ let getAttractionInfo = (req, res, next) => {
   let attractionIds = []  
   for (let i=0;i<resVenJSON.length;i++) {
     attractionInfo[resVenJSON[i]['type']] = []
-    for(let j=0;j<3;j++){
+    for(let j=0;j<resVenJSON[i]['values'].length;j++){
       attractionIds.push(resVenJSON[i]['values'][j][0])
       attractionInfo[resVenJSON[i]['type']].push(
         {
@@ -80,7 +80,7 @@ let getAttractionInfo = (req, res, next) => {
   let restIds = []  
   for (let i=0;i<resRestJSON.length;i++) {
     restInfo[resRestJSON[i]['type']] = []
-    for(let j=0;j<3;j++){
+    for(let j=0;j<resRestJSON[i]['values'].length;j++){
       restIds.push(resRestJSON[i]['values'][j][0])
       restInfo[resRestJSON[i]['type']].push(
         {
