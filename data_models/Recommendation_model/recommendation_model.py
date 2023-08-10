@@ -3,7 +3,7 @@
 
 # # Load Data
 
-# In[74]:
+# In[1]:
 
 
 # import modules
@@ -41,31 +41,25 @@ import geopandas as gpd
 from shapely import wkt
 
 
-# In[75]:
+# In[2]:
 
 
 df_venue_static = pd.read_csv('../data_models/Recommendation_model/venue_static.csv')
 df_venue_timings = pd.read_csv('../data_models/Recommendation_model/venue_timings.csv')
 df_venue_merged = pd.read_csv('../data_models/Recommendation_model/venue_merged.csv')
 
-# df_venue_static = pd.read_csv('venue_static.csv')
-# df_venue_timings = pd.read_csv('venue_timings.csv')
-# df_venue_merged = pd.read_csv('venue_merged.csv')
 
-
-# In[76]:
+# In[ ]:
 
 
 df_venue_static = df_venue_static[df_venue_static['venue_type'] != 'LIBRARY']
-# df_venue_static.to_csv('venue_static.csv', index=False)
 df_venue_static.to_csv('../data_models/Recommendation_model/venue_static.csv', index=False)
 
 
-# In[77]:
+# In[ ]:
 
 
 df_manhattan_zone = pd.read_csv('../data_models/Recommendation_model/manhattan_zones.csv')
-# df_manhattan_zone = pd.read_csv('manhattan_zones.csv')
 #df_manhattan_zone.head(50)
 
 
@@ -73,7 +67,7 @@ df_manhattan_zone = pd.read_csv('../data_models/Recommendation_model/manhattan_z
 
 # ## Split into Hour and Day of the week
 
-# In[78]:
+# In[ ]:
 
 
 df_venue_merged['merged_time'] = pd.to_datetime(df_venue_merged['merged_time'])
@@ -85,7 +79,7 @@ df_venue_merged['day_of_week'] = df_venue_merged['merged_time'].dt.dayofweek
 df_venue_merged['hour_integer'] = df_venue_merged['merged_time'].dt.hour
 
 
-# In[79]:
+# In[ ]:
 
 
 #print(df_venue_merged.head(10))
@@ -93,7 +87,7 @@ df_venue_merged['hour_integer'] = df_venue_merged['merged_time'].dt.hour
 
 # ## Grouping Venue Types
 
-# In[80]:
+# In[ ]:
 
 
 venue_mapping = {
@@ -128,7 +122,7 @@ venue_mapping = {
 df_venue_static['venue_mod_type'] = df_venue_static['venue_type'].replace(venue_mapping)
 
 
-# In[81]:
+# In[ ]:
 
 
 venue_to_zone_dict = {}
@@ -148,15 +142,15 @@ for index, row in df_venue_static.iterrows():
 #print(venue_to_zone_dict)
 
 
-# In[82]:
+# In[ ]:
 
 
-# df_venue_static.head(50)
+#df_venue_static.head(50)
 
 
 # # Clearing Duplicates
 
-# In[83]:
+# In[ ]:
 
 
 # look for duplicates
@@ -166,7 +160,7 @@ for index, row in df_venue_static.iterrows():
 #print('Number of duplicate rows (including first) in the table is:', df_venue_static[df_venue_static.duplicated(keep=False)].shape[0])
 
 
-# In[84]:
+# In[ ]:
 
 
 # look for duplicates
@@ -176,7 +170,7 @@ for index, row in df_venue_static.iterrows():
 #print('Number of duplicate rows (including first) in the table is:', df_venue_timings[df_venue_timings.duplicated(subset=['venue_id', 'day', 'opening_time', 'closing_time'], keep='first')].shape[0])
 
 
-# In[85]:
+# In[ ]:
 
 
 #print('Number of duplicate (excluding first) rows in the table is: ', df_venue_timings.drop_duplicates(subset=['venue_id', 'day', 'opening_time', 'closing_time'], inplace=True))
@@ -185,7 +179,7 @@ for index, row in df_venue_static.iterrows():
 
 # # Grouping Zones
 
-# In[86]:
+# In[ ]:
 
 
 venue_zone_grouping = {
@@ -198,7 +192,7 @@ venue_zone_grouping = {
 }
 
 
-# In[87]:
+# In[ ]:
 
 
 # venue_zone_grouping dictionary
@@ -224,22 +218,22 @@ df_venue_static['zone_group'] = df_venue_static['zone_id'].apply(map_zone_group)
 #print(df_venue_static)
 
 
-# In[88]:
+# In[ ]:
 
 
-df_venue_static.to_csv('zone_Grouping.csv', index=False)
+df_venue_static.to_csv('../data_models/Recommendation_model/zone_Grouping.csv', index=False)
 
 
 # # Extracting Only Attratcion Types and Ignoring Restaurants
 
-# In[89]:
+# In[ ]:
 
 
 unique_type_values = df_venue_static['venue_mod_type'].unique()
-# unique_type_values
+#unique_type_values
 
 
-# In[90]:
+# In[ ]:
 
 
 specific_venue_types = ['Nature Attractions', 'Shopping Center', 'Tourist Destination', 'Cultural Heritage', 'Neighborhood Market', 'Fashion Convenience',  'Scenic Landmarks', 'Art', 'Religious', 'Park', 'Gifts & Souvenirs']
@@ -248,45 +242,41 @@ specific_venue_types = ['Nature Attractions', 'Shopping Center', 'Tourist Destin
 df_venue_static_att = df_venue_static[df_venue_static['venue_mod_type'].isin(specific_venue_types)]
 
 # Now 'filtered_df' contains only rows where the "Attraction_Type" is in the specified list
-# print(df_venue_static_att)
+#print(df_venue_static_att)
 
 
-# In[91]:
+# In[ ]:
+
+
+# Filter out the restaurant types
+restaurant_types = [venue for venue in unique_type_values if 'RESTAURANT' in venue]
+
+# Assuming you have a dataframe named 'df_venue' which has a column 'venue_type'
+# that matches the values in your unique_type_values array, you can filter it as follows:
+df_venue_restaurant = df_venue_static[df_venue_static['venue_type'].isin(restaurant_types)]
+
+#print(df_venue_restaurant)
+
+
+# In[ ]:
+
+
+unique_venue_types = df_venue_restaurant['venue_type'].unique()
+#print(unique_venue_types)
+
+
+# In[ ]:
 
 
 unique_type_values_att = df_venue_static_att['venue_mod_type'].unique()
-# unique_type_values_att
+#unique_type_values_att
 
 
 # # Actual Flow
 
 # ### Input
 
-# In[92]:
-
-
-# Function to get user input with constraints
-def get_user_input(prompt, max_entries, existing_entries=[]):
-    # Replace underscores with spaces for existing entries
-    existing_entries = [entry.replace('_', ' ') for entry in existing_entries]
-    
-    user_input_list = []
-    for i in range(max_entries):
-        entry = input(f"{prompt} {i+1}/{max_entries} (Leave empty to stop entering): ").strip()
-        
-        # Replace underscores with spaces for user's entry
-        entry = entry.replace('_', ' ')
-        
-        while entry in existing_entries or entry in user_input_list:
-            entry = input(f"Invalid! {prompt} {i+1}/{max_entries} already entered. Please re-enter or leave empty to stop: ").strip()
-            
-            # Replace underscores with spaces again for the new entry
-            entry = entry.replace('_', ' ')
-            
-        if entry == "":
-            break
-        user_input_list.append(entry)
-    return user_input_list
+# In[ ]:
 
 
 import sys
@@ -300,6 +290,13 @@ substrings = params[1].split(',')
 user_input_attractions = substrings
 user_input_attractions = [attraction.replace('_', ' ') for attraction in user_input_attractions]
 
+substrings = params[2].split(',')
+user_input_restaurants = substrings
+
+for i in range(len(user_input_restaurants)):
+    user_input_restaurants[i] = user_input_restaurants[i].upper()
+    
+
 
 # user_zone_input = ["Chelsea/Greenwhich market","Upper Manhattan"]
 
@@ -310,8 +307,10 @@ user_input_attractions = [attraction.replace('_', ' ') for attraction in user_in
 #         "Shopping Center"
 #     ]
 
+# user_input_restaurants = ['FRENCH_RESTAURANT', 'ITALIAN_RESTAURANT']
 
-# In[93]:
+
+# In[ ]:
 
 
 if len(user_input_attractions) < 4:
@@ -339,6 +338,9 @@ if len(user_input_attractions) < 4:
         most_similar_core_index = np.argmax(core_similarities)
         user_input_attractions.append(missing_core_attractions[most_similar_core_index])
         x -= 1  # Decrement x as we've added a core attraction
+        
+        # Ensure that this attraction won't be added again from updated_list
+        updated_list.remove(missing_core_attractions[most_similar_core_index])
 
     # Now, for the remaining attractions (if any)
     if x > 0:
@@ -355,13 +357,7 @@ if len(user_input_attractions) < 4:
         user_input_attractions = user_input_attractions + slice_most_similar_tags
 
 
-# In[94]:
-
-
-# user_input_attractions
-
-
-# In[95]:
+# In[ ]:
 
 
 priority_table = pd.DataFrame({
@@ -375,7 +371,7 @@ priority_table = pd.DataFrame({
 })
 
 
-# In[96]:
+# In[ ]:
 
 
 # Assuming the following structure for df_venue_static_att: ['venue_id', 'venue_mod_type']
@@ -413,10 +409,10 @@ for index, row in priority_table.iterrows():
         priority_table.at[index, 'Opening_Time'] = common_times[attraction]['Opening_Time']
         priority_table.at[index, 'Closing_Time'] = common_times[attraction]['Closing_Time']
 
-# print(priority_table)
+#print(priority_table)
 
 
-# In[97]:
+# In[ ]:
 
 
 import pandas as pd
@@ -476,17 +472,19 @@ for attraction in sorted_attractions:
 itinerary_timing = itinerary
 
 
-# In[98]:
+# ## Zone grouping
+
+# In[ ]:
 
 
 zone_group = []
 for group in user_zone_input:
     for zone in venue_zone_grouping[group]:
         zone_group.append(zone)
-# zone_group
+#zone_group
 
 
-# In[99]:
+# In[ ]:
 
 
 zone_type_dict = {}
@@ -495,10 +493,83 @@ for venue_type in itinerary_timing:
     zone_type_dict[venue_type] = list(matched_zones)
 
 # Print the resulting dictionary
-# print(zone_type_dict)
+#print(zone_type_dict)
 
 
-# In[100]:
+# ## Restaurant Filtering
+
+# In[ ]:
+
+
+restaurant_zone_dict = {}
+for restaurant_type in user_input_restaurants:
+    # Find the zones where the user's selected restaurant types are located using df_venue_restaurant
+    matched_zones = df_venue_restaurant[df_venue_restaurant['venue_mod_type'] == restaurant_type]['zone_id'].unique()
+    restaurant_zone_dict[restaurant_type] = list(matched_zones)
+
+# Print the resulting dictionary
+#print(restaurant_zone_dict)
+
+
+# In[ ]:
+
+
+restaurants_with_zero_zones = []
+
+# Iterate through the restaurant_zone_dict
+for restaurant_type, zones in restaurant_zone_dict.items():
+    if len(zones) == 0:
+        restaurants_with_zero_zones.append(restaurant_type)
+
+#print("Restaurant types with 0 zones:", restaurants_with_zero_zones)
+
+filled_restaurant_with_zero_zone = {}
+
+for res_type in restaurants_with_zero_zones:
+    restaurant_to_zone_dict_copy = list(set(restaurant_zone_dict[res_type]))
+    
+    if len(restaurant_to_zone_dict_copy) <= 0:  # Modified condition
+        # get all venue id of each zone and push it to restaurant_zone_dict of that type
+        print('okay')
+        continue  # Continue to next iteration of the loop
+    
+    zone_between_dist = []
+    for user_zone in zone_group:
+        for restaurant_zone in restaurant_to_zone_dict_copy:
+            zone1_polygon = df_manhattan_zone[df_manhattan_zone['LocationID'] == user_zone]['the_geom'].iloc[0]
+            zone2_polygon = df_manhattan_zone[df_manhattan_zone['LocationID'] == restaurant_zone]['the_geom'].iloc[0]
+            distance = find_distance_between_zones(zone1_polygon, zone2_polygon)
+            zone_between_dist.append((user_zone, restaurant_zone, distance)) 
+
+    sorted_zone_between_dist = sorted(zone_between_dist, key=lambda x: x[2])[:3]
+    new_zone = [df_venue_restaurant[
+        (df_venue_restaurant['zone_id'] == item[1]) &
+        (df_venue_restaurant['venue_mod_type'] == res_type)
+    ]['original_ven_id'].tolist() for item in sorted_zone_between_dist]
+    
+    filled_restaurant_with_zero_zone[res_type] = list(set(item for sublist in new_zone for item in sublist))
+
+#print(filled_restaurant_with_zero_zone)
+
+
+# In[ ]:
+
+
+restaurant_venue_dict = {}
+
+for restaurant_type, zones in restaurant_zone_dict.items():
+    # Filter the df_venue_restaurant dataframe for the specific restaurant type and zones
+    matched_venues = df_venue_restaurant[
+        (df_venue_restaurant['venue_mod_type'] == restaurant_type) &
+        (df_venue_restaurant['zone_id'].isin(zones))
+    ]['original_ven_id'].unique()  # Retrieving the unique venue_ids
+    
+    restaurant_venue_dict[restaurant_type] = list(matched_venues)
+
+#print(restaurant_venue_dict)
+
+
+# In[ ]:
 
 
 user_venue_per_type_dict = {}
@@ -509,10 +580,10 @@ for venue_type in itinerary_timing:
     user_venue_per_type_dict[venue_type] = list(result_df)
 
 # Print the resulting dictionary
-# print(user_venue_per_type_dict)
+#print(user_venue_per_type_dict)
 
 
-# In[101]:
+# In[ ]:
 
 
 types_with_zero_zones = []
@@ -522,10 +593,10 @@ for venue_type, zones in user_venue_per_type_dict.items():
     if len(zones) == 0:
         types_with_zero_zones.append(venue_type)
 
-# print("Venue types with 0 zones:", types_with_zero_zones)
+#print("Venue types with 0 zones:", types_with_zero_zones)
 
 
-# In[102]:
+# In[ ]:
 
 
 def find_distance_between_zones(zone1_polygon, zone2_polygon):
@@ -537,7 +608,7 @@ def find_distance_between_zones(zone1_polygon, zone2_polygon):
     return distance
 
 
-# In[103]:
+# In[ ]:
 
 
 filled_type_with_zero_zone = {}
@@ -547,7 +618,7 @@ for ven_type in types_with_zero_zones:
     
     if len(venue_to_zone_dict_copy) <= 0: # Modified condition
         #get all venue id of each zone and push it to user_venue_per_type_dict of that type
-        # print('okay')
+        print('okay')
         continue  # Continue to next iteration of the loop
     
     zone_between_dist = []
@@ -566,62 +637,90 @@ for ven_type in types_with_zero_zones:
     
     filled_type_with_zero_zone[ven_type] = list(set(item for sublist in new_zone for item in sublist))
 
-# filled_type_with_zero_zone
+#filled_type_with_zero_zone
 
 
-# In[104]:
+# In[ ]:
 
 
+# For venues
 for key in user_venue_per_type_dict.keys():
     # Check if the value of the current key is an empty array
     if len(user_venue_per_type_dict[key]) == 0:
-        # Check if the key exists in dictionary B
+        # Check if the key exists in the filled dictionary for venues
         if key in filled_type_with_zero_zone:
-            # Replace the value in A with the value from B
+            # Replace the value in the main dictionary with the value from the filled dictionary for venues
             user_venue_per_type_dict[key] = filled_type_with_zero_zone[key]
-# print(user_venue_per_type_dict)
+
+# For restaurants
+for key in restaurant_venue_dict.keys():
+    # Check if the value of the current key is an empty array
+    if len(restaurant_venue_dict[key]) == 0:
+        # Check if the key exists in the filled dictionary for restaurants
+        if key in filled_restaurant_with_zero_zone:
+            # Replace the value in the main dictionary with the value from the filled dictionary for restaurants
+            restaurant_venue_dict[key] = filled_restaurant_with_zero_zone[key]
+
+#print(user_venue_per_type_dict)
+#print(restaurant_venue_dict)
 
 
-# In[105]:
+# In[ ]:
 
-
-# ... [Other necessary imports, data, and current_date definition]
-
-# ... [Your code for generating the itinerary]
-
-# Now, for the venues
-filtered_venues = {}
 
 today_day_num = datetime.now().weekday()  # 0: Monday, 6: Sunday
 
-# Using the itinerary timings:
-for attraction, timing in itinerary.items():
-    start_time, end_time = [t.strip() for t in timing.split('-')]
-    start_hour = int(pd.Timestamp(f"{current_date} {start_time}").strftime('%H'))
-    end_hour = int(pd.Timestamp(f"{current_date} {end_time}").strftime('%H'))
+# A function to check if a venue is open today
+def is_venue_open_today(venue_id, day_num):
+    venue_today_info = df_venue_timings.loc[(df_venue_timings['venue_id'] == venue_id) & (df_venue_timings['day'] == day_num)]
+    return not venue_today_info.empty and venue_today_info['opening_time'].iloc[0] != -1 and venue_today_info['closing_time'].iloc[0] != -1
 
-    valid_venues = []
-    for venue_id in user_venue_per_type_dict.get(attraction, []):  # Only work with venues in user input
-        venue_info = df_venue_timings.loc[df_venue_timings['venue_id'] == venue_id]
+# Update user_venue_per_type_dict
+for attraction_type, venue_ids in user_venue_per_type_dict.items():
+    user_venue_per_type_dict[attraction_type] = [venue_id for venue_id in venue_ids if is_venue_open_today(venue_id, today_day_num)]
+
+#print(user_venue_per_type_dict)
+
+
+# In[ ]:
+
+
+# Update restaurant_zone_dict for restaurants open today
+for restaurant_type, venue_ids in restaurant_venue_dict.items():
+    restaurant_venue_dict[restaurant_type] = [venue_id for venue_id in venue_ids if is_venue_open_today(venue_id, today_day_num)]
+
+#print(restaurant_venue_dict)
+
+
+# In[ ]:
+
+
+manipulated_restaurants = {}
+
+# Loop through each restaurant type and check for the specified condition
+for restaurant_type, restaurant_ids in restaurant_venue_dict.items():
+    valid_restaurants = []
+    for restaurant_id in restaurant_ids:
+        restaurant_hash_id = df_venue_restaurant[df_venue_restaurant['original_ven_id'] == restaurant_id]['hash_ven_id']
+        restaurant_rating = df_venue_restaurant[df_venue_restaurant['original_ven_id'] == restaurant_id]['rating'].item()
+        restaurant_hash_id = int(restaurant_hash_id)
         
-        if not venue_info.empty:
-            # Check if the venue is closed for the day
-            if venue_info['opening_time'].iloc[0] == -1 or venue_info['closing_time'].iloc[0] == -1:
-                continue
-
-            filtered_venue_info = venue_info.loc[(venue_info['day'] == today_day_num) 
-                                                 & (venue_info['opening_time'] <= start_hour)
-                                                 & (venue_info['closing_time'] >= end_hour)]
-            if not filtered_venue_info.empty:
-                valid_venues.append(venue_id)
+        df_venue_merged['venue_id'] = df_venue_merged['venue_id'].astype(int)
+        specific_restaurant_df = df_venue_merged[df_venue_merged['venue_id'] == restaurant_hash_id]
+        average_busyness = specific_restaurant_df['busyness'].mean() 
         
-    if valid_venues:
-        filtered_venues[attraction] = valid_venues
+        weight_rating = 0.6
+        weight_busyness = 0.4
+        composite_score = (weight_rating * restaurant_rating) + (weight_busyness * average_busyness)
+        
+        valid_restaurants.append((restaurant_id, restaurant_rating, average_busyness, composite_score))
+    if valid_restaurants:
+        manipulated_restaurants[restaurant_type] = valid_restaurants
 
-# print(filtered_venues)
+#print(manipulated_restaurants)
 
 
-# In[106]:
+# In[ ]:
 
 
 manipulated_venues = {}
@@ -648,30 +747,46 @@ for venue_type, venue_ids in user_venue_per_type_dict.items():
 
 
 
-# In[108]:
+# In[ ]:
 
 
-# top_3_venues = {}
+top_3_restaurants = {}
 
-# # Loop through each venue type and its venues
-# for venue_type, venue_data in manipulated_venues.items():
-#     # Sort the venues based on the composite score (fourth element in the tuple, index 3)
-#     if len(venue_data) > 3:
-#         sorted_venues = sorted(venue_data, key=lambda x: x[3], reverse=True)
+# Loop through each restaurant type and its restaurants
+for restaurant_type, restaurant_data in manipulated_restaurants.items():
+    # Sort the restaurants based on the composite score (fourth element in the tuple, index 3)
+    if len(restaurant_data) > 3:
+        sorted_restaurants = sorted(restaurant_data, key=lambda x: x[3], reverse=True)
     
-#         # Keep only the top 3 venues for each venue type
-#         top_3_venues[venue_type] = sorted_venues[:3]
-#     else:
-#         top_3_venues[venue_type] = venue_data
+        # Keep only the top 3 restaurants for each restaurant type
+        top_3_restaurants[restaurant_type] = sorted_restaurants[:3]
+    else:
+        top_3_restaurants[restaurant_type] = restaurant_data
 
-# # Display the top 3 venues for each venue type
-# # for venue_type, top_venues in top_3_venues.items():
-# #     print(f"Venue Type: {venue_type}")
-# #     for rank, (venue_id, rating, busyness, score) in enumerate(top_venues, start=1):
-# #         print(f"Rank {rank}: Venue ID: {venue_id}, Rating: {rating}, Busyness: {busyness}, Score: {score}")
-# #     print()
+top_3_restaurants
 
-# print(top_3_venues)
+
+restaurant_keys = list(top_3_restaurants.keys())
+restaurant_values = list(top_3_restaurants.values())
+
+final_restaurants = []
+for i in range(0, len(restaurant_keys)):
+    # Check if the index is within the bounds of venue_values
+    if i < len(restaurant_values):
+        final_restaurants.append({
+            'order': i,
+            'type': restaurant_keys[i],
+            'values': restaurant_values[i],
+            'type_cat': 'attraction'
+        })
+
+print(final_restaurants)
+
+
+# In[ ]:
+
+
+print('|')
 
 top_3_venues = {}
 
@@ -686,12 +801,6 @@ for venue_type, venue_data in manipulated_venues.items():
     else:
         top_3_venues[venue_type] = venue_data
 
-# Display the top 3 venues for each venue type
-# for venue_type, top_venues in top_3_venues.items():
-#     print(f"Venue Type: {venue_type}")
-#     for rank, (venue_id, rating, busyness, score) in enumerate(top_venues, start=1):
-#         print(f"Rank {rank}: Venue ID: {venue_id}, Rating: {rating}, Busyness: {busyness}, Score: {score}")
-#     print()
 
 venue_keys = list(top_3_venues.keys())
 venue_values = list(top_3_venues.values())

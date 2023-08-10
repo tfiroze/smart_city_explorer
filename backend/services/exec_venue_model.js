@@ -23,7 +23,7 @@ function executeIPythonNotebook(ipynbFileName, parameters) {
   }
 }
 
-let getRecommendVenues = (req, res, next) => {
+let getAttractionInfo = (req, res, next) => {
 
   const ipynbFileName = '../data_models/Recommendation_model/recommendation_model.ipynb'
 
@@ -33,64 +33,96 @@ let getRecommendVenues = (req, res, next) => {
 
   const user_zone_input = req.body.zoneGroup
   const user_input_attractions = req.body.attractions
+  const user_input_restaurants = req.body.restaurants
 
-  const parameters = [user_zone_input, user_input_attractions]
+  const parameters = [user_zone_input, user_input_attractions, user_input_restaurants]
 
   // get a string from python script and convert into json
   const result = executeIPythonNotebook(ipynbFileName, parameters);
   const resString = result.replace(/'/g, '"').replace(/\(/g, '[').replace(/\)/g, ']')
-  let resJSON = JSON.parse(resString)
+  const resArray = resString.split('|')
+  const resRest = resArray[0]
+  const resVen = resArray[1]
 
-  const result_order = resJSON.map(item => ({
+  let resRestJSON = JSON.parse(resRest)
+  let resVenJSON = JSON.parse(resVen)
+
+  const attractionOrder = resVenJSON.map(item => ({
     order: item.order,
     type: item.type
-  }));
+  }))
+  const restOrder = resRestJSON.map(item => ({
+    order: item.order,
+    type: item.type
+  }))
   
-  
-  
-  let venueInfo = {}
-  let venueIds = []  
-  for (let i=0;i<resJSON.length;i++) {
-    venueInfo[resJSON[i]['type']] = []
+
+  let attractionInfo = {}
+  let attractionIds = []  
+  for (let i=0;i<resVenJSON.length;i++) {
+    attractionInfo[resVenJSON[i]['type']] = []
     for(let j=0;j<3;j++){
-      venueIds.push(resJSON[i]['values'][j][0])
-      venueInfo[resJSON[i]['type']].push(
+      attractionIds.push(resVenJSON[i]['values'][j][0])
+      attractionInfo[resVenJSON[i]['type']].push(
         {
-          venue_id: resJSON[i]['values'][j][0],
-          rating: resJSON[i]['values'][j][1],
-          busyness: resJSON[i]['values'][j][2],
-          score: resJSON[i]['values'][j][3]
+          venue_id: resVenJSON[i]['values'][j][0],
+          rating: resVenJSON[i]['values'][j][1],
+          busyness: resVenJSON[i]['values'][j][2],
+          score: resVenJSON[i]['values'][j][3]
         }
       )
     }
   }
-  
+
+  let restInfo = {}
+  let restIds = []  
+  for (let i=0;i<resRestJSON.length;i++) {
+    restInfo[resRestJSON[i]['type']] = []
+    for(let j=0;j<3;j++){
+      restIds.push(resRestJSON[i]['values'][j][0])
+      restInfo[resRestJSON[i]['type']].push(
+        {
+          venue_id: resRestJSON[i]['values'][j][0],
+          rating: resRestJSON[i]['values'][j][1],
+          busyness: resRestJSON[i]['values'][j][2],
+          score: resRestJSON[i]['values'][j][3]
+        }
+      )
+    }
+  }
 
   try {
     let dbOperation = (conn) => {
-      const sqlStr = 'select original_ven_id,name,rating,image,description,type_mod,latitude,longitude from venue_static where original_ven_id in (?)'
-      conn.query(sqlStr, [venueIds], (err, result) => {
+      const sqlStr = 'select original_ven_id,name,rating,image,description,latitude,longitude from venue_static where original_ven_id in (?)'
+      conn.query(sqlStr, [attractionIds], (err, result) => {
         if(err) {
             console.error(err)
             conn.end()
             return res.status(200).send({valid:false,message:'Failed to get recommendation venues'})
         }
       }).then(([rows]) => {
-        for (const key in venueInfo) {
-          for(let i=0;i<venueInfo[key].length;i++){
+        for (const key in attractionInfo) {
+          for(let i=0;i<attractionInfo[key].length;i++){
             for(let j=0;j<rows.length;j++){
-              if(rows[j]['original_ven_id'] === venueInfo[key][i]['venue_id']){
-                venueInfo[key][i]['name'] = rows[j]['name']
-                venueInfo[key][i]['image'] = rows[j]['image']
-                venueInfo[key][i]['latitude'] = rows[j]['latitude']
-                venueInfo[key][i]['longitude'] = rows[j]['longitude']
-                venueInfo[key][i]['description'] = rows[j]['description']
+              if(rows[j]['original_ven_id'] === attractionInfo[key][i]['venue_id']){
+                attractionInfo[key][i]['name'] = rows[j]['name']
+                attractionInfo[key][i]['image'] = rows[j]['image']
+                attractionInfo[key][i]['latitude'] = rows[j]['latitude']
+                attractionInfo[key][i]['longitude'] = rows[j]['longitude']
+                attractionInfo[key][i]['description'] = rows[j]['description']
               }
             }
           } 
         }       
         conn.end()
-        return res.status(200).send({valid:true, data:venueInfo, order: result_order})
+        // execute the next middleware
+        req.body.attractionInfo = attractionInfo
+        req.body.attractionIds = attractionIds
+        req.body.attractionOrder = attractionOrder
+        req.body.restInfo = restInfo
+        req.body.restIds = restIds
+        req.body.restOrder = restOrder
+        next()
       })
     }
     createSSHTunnel(dbOperation)
@@ -103,18 +135,55 @@ let getRecommendVenues = (req, res, next) => {
 
 
 
+let getRestInfo = (req, res) => {
+  try{
+    let dbOperation = (conn) => {
+      const sqlStr = 'select original_ven_id,name,rating,image,description,latitude,longitude from venue_static where original_ven_id in (?)'
+      conn.query(sqlStr, [req.body.restIds], (err, result) => {
+        if(err) {
+            console.error(err)
+            conn.end()
+            return res.status(200).send({valid:false,message:'Failed to get recommendation venues'})
+        }
+      }).then(([rows]) => {
+        for (const key in req.body.restInfo) {
+          for(let i=0;i<req.body.restInfo[key].length;i++){
+            for(let j=0;j<rows.length;j++){
+              if(rows[j]['original_ven_id'] === req.body.restInfo[key][i]['venue_id']){
+                req.body.restInfo[key][i]['name'] = rows[j]['name']
+                req.body.restInfo[key][i]['image'] = rows[j]['image']
+                req.body.restInfo[key][i]['latitude'] = rows[j]['latitude']
+                req.body.restInfo[key][i]['longitude'] = rows[j]['longitude']
+                req.body.restInfo[key][i]['description'] = rows[j]['description']
+              }
+            }
+          } 
+        }       
+        conn.end()
+
+        return res.status(200).send({valid:true, attractions:req.body.attractionInfo, restaurants:req.body.restInfo, attraction_order: req.body.attractionOrder, restaurant_order:req.body.restOrder})
+      })
+    }
+    createSSHTunnel(dbOperation)
+  }catch(err) {
+    console.error(err)
+    return res.status(200).send({valid:false, message:'Failed to get recommendation venues'})
+  }
+}
+
+
 // let checkVenueOpen = (req, res) => {
 //   let day = new Date(req.body.date).getDay()
-//   let venueIds = []
+//   let attractionIds = []
 
 //   for (const venue of req.body.result) {
-//     venueIds.push(venue.original_ven_id)
+//     attractionIds.push(venue.original_ven_id)
 //   }
 
 //   try {
 //     let dbOperation = (conn) => {
 //       const sqlStr = 'select venue_id from venue_timings where venue_id in (?) and day=? and (opening_time=-1 or opening_time=0)'
-//       conn.query(sqlStr, [venueIds, day], (err, result) => {
+//       conn.query(sqlStr, [attractionIds, day], (err, result) => {
 //         if(err) {
 //             console.error(err)
 //             conn.end()
@@ -141,6 +210,7 @@ let getRecommendVenues = (req, res, next) => {
 // }
 
 module.exports = {
-  getRecommendVenues
+  getAttractionInfo,
+  getRestInfo
   // checkVenueOpen
 }
