@@ -91,12 +91,13 @@ export const CreateItinerary: React.FC<IProps> = ({
 
   const handleGetFare = (request: string[]) => {
     setFinalVenueids(request)
+    console.log('Called------------', finalvenueids)
     let req = {
       venue_id: [...request],
       date: tripDate
     }
 
-    smartApi.getFare(req)
+    smartApi.getDuration(req)
       .then((results) => {
         console.log(results);
 
