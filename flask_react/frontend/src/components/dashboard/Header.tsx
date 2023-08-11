@@ -248,34 +248,31 @@ export const Header: React.FC<Partial<IProps>> = ({
             }}
           />
         </LogoImage>
-        <Hidden xsDown>
-          <Grid item xs={6} className="viewDtailsModal">
-            {steps.length > 0 && (
-              <Stepper
-                activeStep={activeStep}
-                sx={{
-                  mx: "auto",
-                  padding: "5px",
-                }}
-              >
-                {steps.map((label, index) => (
-                  <Step key={label}>
-                    <StepLabel>{label}</StepLabel>
-                  </Step>
-                ))}
-              </Stepper>
-            )}
-          </Grid>
-
-        </Hidden>
+        <Grid item xs={6} className="viewDtailsModal">
+          {steps.length > 0 && (
+            <Stepper
+              activeStep={activeStep}
+              sx={{
+                mx: "auto",
+                padding: "5px",
+              }}
+            >
+              {steps.map((label, index) => (
+                <Step key={label}>
+                  <StepLabel>{label}</StepLabel>
+                </Step>
+              ))}
+            </Stepper>
+          )}
+        </Grid>
         <Grid
           item
-          md={steps.length ? 4 : 10}
           xs={10}
+          md={steps.length ? 4 : 4}
           style={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "flex-end",
+            justifyContent: "flex-end"
           }}
         >
           <StyledAvatar onClick={(event) => setAnchorEl(event.currentTarget)} />

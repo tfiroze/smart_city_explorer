@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Typography, Tooltip, useTheme } from "@mui/material";
 import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
+import { isMobile } from "react-device-detect";
 import {
   Button,
   Grid,
@@ -46,7 +47,7 @@ import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
 import PaymentIcon from "@mui/icons-material/Payment";
 import IItinerary from "../../models/IItinerary";
 import { CButton } from "../common/button";
-
+import { VenueSelectionMobile } from "./VenueSelectionMobile";
 const slideInAnimation = keyframes`
   0% {
     transform: translateY(100%);
@@ -304,78 +305,79 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
         </DialogActions>
       </Dialog>
       <Grid item xs={12} style={{ overflowY: "scroll" }}>
-        <Timeline position="alternate-reverse">
-          {itinerary.map((item, index) => (
-            <>
-              <TimelineItem key={index} >
-                <TimelineOppositeContent
-                  sx={{ m: 'auto 0' }}
-                  align="right"
-                  variant="body2"
-                  color="text.secondary"
-                >
-                  Time To Visit: Between 9am to 11am
-                </TimelineOppositeContent>
-                <TimelineSeparator>
-                  <TimelineDot sx={{ backgroundColor: currentTheme.palette.secondary.main }}>
-                    <StyledLocationOnIcon />
-                  </TimelineDot>
-                  {<TimelineConnector />}
-                </TimelineSeparator>
-                <TimelineContent style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Card
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: '50%',
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                      padding: '15px',
-                      borderRadius: '10px',
-                      backgroundColor: currentTheme.palette.secondary.main
-                    }}
+        {isMobile ? <VenueSelectionMobile items={itinerary} /> :
+          (<Timeline position="alternate-reverse">
+            {itinerary.map((item, index) => (
+              <>
+                <TimelineItem key={index} >
+                  <TimelineOppositeContent
+                    sx={{ m: 'auto 0' }}
+                    align="right"
+                    variant="body2"
+                    color="text.secondary"
                   >
-                    <Typography variant="h6" align="left">
-                      {item.title}
-                    </Typography>
-                    <CardMedia
-                      component="img"
-                      alt="times square"
-                      image={item.imgLink}
+                    Time To Visit: Between 9am to 11am
+                  </TimelineOppositeContent>
+                  <TimelineSeparator>
+                    <TimelineDot sx={{ backgroundColor: currentTheme.palette.secondary.main }}>
+                      <StyledLocationOnIcon />
+                    </TimelineDot>
+                    {<TimelineConnector />}
+                  </TimelineSeparator>
+                  <TimelineContent style={{ display: 'flex', justifyContent: 'center' }}>
+                    <Card
                       sx={{
-                        height: 200,
-                        aspectRatio: 16 / 9,
-                        objectFit: "cover",
-                        borderTopLeftRadius: "4px",
+                        display: "flex",
+                        flexDirection: "column",
+                        width: '50%',
+                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                        padding: '15px',
                         borderRadius: '10px',
-                        marginBottom: '10px'
+                        backgroundColor: currentTheme.palette.secondary.main
                       }}
-                    />
-                    <Typography variant="subtitle2"
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: '3',
-                        WebkitBoxOrient: 'vertical',
-
-                      }}
-                      align="left"
                     >
-                      Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
-                    </Typography>
-                    <Divider sx={{ margin: '10px 0' }} />
-                    <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                      <Typography>
-                        Rating: <span>4</span>
+                      <Typography variant="h6" align="left">
+                        {item.title}
                       </Typography>
+                      <CardMedia
+                        component="img"
+                        alt="times square"
+                        image={item.imgLink}
+                        sx={{
+                          height: 200,
+                          aspectRatio: 16 / 9,
+                          objectFit: "cover",
+                          borderTopLeftRadius: "4px",
+                          borderRadius: '10px',
+                          marginBottom: '10px'
+                        }}
+                      />
+                      <Typography variant="subtitle2"
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: '-webkit-box',
+                          WebkitLineClamp: '3',
+                          WebkitBoxOrient: 'vertical',
 
-                      <Typography>
-                        Busyness: <span>Moderate</span>
+                        }}
+                        align="left"
+                      >
+                        Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
                       </Typography>
-                    </Grid>
-                    <Divider sx={{ margin: '10px 0' }} />
-                    <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main }}>
-                      {/* <CButton
+                      <Divider sx={{ margin: '10px 0' }} />
+                      <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                        <Typography>
+                          Rating: <span>4</span>
+                        </Typography>
+
+                        <Typography>
+                          Busyness: <span>Moderate</span>
+                        </Typography>
+                      </Grid>
+                      <Divider sx={{ margin: '10px 0' }} />
+                      <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main }}>
+                        {/* <CButton
                           title="Select"
                           onClick={() => { }}
                           style={{
@@ -387,46 +389,46 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
                             fontWeight: 'bold',
                           }}
                         /> */}
-                      <CButton
-                        title="View"
-                        onClick={() => { }}
-                        style={{
-                          width: '30%',
-                          background: '#757de8',
-                          color: '#ffffff',
-                          borderRadius: '20px',
-                          padding: '10px 30px',
-                          fontWeight: 'bold',
-                        }}
-                      />
-                    </Grid>
-                  </Card>
-                </TimelineContent>
-              </TimelineItem>
-              <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
-                <div style={{ width: '48%' }}>
-                  <Typography variant="h6" align="right">
-                    Estimated Fare
-                  </Typography>
-                  <Typography align="right">40 Dollars</Typography>
+                        <CButton
+                          title="View"
+                          onClick={() => { }}
+                          style={{
+                            width: '30%',
+                            background: '#757de8',
+                            color: '#ffffff',
+                            borderRadius: '20px',
+                            padding: '10px 30px',
+                            fontWeight: 'bold',
+                          }}
+                        />
+                      </Grid>
+                    </Card>
+                  </TimelineContent>
+                </TimelineItem>
+                <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
+                  <div style={{ width: '48%' }}>
+                    <Typography variant="h6" align="right">
+                      Estimated Fare
+                    </Typography>
+                    <Typography align="right">40 Dollars</Typography>
 
-                </div>
-                <div style={{ width: '4%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <div style={{ width: '20px', height: '20px', padding: '10px', borderRadius: '50%', backgroundColor: currentTheme.palette.secondary.main, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <LocalTaxiIcon sx={{ color: ' #757de8' }} />
                   </div>
-                </div>
-                <div style={{ width: '48%' }}>
-                  <Typography variant="h6" component="span">
-                    Drive For
-                  </Typography>
-                  <Typography>30 minutes</Typography>
-                </div>
+                  <div style={{ width: '4%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ width: '20px', height: '20px', padding: '10px', borderRadius: '50%', backgroundColor: currentTheme.palette.secondary.main, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <LocalTaxiIcon sx={{ color: ' #757de8' }} />
+                    </div>
+                  </div>
+                  <div style={{ width: '48%' }}>
+                    <Typography variant="h6" component="span">
+                      Drive For
+                    </Typography>
+                    <Typography>30 minutes</Typography>
+                  </div>
 
-              </div>
-            </>
-          ))}
-        </Timeline>
+                </div>
+              </>
+            ))}
+          </Timeline>)}
       </Grid>
       <CButton
         title="Confirm"
