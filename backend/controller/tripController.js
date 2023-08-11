@@ -100,7 +100,7 @@ let getVenueInfo = (req, res, next) => {
     let venueIds = req.body.venueIds
     try {
         let dbOperation = (conn) => {
-            let sqlStr = 'select original_ven_id,name,image,rating,description from venue_static where original_ven_id in (?)'
+            let sqlStr = 'select original_ven_id,name,image,rating,description,latitude,longitude from venue_static where original_ven_id in (?)'
             conn.query(sqlStr, [venueIds], (err, result) => {
                 if(err) {
                     console.error(err)
@@ -140,36 +140,48 @@ let getVenueInfo = (req, res, next) => {
                             venueDetail['ven_1']['rating'] = places[i]['rating']
                             venueDetail['ven_1']['description'] = places[i]['description']
                             venueDetail['ven_1']['busyness'] = places[i]['busyness']
+                            venueDetail['ven_1']['latitude'] = places[i]['latitude']
+                            venueDetail['ven_1']['longitude'] = places[i]['longitude']
                         }else if(places[i]['original_ven_id'] == venueDetail['ven_2']['venue_id']){
                             venueDetail['ven_2']['venue_name'] = places[i]['name']
                             venueDetail['ven_2']['image'] = places[i]['image']
                             venueDetail['ven_2']['rating'] = places[i]['rating']
                             venueDetail['ven_2']['description'] = places[i]['description']
                             venueDetail['ven_2']['busyness'] = places[i]['busyness']
+                            venueDetail['ven_2']['latitude'] = places[i]['latitude']
+                            venueDetail['ven_2']['longitude'] = places[i]['longitude']
                         }else if(places[i]['original_ven_id'] == venueDetail['ven_3']['venue_id']){
                             venueDetail['ven_3']['venue_name'] = places[i]['name']
                             venueDetail['ven_3']['image'] = places[i]['image']
                             venueDetail['ven_3']['rating'] = places[i]['rating']
                             venueDetail['ven_3']['description'] = places[i]['description']
                             venueDetail['ven_3']['busyness'] = places[i]['busyness']
+                            venueDetail['ven_3']['latitude'] = places[i]['latitude']
+                            venueDetail['ven_3']['longitude'] = places[i]['longitude']
                         }else if(places[i]['original_ven_id'] == venueDetail['ven_4']['venue_id']){
                             venueDetail['ven_4']['venue_name'] = places[i]['name']
                             venueDetail['ven_4']['image'] = places[i]['image']
                             venueDetail['ven_4']['rating'] = places[i]['rating']
                             venueDetail['ven_4']['description'] = places[i]['description']
                             venueDetail['ven_4']['busyness'] = places[i]['busyness']
+                            venueDetail['ven_4']['latitude'] = places[i]['latitude']
+                            venueDetail['ven_4']['longitude'] = places[i]['longitude']
                         }else if(places[i]['original_ven_id'] == venueDetail['rest_1']['venue_id']){
                             venueDetail['rest_1']['venue_name'] = places[i]['name']
                             venueDetail['rest_1']['image'] = places[i]['image']
                             venueDetail['rest_1']['rating'] = places[i]['rating']
                             venueDetail['rest_1']['description'] = places[i]['description']
                             venueDetail['rest_1']['busyness'] = places[i]['busyness']
+                            venueDetail['rest_1']['latitude'] = places[i]['latitude']
+                            venueDetail['rest_1']['longitude'] = places[i]['longitude']
                         }else if(places[i]['original_ven_id'] == venueDetail['rest_2']['venue_id']){
                             venueDetail['rest_2']['venue_name'] = places[i]['name']
                             venueDetail['rest_2']['image'] = places[i]['image']
                             venueDetail['rest_2']['rating'] = places[i]['rating']
                             venueDetail['rest_2']['description'] = places[i]['description']
                             venueDetail['rest_2']['busyness'] = places[i]['busyness']
+                            venueDetail['rest_2']['latitude'] = places[i]['latitude']
+                            venueDetail['rest_2']['longitude'] = places[i]['longitude']
                         }
                     }
                     conn.end();

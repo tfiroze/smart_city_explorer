@@ -57,7 +57,6 @@ exports.sendInvite = (req, res, next) => {
 
 // return res.status(200).json({valid:true, message: 'Invite sent.' });
 exports.addTripRequest = (req, res) => {
-  console.log("sent")
   try {
     let dbOperation = (conn) => {
       let sqlStr = 'INSERT INTO trip_requests (trip_id, trip_owner_id, requested_user_id, confirmation_status) VALUES (?, ?, ?, ?)'
@@ -80,43 +79,117 @@ exports.addTripRequest = (req, res) => {
 }
 
 
-exports.checkRequests = (req, res) => {
-  const { user_id } = req.body;
+// (Required: user_id)
+exports.checkRequests = (req, res, next) => {
 
-  createSSHTunnel(async (connection) => {
-    try {
-      // First, get trip requests using the user_id and awaiting status
-      const [tripRequests] = await connection.execute('SELECT * FROM trip_requests WHERE requested_user_id = ? AND confirmation_status = ?', [user_id, 'awaiting']);
-
-      if (tripRequests.length > 0) {
-        // Loop over trip requests and fetch additional information
-        for (let request of tripRequests) {
-          // Fetch trip name using trip_id
-          const [tripInfo] = await connection.execute('SELECT trip_name FROM trip_info WHERE trip_id = ?', [request.trip_id]);
-          if (tripInfo.length > 0) {
-            request.trip_name = tripInfo[0].trip_name;
+  try{
+    let dbOperation = (conn) => {
+      let sqlStr = 'SELECT * FROM trip_requests WHERE requested_user_id = ? AND confirmation_status = ?'
+      conn.query(sqlStr, [req.body.user_id, 'awaiting'], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        if (rows[0].length > 0) {
+          let requests = []
+          // Loop over trip requests and fetch additional information
+          for (let request of rows[0]) {
+            requests.push(request)  
           }
+          req.body.requests = requests
+          next()
+        } else {
+          res.status(404).json({valid:false, message: 'No trip requests found.' });
+        }
+      })
+    }
+    createSSHTunnel(dbOperation)
+  }catch (err) {
+    console.error(err)
+    return res.status(200).send({valid: false, message:"There is an error", error:err})
+  }
+}
 
-          // Fetch user email and name using trip_owner_id
-          const [userInfo] = await connection.execute('SELECT email, name FROM user_info WHERE user_id = ?', [request.trip_owner_id]);
-          if (userInfo.length > 0) {
-            request.email = userInfo[0].email;
-            request.name = userInfo[0].name;
+exports.checkRequestsMW = (req, res, next) => {
+  let requests = req.body.requests
+  let ids = []
+  for(let i=0;i<requests.length;i++){
+    ids.push(requests[i]['trip_id'])
+  }
+  try{
+    let dbOperation = (conn) => {
+      let sqlStr = 'SELECT trip_id,trip_name FROM trip_info WHERE trip_id = ?'
+      conn.query(sqlStr, [ids], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        if(rows[0].length > 0){
+          for(let i=0;i<rows[0].length;i++){
+            for(let j=0;j<requests.length;j++){
+              if(rows[0][i]['trip_id'] == requests[j]['trip_id']){
+                requests[j]['trip_name'] = rows[0][i]['trip_name']
+              }
+            }
           }
         }
-
-        res.status(200).json({valid:true, message: 'Trip requests found.', requests: tripRequests });
-      } else {
-        res.status(404).json({valid:false, message: 'No trip requests found.' });
-      }
-    } catch (selectError) {
-      console.error('Error executing SELECT query:', selectError);
-      res.status(500).json({valid:false, message: 'There was an error fetching the trip requests.', error: selectError.message });
-    } finally {
-      connection.end();
+        req.body.requests = requests
+        conn.end()
+        next()
+      })
     }
-  });
-};
+    createSSHTunnel(dbOperation)
+  }catch(err) {
+    console.error(err)
+    return res.status(200).send({valid: false, message:"There is an error", error:err})
+  }
+}
+
+exports.checkRequestsMW2 = (req, res) => {
+  let requests = req.body.requests
+  let ids = []
+  for(let i=0;i<requests.length;i++){
+    ids.push(requests[i]['trip_owner_id'])
+  }
+  try {
+    let dbOperation = (conn) => {
+      let sqlStr = 'SELECT user_id,email,firstname,surname FROM user_info WHERE user_id = ?'
+      conn.query(sqlStr, [ids], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        console.log(rows)
+        if(rows[0].length > 0){
+          for(let i=0;i<rows[0].length;i++){
+            for(let j=0;j<requests.length;j++){
+              if(rows[0][i]['user_id'] == requests[j]['trip_owner_id']){
+                requests[j]['email'] = rows[0][i]['email']
+                requests[j]['firstname'] = rows[0][i]['firstname']
+                requests[j]['surname'] = rows[0][i]['surname']
+              }
+            }
+          }
+        }
+        conn.end()
+        return res.status(200).send({valid:true, data: requests})
+      })
+    }
+    createSSHTunnel(dbOperation)
+  }catch(err) {
+    console.error(err)
+    return res.status(200).send({valid: false, message:"There is an error", error:err})
+  }
+}
+
+
+
 
 // 3. API to accept an invite
 exports.acceptInvite = (req, res) => {
@@ -176,4 +249,4 @@ exports.declineInvite = (req, res) => {
       connection.end();
     }
   });
-};
+}
