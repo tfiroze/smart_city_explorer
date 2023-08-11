@@ -41,6 +41,19 @@ export const VenueSelectionMobile: React.FC<IProps> = ({ items }) => {
                             <Typography variant="h6" align="left">
                                 {item.title}
                             </Typography>
+                            <CardMedia
+                                component="img"
+                                alt="times square"
+                                image={item.imgLink}
+                                sx={{
+                                    height: 200,
+                                    aspectRatio: 16 / 9,
+                                    objectFit: "cover",
+                                    borderTopLeftRadius: "4px",
+                                    borderRadius: '10px',
+                                    marginBottom: '10px'
+                                }}
+                            />
                         </Card>
                     </Grid>)
             })}
