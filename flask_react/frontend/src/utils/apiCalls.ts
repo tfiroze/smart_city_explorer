@@ -565,7 +565,7 @@ confirmItienary = async function(request: object){
 checkEmail = async function(email: string){
 
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "checkEmail", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "checkEmail", {
 		  method: "POST",
 		  body: JSON.stringify({email: email}),
 		  headers: {
@@ -609,7 +609,7 @@ sendRequest = async function(req: object){
 	console.log(req);
 	
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "sendInvite", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "sendInvite", {
 		  method: "POST",
 		  body: JSON.stringify(req),
 		  headers: {
@@ -650,7 +650,7 @@ sendRequest = async function(req: object){
 
 getItienaryDetails = async function (trip_id:number) {
 	try {
-		const response = await fetch('http://127.0.0.1:5000/api/' + `trips/${trip_id}`, {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `trips/${trip_id}`, {
 			method: "GET",
 			credentials: 'include',
 		  });
@@ -686,7 +686,7 @@ getItienaryDetails = async function (trip_id:number) {
 
 getRequest = async function (req:object) {
 	try {
-		const response = await fetch('http://127.0.0.1:5000/api/' + `checkRequests`, {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `checkRequests`, {
 			method: "POST",
 			credentials: 'include',
 			body: new URLSearchParams({...req})

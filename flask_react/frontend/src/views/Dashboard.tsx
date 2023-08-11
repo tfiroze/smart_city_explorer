@@ -285,7 +285,7 @@ export const Dashboard = () => {
           
           if (results?.valid) {
             navigate('/ItineraryDetails', { state: { data: results.data} })
-            setLoader(false)
+            // setLoader(false)
           } else {
             // ... handle the case when results?.valid is falsy ...
             setError(results.errorType)
