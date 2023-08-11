@@ -1,47 +1,83 @@
 const createSSHTunnel = require('../db');
 
-// 1. API to check if an email exists and retrieve its user_id
+// 1. API to check if an email exists and retrieve its user_id (Required: email)
 exports.checkEmail = (req, res) => {
-  const { email } = req.body;
-
-  createSSHTunnel(async (connection) => {
-    try {
-      const [rows] = await connection.execute('SELECT * FROM user_info WHERE email = ?', [email]);
-      if (rows.length > 0) {
-        res.status(200).json({ valid: true, message: 'Email exists.', user_id: rows[0].user_id });
-      } else {
-        res.status(404).json({ valid:false, message: 'Email not found.' });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({valid:false, message: 'There was an error.', error:error.message});
-    } finally {
-      connection.end();
+  try {
+    let dbOperation = (conn) => {
+      let sqlStr = 'SELECT * FROM user_info WHERE email = ?'
+      conn.query(sqlStr, [req.body.email], (err, result) => {
+        if (err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then(([rows]) => {
+        if (rows.length > 0) {
+          res.status(200).json({ valid: true, message: 'Email exists.', user_id: rows[0].user_id });
+        } else {
+          res.status(200).json({ valid: false, message: 'Email not found.' });
+        }
+      })
     }
-  });
-};
+    createSSHTunnel(dbOperation)
+  } catch (err) {
+    console.error(err)
+    return res.status(200).send({ valid: false, message: 'Something Went Wrong!' })
+  }
+}
 
-// 2. API to send an invite
-exports.sendInvite = (req, res) => {
-  const { user_id, trip_id, trip_owner_id } = req.body;
+// 2. API to send an invite (Required: user_id, trip_id, trip_owner_id)
+exports.sendInvite = (req, res, next) => {
+  try {
+    let dbOperation = (conn) => {
+      const sqlStr = 'SELECT * FROM trip_requests WHERE requested_user_id = ? AND trip_id = ?'
+      conn.query(sqlStr, [req.body.user_id, req.body.trip_id], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        if (rows[0].length > 0) {
+          conn.end()
+          return res.status(400).json({ valid:false, message: 'Request already sent.' });
+        } else {
+          conn.end()
+          next()
+        }
+      })
+    } 
+    createSSHTunnel(dbOperation)
 
-  createSSHTunnel(async (connection) => {
-    try {
-      const [rows] = await connection.execute('SELECT * FROM trip_requests WHERE requested_user_id = ? AND trip_id = ?', [user_id, trip_id]);
-      if (rows.length > 0) {
-        res.status(400).json({ valid:false, message: 'Request already sent.' });
-      } else {
-        await connection.execute('INSERT INTO trip_requests (trip_id, trip_owner_id, requested_user_id, confirmation_status) VALUES (?, ?, ?, ?)', [trip_id, trip_owner_id, user_id, 'awaiting']);
-        res.status(200).json({valid:true, message: 'Invite sent.' });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({valid:false, message: 'There was an error.', error: error.message});
-    } finally {
-      connection.end();
-    }
-  });
-};
+  }catch (error) {
+    console.error('Error:', error);
+    return res.status(500).json({valid:false, message: 'There was an error.', error: error.message});
+  }
+}
+
+// return res.status(200).json({valid:true, message: 'Invite sent.' });
+exports.addTripRequest = (req, res) => {
+  console.log("sent")
+  try {
+    let dbOperation = (conn) => {
+      let sqlStr = 'INSERT INTO trip_requests (trip_id, trip_owner_id, requested_user_id, confirmation_status) VALUES (?, ?, ?, ?)'
+      conn.query(sqlStr, [req.body.trip_id, req.body.trip_owner_id, req.body.user_id, 'awaiting'], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        conn.end()
+        return res.status(200).send({valid:true, message: "Invite sent"})
+      })
+    }    
+    createSSHTunnel(dbOperation)
+  }catch(err){
+    console.error('Error:', error);
+    return res.status(500).json({valid:false, message: 'There was an error.', error: error.message});
+  }
+}
 
 
 exports.checkRequests = (req, res) => {

@@ -194,8 +194,8 @@ let getUserIds = (req, res, next) => {
     let venueDetail = req.body.venueDetail
     try {
         let dbOperation = (conn) => {
-            const sqlStr = 'select trip_owner_id, requested_user_id from trip_requests where trip_owner_id=?'
-            conn.query(sqlStr, [venueDetail['owner_id']], (err, result) => {
+            const sqlStr = 'select trip_owner_id, requested_user_id from trip_requests where trip_owner_id=? and trip_id=?'
+            conn.query(sqlStr, [venueDetail['owner_id'], venueDetail['trip_id']], (err, result) => {
                 if(err) {
                     console.error(err)
                     conn.end()
