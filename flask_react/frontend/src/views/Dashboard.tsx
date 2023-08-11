@@ -31,6 +31,7 @@ import Choropleth from "../components/map/Choropleth";
 import { MapContainer, TileLayer, Popup, Marker, useMap, GeoJSON } from 'react-leaflet';
 import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
 import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
+import grass from '../resources/images/grass.jpg'
 import { toTitleCase } from "../utils/utility_func";
 // import Profile from "../components/profile/Profile"
 import { ProfileDrawer } from "../components/navigation/ProfileDrawer";
@@ -47,6 +48,7 @@ import L, { divIcon } from "leaflet";
 
 
 import { GeoJSON as LeafletGeoJSON } from "leaflet";
+import dayjs from "dayjs";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     "& .MuiPaper-root": {
@@ -113,6 +115,8 @@ export const Dashboard = () => {
   const [loader, setLoader] = useState<boolean>(false)
   const [error, setError] = useState<string>("0")
 
+ 
+
   const currentTheme = useTheme();
 
 
@@ -148,6 +152,14 @@ export const Dashboard = () => {
             setPastTrips([...results.completedTrips])
             setUpcomingTrips([...results.upcomingTrips])
             getPopularPlaces()
+
+            if ((results.upcomingTrips.length > 0) && (results.completedTrips.length <= 0)) {
+              setTab(1)
+            } else if ((results.upcomingTrips.length <= 0) && (results.completedTrips.length > 0)) {
+              setTab(0)
+            } else {
+              setTab(1)
+            }
           } else {
             // ... handle the case when results?.valid is falsy ...
             setError(results.errorType)
@@ -197,20 +209,20 @@ export const Dashboard = () => {
   function getFillColorForZoneGroup(zoneGroup: string) {
     switch (zoneGroup) {
       case "Upper Manhattan":
-        return "yellow";
+        return "#0087E5";
       case "Lower Manhattan":
-        return "green";
+        return "#0089CF";
       case "Upper West Side":
-        return "blue";
+        return "#68FBD0";
       case "Upper East Side":
-        return "cyan";
+        return "#008181";
       case "Chelsea/Greenwhich market":
-        return "white";
+        return "#FEFEDF";
       case "Midtown Manhattan":
-        return "#000000";
+        return "#BAB7EF";
       // Add more cases for other zone groups here
       default:
-        return "red"; // Default color if no match is found
+        return "#ABA9BB"; // Default color if no match is found
     }
   }
 
@@ -265,11 +277,32 @@ export const Dashboard = () => {
     ]
   };
 
+  const handleDetailsNavigation =(id: number)=>{
+    setLoader(true)
+    smartApi.getItienaryDetails(id)
+        .then((results) => {
+          console.log(results);
+          
+          if (results?.valid) {
+            navigate('/ItineraryDetails', { state: { data: results.data} })
+            // setLoader(false)
+          } else {
+            // ... handle the case when results?.valid is falsy ...
+            setError(results.errorType)
+            setLoader(false)
+          }
+        })
+        .catch((error) => {
+          // console.log(error);
+          setError('2')
+          setLoader(false)
+        });
+  }
 
 
   return (
     <>
-      {loader && true ? <Loader /> :
+      {loader ? <Loader /> :
         error !== '0' ? <ErrorPage /> :
           <>
             <ProfileDrawer open={profileDrawerOpen} handleClose={handleClose} />
@@ -364,34 +397,90 @@ export const Dashboard = () => {
                                 width: '20%',
                                 padding: '8px',
                                 cursor: 'pointer',
-                                backgroundColor: tab == 0 ? '#757de8' : 'transparent',
-                                border: tab == 0 ? '2px solid transparent' : '2px solid #757de8',
+                                backgroundColor: tab == 1 ? '#757de8' : 'transparent',
+                                border: tab == 1 ? '2px solid transparent' : '2px solid #757de8',
                                 marginRight: '20px',
                                 textAlign: 'center',
                                 borderRadius: '20px',
-                                color: tab == 0 ? '#ffff' : '#757de8'
+                                color: tab == 1 ? '#ffff' : '#757de8'
                               }}
-                                onClick={() => setTab(0)}>
+                                onClick={() => setTab(1)}>
                                 Upcoming
                               </div>}
                               {pastTrips?.length > 0 && <div style={{
                                 width: '20%',
                                 padding: '8px',
                                 cursor: 'pointer',
-                                backgroundColor: tab == 1 ? '#757de8' : 'transparent',
-                                border: tab == 1 ? '2px solid transparent' : '2px solid #757de8',
+                                backgroundColor: tab == 0 ? '#757de8' : 'transparent',
+                                border: tab == 0 ? '2px solid transparent' : '2px solid #757de8',
                                 textAlign: 'center',
                                 borderRadius: '20px',
-                                color: tab == 1 ? '#ffff' : '#757de8'
+                                color: tab == 0 ? '#ffff' : '#757de8'
                               }}
-                                onClick={() => setTab(1)}>
+                                onClick={() => setTab(0)}>
                                 Completed
                               </div>}
                             </Grid>
                             <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                              {(pastTrips?.length > 0 && tab == 0) && pastTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />
+                              {(pastTrips?.length > 0 && tab == 0) && pastTrips.slice(0, 3).map((item, index) => <>
+                                <Grid
+                                  style={{
+                                    cursor: "pointer",
+                                    padding: '15px',
+                                    width: '35%',
+                                    backgroundColor: currentTheme?.palette?.secondary?.main,
+                                    marginRight: '5px',
+                                    borderRadius: '10px',
+                                    backgroundPosition: 'center', // Center the background image
+                                    backgroundSize: 'cover', // Ensure the image covers the entire container
+                                    backgroundRepeat: 'no-repeat', // Prevent image repetition
+                                    backgroundImage: `url(${grass})`,
+                                  }}
+                                  item
+                                  className="unselectable"
+                                  onClick={() => onClick && onClick()}
+                                >
+                                  <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
+                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                      {toTitleCase(item.trip_name)}
+                                    </Typography>
+                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                      {dayjs(item.trip_date).format("YYYY-MM-DD")}
+                                    </Typography>
+                                  </Grid>
+                                </Grid>
+                              </>
                               )}
-                              {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />
+                              {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item:any, index:number) =>
+                                <>
+                                  <Grid
+                                    key={item.trip_id}
+                                    style={{
+                                      cursor: "pointer",
+                                      padding: '15px',
+                                      width: '35%',
+                                      backgroundColor: currentTheme?.palette?.secondary?.main,
+                                      marginRight: '5px',
+                                      borderRadius: '10px',
+                                      backgroundPosition: 'top', // Center the background image
+                                      backgroundSize: 'cover', // Ensure the image covers the entire container
+                                      backgroundRepeat: 'no-repeat', // Prevent image repetition
+                                      border: '2px solid #757de8'
+                                    }}
+                                    item
+                                    className="unselectable"
+                                    onClick={() => handleDetailsNavigation(item.trip_id)}
+                                  >
+                                    <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
+                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                        {toTitleCase(item.trip_name)}
+                                      </Typography>
+                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                        {dayjs(item.trip_date).format("YYYY-MM-DD")}
+                                      </Typography>
+                                    </Grid>
+                                  </Grid>
+                                </>
                               )}
                             </Grid>
                           </>}
@@ -409,12 +498,11 @@ export const Dashboard = () => {
                   </div>}
                 </Grid>
               </Grid>
-              <Grid container xs={6}>
+              <Grid container xs={6} style={{position:'relative'}}>
                 <MapContainer
                   style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
                   zoom={12}
                   center={[40.7831, -73.9712]}
-                  // center={[37.5004851, -96.2261503]}
                   maxBoundsViscosity={1.0}
                   zoomControl={false}
                   scrollWheelZoom={false}
@@ -443,14 +531,11 @@ export const Dashboard = () => {
                           layer.bindPopup(popupContent);
                         }
                       }
-
                       // Create a popup content using the zoneNumber or other properties you want to display
-
                     }}
-
                     style={(feature) => {
                       const zoneNumber = feature.properties.location_id; // Assuming someProperty holds the zone number
-                      let fillColor = "red"; // Default color
+                      let fillColor = "#ABA9BB"; // Default color
 
                       // Loop through the zone_grouping object and check if the zone number is in any of the specified zones
                       for (const [zoneGroup, zoneNumbers] of Object.entries(
@@ -471,7 +556,9 @@ export const Dashboard = () => {
                       };
                     }}
                   />
+                  
                 </MapContainer>
+                
               </Grid>
             </Grid>
 

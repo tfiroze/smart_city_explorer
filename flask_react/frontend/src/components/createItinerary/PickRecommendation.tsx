@@ -61,7 +61,7 @@ interface IProps {
     attractionName: string[];
     restaurantValue: any[];
     restaurantName: string[];
-    getFare:(args: string[], args2:any)=>void
+    getFare: (args: string[], args2: any) => void
 }
 
 export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attractionName, restaurantName, restaurantValue, getFare }) => {
@@ -98,7 +98,7 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
 
     const handleCardSelection = (type: string, id: string, details: any) => {
         console.log(details);
-        
+
         if (type.includes("RESTAURANT")) {
             setRestaurantSelection({
                 ...restaurantSelection,
@@ -123,25 +123,25 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
 
     const handleSubmitSelection = () => {
 
-        if (Object.keys(attractionSelection).length == 4 && Object.keys(restaurantSelection).length == 2){
+        if (Object.keys(attractionSelection).length == 4 && Object.keys(restaurantSelection).length == 2) {
             console.log(restaurantSelection, attractionSelection);
             const submissionArray = attractionNameArr.map(key => attractionSelection[key]);
             let restArr = restaurantNameArr.map(key => restaurantSelection[key]);
-    
+
             submissionArray.splice(2, 0, restArr[0]);
             // Insert the second value of arrayB at the end of arrayA
             submissionArray.push(restArr[1]);
-            let submissionObjArr =attractionNameArr.map(key => attractionSelectionObject[key]);
-            let  submissionRestObjArr = restaurantNameArr.map(key => restaurantSelectionObject[key]);
+            let submissionObjArr = attractionNameArr.map(key => attractionSelectionObject[key]);
+            let submissionRestObjArr = restaurantNameArr.map(key => restaurantSelectionObject[key]);
 
             submissionObjArr.splice(2, 0, submissionRestObjArr[0]);
             submissionObjArr.push(submissionRestObjArr[1]);
 
             console.log(submissionObjArr, 'Submission Object Array');
-            
+
 
             getFare(submissionArray, submissionObjArr)
-        }else{
+        } else {
             handleSelectionError('Please Select One Venue for Each Attraction')
         }
 
@@ -154,16 +154,16 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
 
     const setErrorMessage = (message: string) => {
         setOneButtonMessage(message)
-      }
+    }
 
     const handleSelectionError = (message: string) => {
         setErrorMessage(message)
         handleOneButtonPopup()
-      }
-    
-      const handleOneButtonPopup = () => {
+    }
+
+    const handleOneButtonPopup = () => {
         setOneButtonModal(!oneButtonModal)
-      }
+    }
 
 
     return (
@@ -178,13 +178,13 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
                 <VenueDetailsModal venue={modalDetails} />
             </Dialog>
             <Dialog
-        open={oneButtonModal}
-        onClose={handleOneButtonPopup}
-        maxWidth="sm"
-        fullWidth
-      >
-        <MessagePopups totalButtons={1} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleOneButtonPopup} />
-      </Dialog>
+                open={oneButtonModal}
+                onClose={handleOneButtonPopup}
+                maxWidth="sm"
+                fullWidth
+            >
+                <MessagePopups totalButtons={1} message={oneButtonMessage} buttonText={'OK'} onFirstClick={handleOneButtonPopup} />
+            </Dialog>
             {attractionValueArr?.length > 0 && attractionValueArr.map((el: any, index: number) => (
                 <Grid container style={{ marginTop: '20px', justifyContent: 'center' }}>
                     <Grid item xs={12}>

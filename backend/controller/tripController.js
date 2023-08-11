@@ -55,7 +55,8 @@ let completedTripsInfo = (req, res) => {
 }
 
 // get one trip content (Required: trip_id)
-let tripInfo = (req, res) => {
+let getVenueIds = (req, res, next) => {
+    let venueDetail = {}
     try {
         let dbOperation = (conn) => {
             let sqlStr = 'select * from trip_info where trip_id=?'
@@ -66,8 +67,25 @@ let tripInfo = (req, res) => {
                     return res.status(200).send({valid:false,message:'Failed to get trip information'})
                 }
             }).then(([rows]) => {
+                venueDetail = {
+                    trip_id: rows[0]['trip_id'],
+                    name: rows[0]['trip_name'],
+                    owner_id: rows[0]['trip_owner'],
+                    date: rows[0]['trip_date'].toISOString().split('T')[0],
+                    ven_1:{venue_id:rows[0]['trip_ven_1']},
+                    ven_2:{venue_id:rows[0]['trip_ven_2']},
+                    ven_3:{venue_id:rows[0]['trip_ven_3']},
+                    ven_4:{venue_id:rows[0]['trip_ven_4']},
+                    rest_1:{venue_id:rows[0]['trip_rest_1']},
+                    rest_2:{venue_id:rows[0]['trip_rest_2']}
+                }
+                const venueIds = [venueDetail['ven_1']['venue_id'], venueDetail['ven_2']['venue_id'], venueDetail['ven_3']['venue_id'], venueDetail['ven_4']['venue_id'], venueDetail['rest_1']['venue_id'], venueDetail['rest_2']['venue_id']]
+
+                req.body.venueDetail = venueDetail
+                req.body.venueIds = venueIds
+                
                 conn.end()
-                return res.status(200).json(rows[0])
+                next()
             })
         }
         createSSHTunnel(dbOperation)
@@ -77,12 +95,188 @@ let tripInfo = (req, res) => {
     }
 }
 
+let getVenueInfo = (req, res, next) => {
+    let venueDetail = req.body.venueDetail
+    let venueIds = req.body.venueIds
+    try {
+        let dbOperation = (conn) => {
+            let sqlStr = 'select original_ven_id,name,image,rating,description,latitude,longitude from venue_static where original_ven_id in (?)'
+            conn.query(sqlStr, [venueIds], (err, result) => {
+                if(err) {
+                    console.error(err)
+                    conn.end()
+                    return res.status(200).send({valid:false,message:'There is an error',error:err.message})
+                }
+            }).then((rows) => {
+                let places = rows[0]
+                const currentDate = venueDetail['date']
+
+                // the url should be the ip address of server
+                const apiUrl = 'http://127.0.0.1:5000/api/busyness';
+                const promises = [];
+
+                for (let i = 0; i < places.length; i++) {
+                const promise = axios.post(apiUrl, {
+                    venue_id: places[i].original_ven_id,
+                    date: currentDate,
+                    hour: 14
+                })
+                    .then(response => {
+                    places[i].busyness = response.data;
+                    })
+                    .catch(error => {
+                    console.error('Error fetching data:', error);
+                    });
+
+                promises.push(promise);
+                }
+
+                Promise.all(promises)
+                .then(() => {
+                    for(let i=0;i<places.length;i++){
+                        if(places[i]['original_ven_id'] == venueDetail['ven_1']['venue_id']){
+                            venueDetail['ven_1']['venue_name'] = places[i]['name']
+                            venueDetail['ven_1']['image'] = places[i]['image']
+                            venueDetail['ven_1']['rating'] = places[i]['rating']
+                            venueDetail['ven_1']['description'] = places[i]['description']
+                            venueDetail['ven_1']['busyness'] = places[i]['busyness']
+                            venueDetail['ven_1']['latitude'] = places[i]['latitude']
+                            venueDetail['ven_1']['longitude'] = places[i]['longitude']
+                        }else if(places[i]['original_ven_id'] == venueDetail['ven_2']['venue_id']){
+                            venueDetail['ven_2']['venue_name'] = places[i]['name']
+                            venueDetail['ven_2']['image'] = places[i]['image']
+                            venueDetail['ven_2']['rating'] = places[i]['rating']
+                            venueDetail['ven_2']['description'] = places[i]['description']
+                            venueDetail['ven_2']['busyness'] = places[i]['busyness']
+                            venueDetail['ven_2']['latitude'] = places[i]['latitude']
+                            venueDetail['ven_2']['longitude'] = places[i]['longitude']
+                        }else if(places[i]['original_ven_id'] == venueDetail['ven_3']['venue_id']){
+                            venueDetail['ven_3']['venue_name'] = places[i]['name']
+                            venueDetail['ven_3']['image'] = places[i]['image']
+                            venueDetail['ven_3']['rating'] = places[i]['rating']
+                            venueDetail['ven_3']['description'] = places[i]['description']
+                            venueDetail['ven_3']['busyness'] = places[i]['busyness']
+                            venueDetail['ven_3']['latitude'] = places[i]['latitude']
+                            venueDetail['ven_3']['longitude'] = places[i]['longitude']
+                        }else if(places[i]['original_ven_id'] == venueDetail['ven_4']['venue_id']){
+                            venueDetail['ven_4']['venue_name'] = places[i]['name']
+                            venueDetail['ven_4']['image'] = places[i]['image']
+                            venueDetail['ven_4']['rating'] = places[i]['rating']
+                            venueDetail['ven_4']['description'] = places[i]['description']
+                            venueDetail['ven_4']['busyness'] = places[i]['busyness']
+                            venueDetail['ven_4']['latitude'] = places[i]['latitude']
+                            venueDetail['ven_4']['longitude'] = places[i]['longitude']
+                        }else if(places[i]['original_ven_id'] == venueDetail['rest_1']['venue_id']){
+                            venueDetail['rest_1']['venue_name'] = places[i]['name']
+                            venueDetail['rest_1']['image'] = places[i]['image']
+                            venueDetail['rest_1']['rating'] = places[i]['rating']
+                            venueDetail['rest_1']['description'] = places[i]['description']
+                            venueDetail['rest_1']['busyness'] = places[i]['busyness']
+                            venueDetail['rest_1']['latitude'] = places[i]['latitude']
+                            venueDetail['rest_1']['longitude'] = places[i]['longitude']
+                        }else if(places[i]['original_ven_id'] == venueDetail['rest_2']['venue_id']){
+                            venueDetail['rest_2']['venue_name'] = places[i]['name']
+                            venueDetail['rest_2']['image'] = places[i]['image']
+                            venueDetail['rest_2']['rating'] = places[i]['rating']
+                            venueDetail['rest_2']['description'] = places[i]['description']
+                            venueDetail['rest_2']['busyness'] = places[i]['busyness']
+                            venueDetail['rest_2']['latitude'] = places[i]['latitude']
+                            venueDetail['rest_2']['longitude'] = places[i]['longitude']
+                        }
+                    }
+                    conn.end();
+                    req.body.venueDetail = venueDetail
+                    next()
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    conn.end();
+                    return res.status(500).send({valid:false, message:'Internal Server Error',error:error.message});
+                })
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch (err) {
+        console.error(err)
+        return res.status(200).send({valid:false, message: "There is an error", error: err.message})
+    }
+}
+
+let getUserIds = (req, res, next) => {
+    let venueDetail = req.body.venueDetail
+    try {
+        let dbOperation = (conn) => {
+            const sqlStr = 'select trip_owner_id, requested_user_id from trip_requests where trip_owner_id=? and trip_id=?'
+            conn.query(sqlStr, [venueDetail['owner_id'], venueDetail['trip_id']], (err, result) => {
+                if(err) {
+                    console.error(err)
+                    conn.end()
+                    return res.status(200).send({valid:false,message:'There is an error',error:err.message})
+                }
+            }).then((rows) => {
+                if(rows[0].length == 0){
+                    venueDetail['friend_id'] = []
+                    venueDetail['friend_email'] = []
+                }else {
+                    const requestedUserIds = [...rows[0].map(item => item.requested_user_id)]
+                    venueDetail['friend_id'] = requestedUserIds
+                    venueDetail['friend_email'] = []
+                }
+                req.body.venueDetail = venueDetail
+                conn.end()
+                next()
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err) {
+        console.error(err)
+        return res.status(200).send({valid:200, message:"There is an error", error: err.message})
+    }
+}
+
+let getUserInfo = (req, res) => {
+    venueDetail = req.body.venueDetail
+    const userIds = venueDetail['friend_id']
+    userIds.push(parseInt(venueDetail['owner_id']))
+    try{
+        let dbOperation = (conn) => {
+            sqlStr = 'select user_id,email from user_info where user_id in (?)'
+            conn.query(sqlStr, [userIds], (err, result) => {
+                if(err) {
+                    console.error(err)
+                    conn.end()
+                    return res.status(200).send({valid:false,message:'There is an error',error:err.message})
+                }
+            }).then((rows) => {
+                rows[0].sort((a, b) => a.user_id - b.user_id)
+                venueDetail['friend_id'].sort((a,b) => a - b)
+                for(let i=0;i<rows[0].length;i++){
+                    if(rows[0][i]['user_id'] == venueDetail['owner_id']){
+                        venueDetail['owner_email'] = rows[0][i]['email']
+                        venueDetail['friend_id'].splice(i, 1)
+                        rows[0].splice(i, 1)
+                    }
+                }
+                for(let i=0;i<rows[0].length;i++) {
+                    venueDetail['friend_email'].push(rows[0][i]['email'])
+                }
+                conn.end()
+                return res.status(200).send({valid:true, data:venueDetail})
+            })
+        }
+        createSSHTunnel(dbOperation)
+    }catch(err) {
+        console.error(err)
+        return res.status(200).send({valid:false, message:"There is an error", error:err.message})
+    }
+}
+
 // update trip content (Required: trip_id, trip_name, trip_owner, trip_date, trip_status, [trip_part_1, trip_part_2, trip_part_3, trip_part_4], trip_ven_1, trip_ven_2, trip_ven_3, trip_ven_4, trip_rest_1, trip_rest_2)
 let updateTrip = (req, res) => {
     try{
         let dbOperation = (conn) => {
-            const sqlStr = `update trip_info set trip_id=?, trip_name=?, trip_owner=?, trip_date=?, trip_status=?, trip_part_1=?, trip_part_2=?, trip_part_3=?, trip_part_4=?, trip_ven_1=?, trip_ven_2=?, trip_ven_3=?, trip_ven_4=?, trip_rest_1=?, trip_rest_2=? WHERE trip_id=?`
-            conn.query(sqlStr, [req.body.firstname, ], (err, result) => {
+            const sqlStr = `update trip_info set trip_id=?, trip_name=?, trip_owner=?, trip_date=?, trip_status=?, trip_ven_1=?, trip_ven_2=?, trip_ven_3=?, trip_ven_4=?, trip_rest_1=?, trip_rest_2=? WHERE trip_id=?`
+            conn.query(sqlStr, [req.body.trip_name, req.body.user_id, req.body.date, req.body.ven_1, req.body.ven_2, req.body.ven_3, req.body.ven_4, req.body.rest_1, req.body.rest_2], (err, result) => {
                 if(err) {
                     console.error(err)
                     conn.end()
@@ -105,7 +299,7 @@ let addTrip = (req, res, next) => {
     try {
         let dbOperation = (conn) => {
             let sqlStr = 'insert into trip_info (trip_name, trip_owner, trip_date, trip_ven_1, trip_ven_2, trip_ven_3, trip_ven_4, trip_rest_1, trip_rest_2) values (?, ?, ?, ?, ?, ?, ?, ?, ?)'
-            conn.query(sqlStr, [req.body.trip_name, req.body.user_id, req.body.date, req.body.ven_1, req.body.ven_2, req.body.ven_3, req.body.ven_4, req.body.rest_1, req.body.rest_2 ], (err, result) => {
+            conn.query(sqlStr, [req.body.trip_name, req.body.user_id, req.body.date, req.body.ven_1, req.body.ven_2, req.body.ven_3, req.body.ven_4, req.body.rest_1, req.body.rest_2], (err, result) => {
                 if(err) {
                     console.error(err)
                     conn.end()
@@ -358,7 +552,7 @@ let businessHour = (req, res) => {
 module.exports = {
     upcomingTripsInfo,
     completedTripsInfo,
-    tripInfo,
+    getVenueIds,
     updateTrip,
     addTrip,
     deleteTrip,
@@ -367,5 +561,8 @@ module.exports = {
     getTripInfoQuestionnaireMW,
     popularPlaces,
     businessHour,
-    returnTripId
+    returnTripId,
+    getVenueInfo,
+    getUserIds,
+    getUserInfo
 }

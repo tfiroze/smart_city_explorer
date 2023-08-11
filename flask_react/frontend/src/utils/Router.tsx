@@ -26,6 +26,7 @@ export const Router: React.FC<RouterProps> = ({ auth }) => {
             <Route path="/*" element={<Dashboard />} />
             <Route path="/createItinerary" element={<CreateItinerary />} />
             <Route path="/EditProfile" element={<EditProfile />} />
+            <Route path="/ItineraryDetails" element={<ItineraryDetails />} />
           </>
         ) : (
           <>

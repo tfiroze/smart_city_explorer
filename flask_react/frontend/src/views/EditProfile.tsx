@@ -39,8 +39,8 @@ const EditProfile = () => {
         <StyledPaper elevation={3}>
             <Divider variant="middle" sx={{ marginBottom: theme.spacing(4) }} />
             <Profile />
-            <Grid item xs={12} sm={8}>
-            </Grid>
+            {/* <Grid item xs={12} sm={8}>
+            </Grid> */}
         </StyledPaper>
     );
 };

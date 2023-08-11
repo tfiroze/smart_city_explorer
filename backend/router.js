@@ -30,7 +30,7 @@ router.post('/emails', userController.verifyEmailUnique, emailVerification.sendC
 router.post('/captcha', emailVerification.sendCaptcha)
 
 router.get('/trips/all/:user_id', tripController.upcomingTripsInfo, tripController.completedTripsInfo)
-router.get('/trips/:trip_id', tripController.tripInfo)
+router.get('/trips/:trip_id', tripController.getVenueIds, tripController.getVenueInfo, tripController.getUserIds, tripController.getUserInfo)
 router.post('/trips', tripController.addTrip, tripController.returnTripId)
 router.put('/trips', tripController.updateTrip)
 router.delete('/trips', tripController.deleteTrip)
@@ -49,17 +49,15 @@ router.post('/venues', recommendationModel.getAttractionInfo, recommendationMode
 
 
 router.post('/checkEmail', friendController.checkEmail);
-
 // 2. API to send an invite
-router.post('/sendInvite', friendController.sendInvite);
-
+router.post('/sendInvite', friendController.sendInvite, friendController.addTripRequest);
 // 3. API to check trip requests
-router.post('/checkRequests', friendController.checkRequests);
-
+router.post('/checkRequests', friendController.checkRequests, friendController.checkRequestsMW, friendController.checkRequestsMW2);
 // 4. API to accept an invite
-router.post('/acceptInvite', friendController.acceptInvite);
-
+router.post('/acceptInvite', friendController.acceptInvite, friendController.acceptInviteMW, friendController.acceptInviteMW2);
 // 5. API to decline an invite
 router.post('/declineInvite', friendController.declineInvite);
+
+
 
 module.exports = router

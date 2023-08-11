@@ -8,6 +8,8 @@ import {
     styled
 } from "@mui/material";
 
+import UFO from '../resources/images/UFO.png'
+
 const StyledButton = styled(Button)(({ theme }) => ({
     animation: 'pulse 1.5s ease-in-out infinite',
     '&:hover': {
@@ -30,7 +32,7 @@ export const ErrorPage = () => {
             }}
         >
             <img
-                src="/UFO.png"
+                src={UFO}
                 alt="UFO"
                 style={{
                     width: '200px',

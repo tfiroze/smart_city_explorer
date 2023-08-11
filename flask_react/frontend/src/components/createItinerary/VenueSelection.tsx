@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Typography, Tooltip, useTheme } from "@mui/material";
 import SentimentVerySatisfiedIcon from "@mui/icons-material/SentimentVerySatisfied";
 import SentimentVeryDissatisfiedIcon from "@mui/icons-material/SentimentVeryDissatisfied";
@@ -17,7 +17,6 @@ import {
   DialogActions,
   SpeedDial,
   SpeedDialAction,
-  makeStyles,
 } from "@mui/material";
 import {
   Timeline,
@@ -46,6 +45,9 @@ import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
 import PaymentIcon from "@mui/icons-material/Payment";
 import IItinerary from "../../models/IItinerary";
 import { CButton } from "../common/button";
+import { VenueCard } from "../common/venueCard";
+import { VenueDetailsModal } from "./VenueDetailsModal";
+import makeStyles from "@mui/styles/makeStyles/makeStyles";
 
 const slideInAnimation = keyframes`
   0% {
@@ -58,26 +60,6 @@ const slideInAnimation = keyframes`
   }
 `;
 
-const StyledDivider = styled(Divider)`
-	background-color: #008080;
-	margin: 24px 0;
-	height: 2px;
-	animation: ${keyframes`
-    from {
-      width: 0;
-    }
-    to {
-      width: 100%;
-    }
-  `} 0.5s ease-in-out;
-`;
-
-const StyledScheduleIcon = styled(ScheduleIcon)`
-	color: #008080;
-	margin-right: 4px;
-	margin-top: 4px;
-	animation: ${slideInAnimation} 0.5s ease-in-out;
-`;
 
 const StyledLocationOnIcon = styled(LocationOnIcon)`
 	color: #757de8;
@@ -88,98 +70,14 @@ const StyledLocationOnIcon = styled(LocationOnIcon)`
   
 `;
 
-const StyledPeopleIcon = styled(PeopleIcon)`
-	color: #008080;
-	margin-right: 4px;
-	animation: ${slideInAnimation} 0.5s ease-in-out;
-`;
-
-const StyledLocalTaxiIcon = styled(LocalTaxiIcon)`
-color: #FB9403;
-  &:hover {
-    transform: scale(1.1);
-    color: #FFD854;
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    "& .MuiPaper-root": {
+      backgroundColor: "transparent",
+      boxShadow: '0 0 0 rgba(0, 0, 0, 0.3)',
+    }
   }
-`;
-
-const StyledPaymentIcon = styled(PaymentIcon)`
-  &:hover {
-    transform: scale(1.1);
-    color: #32c75f;
-  }
-`;
-
-const CenteredCardActions = styled(CardActions)`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 8px;
-`;
-
-const StyledTimeWrapper = styled("div")`
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	margin-top: 12px;
-`;
-
-const StyledTimelineWrapper = styled('div')`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  margin-bottom: 16px;
-`;
-
-const StyledTimeLabel = styled(Typography)`
-	color: #008080;
-	margin-right: 4px;
-	font-weight: 600;
-	display: flex;
-	align-items: center;
-`;
-
-const StyledTime = styled(Typography)`
-	font-weight: 600;
-`;
-
-const DividerWrapper = styled("div")`
-	height: 2px;
-	position: relative;
-	background-color: #008080;
-	overflow: hidden;
-	margin: 12px 0;
-`;
-
-const AnimatedDivider = styled("div")`
-	position: absolute;
-	top: 0;
-	left: 0;
-	height: 100%;
-	width: 100%;
-	background-color: #fff;
-	transform: translateX(-100%);
-	animation: ${slideInAnimation} 0.5s ease-in-out forwards;
-`;
-
-const StyledArrowForwardIcon = styled(ArrowForwardIcon)`
-	color: #008080;
-	vertical-align: middle;
-	margin: 0 8px;
-`;
-
-const StyledDurationTypography = styled(Typography)`
-  display: flex;
-  align-items: center;
-  // color: #FFD854;
-`;
-
-const StyledTaxiFareTypography = styled(Typography)`
-  display: flex;
-  align-items: center;
-  // color: #32c75f;
-`;
-
+}));
 
 //#endregion
 
@@ -191,7 +89,7 @@ interface IProps {
   finalize: ()=>void
 }
 
-export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, venues  }) => {
+export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, venues,finalize  }) => {
   const [introvertMode, setIntrovertMode] = React.useState(false);
   const [itinerary, setItinerary] = React.useState<IVenueItem[]>([]);
   const [controlsOpen, setControlsOpen] = React.useState(false);
@@ -200,6 +98,10 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
     null
   );
   const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
+  const [venueIndex, setVenueIndex] = useState(0);
+  const [openItienaryDetailsModal, setOpenItienaryDetailsModal] = useState<boolean>(false);
+
+  // const [showVenueInfo, setShowVenueInfo] = useState()
 
   useEffect(() => {
 
@@ -266,6 +168,11 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
 
   const currentTheme = useTheme();
 
+  const handItienraryDetailsModal = () => {
+    setOpenItienaryDetailsModal(!openItienaryDetailsModal)
+  }
+  const classes = useStyles();
+
   return (
     <Grid container justifyContent="center" style={{ position: 'relative' }}>
       {viewVenueItem && (
@@ -300,6 +207,16 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Dialog
+        open={openItienaryDetailsModal}
+        onClose={handItienraryDetailsModal}
+        maxWidth="md"
+        fullWidth
+        className={classes.root}
+      >
+        <VenueDetailsModal venue={venues[venueIndex]} onClick={handItienraryDetailsModal} />
+      </Dialog>
       <Grid item xs={12} style={{ overflowY: "scroll" }}>
         <Timeline position="alternate-reverse">
           {venues.map((item:any, index:number) => (
@@ -320,93 +237,28 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
                   {<TimelineConnector />}
                 </TimelineSeparator>
                 <TimelineContent style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Card
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      width: '50%',
-                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                      padding: '15px',
-                      borderRadius: '10px',
-                      backgroundColor: currentTheme.palette.secondary.main
-                    }}
-                  >
-                    <Typography variant="h6" align="left">
-                      {item.name}
-                    </Typography>
-                    <CardMedia
-                      component="img"
-                      alt="times square"
-                      image={item.image}
-                      sx={{
-                        height: 200,
-                        aspectRatio: 16 / 9,
-                        objectFit: "cover",
-                        borderTopLeftRadius: "4px",
-                        borderRadius: '10px',
-                        marginBottom: '10px'
-                      }}
-                    />
-                    <Typography variant="subtitle2"
-                      sx={{
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: '3',
-                        WebkitBoxOrient: 'vertical',
-
-                      }}
-                      align="left"
-                    >
-                      {item.description}
-                    </Typography>
-                    <Divider sx={{ margin: '10px 0' }} />
-                    <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                      <Typography>
-                        Rating: <span>{item.rating}</span>
-                      </Typography>
-
-                      <Typography>
-                        Busyness: <span>{(item.busyness >= 40 && item.busyness < 80) ? ' Moderate' : (item.busyness >= 80) ? ' High' : ' Low' }</span>
-                      </Typography>
-                    </Grid>
-                    <Divider sx={{ margin: '10px 0' }} />
-                    <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main }}>
-                      <CButton
-                        title="View"
-                        onClick={() => { }}
-                        style={{
-                          width: '30%',
-                          background: '#757de8',
-                          color: '#ffffff',
-                          borderRadius: '20px',
-                          padding: '10px 30px',
-                          fontWeight: 'bold',
-                        }}
-                      />
-                    </Grid>
-                  </Card>
+                  <VenueCard showButtons={false} setWidth={6} detailsModalClick={handItienraryDetailsModal} showSelect={false} isSelected={false} venDetails={item}/>
                 </TimelineContent>
               </TimelineItem>
               {index !== (venues.length-1) && <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
-                <div style={{ width: '48%' }}>
-                  <Typography variant="h6" align="right">
+                {(fareArr && fareArr.length > 0) && <div style={{ width: '48%' }}>
+                  <Typography variant="subtitle1" align="right">
                     Estimated Fare
                   </Typography>
-                  <Typography align="right">$ {Math.ceil(parseInt(fareArr[index]))}</Typography>
+                  <Typography variant="h5" fontWeight={"bold"} align="right">$ {fareArr[index] ? Math.ceil(parseInt(fareArr[index])) : '--'}</Typography>
 
-                </div>
+                </div>}
                 <div style={{ width: '4%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <div style={{ width: '20px', height: '20px', padding: '10px', borderRadius: '50%', backgroundColor: currentTheme.palette.secondary.main, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <div style={{ width: '20px', height: '20px',marginTop:'15px', padding: '10px', borderRadius: '50%', backgroundColor: currentTheme.palette.secondary.main, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <LocalTaxiIcon sx={{ color: ' #757de8' }} />
                   </div>
                 </div>
-                <div style={{ width: '48%' }}>
-                  <Typography variant="h6" component="span">
+                {(duration && duration.length > 0) && <div style={{ width: '48%' }}>
+                  <Typography variant="subtitle1" component="span">
                     Drive For
                   </Typography>
-                  <Typography>{Math.ceil(parseInt(duration[index])/60)} Minutes</Typography>
-                </div>
+                  <Typography variant="h5" fontWeight={"bold"}>{duration[index] ? Math.ceil(parseInt(duration[index])/60) : '--'} Minutes</Typography>
+                </div>}
 
               </div>}
             </>
@@ -415,7 +267,7 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
       </Grid>
       <CButton
         title="Confirm"
-        onClick={() => {}}
+        onClick={() => {finalize()}}
         style={{
           width: '30%',
           background: '#757de8',
