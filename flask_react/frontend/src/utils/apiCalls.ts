@@ -162,7 +162,7 @@ class SmartCityApi {
 
 	allTrips = async function (user_id: string) {
 		try {
-			const response = await fetch('http://127.0.0.1:5000/api/' + `trips/all/${user_id}`, {
+			const response = await fetch('https://csstudent09.ucd.ie/api/' + `trips/all/${user_id}`, {
 				method: "GET",
 			});
 			if (response.status === 200) {
@@ -294,7 +294,7 @@ class SmartCityApi {
 
 popularPlaces = async function(){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "popularPlaces", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "popularPlaces", {
 		  method: "GET",
 		});
 
@@ -329,7 +329,7 @@ popularPlaces = async function(){
 
 updatePassword = async function(request: object, token:string){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "password", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "password", {
 		  method: "PATCH",
 		  body: new URLSearchParams({...request}),
 		  credentials: 'include',
@@ -368,7 +368,7 @@ updatePassword = async function(request: object, token:string){
 
 updateUserDetails = async function(request: object){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "/users", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api' + "/users", {
 		  method: "PUT",
 		  body: new URLSearchParams({...request}),
 		  credentials: 'include',
@@ -404,7 +404,7 @@ updateUserDetails = async function(request: object){
 
 getRecommendation = async function(request: object){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "venues", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "venues", {
 		  method: "POST",
 		  body: JSON.stringify({...request}),
 		  headers: {
@@ -446,7 +446,7 @@ getFare = async function(request: object){
 	
 	
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "fare", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "fare", {
 		  method: "POST",
 		  body: JSON.stringify({...request}),
 		  headers: {
@@ -487,7 +487,7 @@ getFare = async function(request: object){
 getDuration = async function(request: object){
 	
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "duration", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "duration", {
 		  method: "POST",
 		  body: JSON.stringify({...request}),
 		  headers: {
@@ -528,7 +528,7 @@ getDuration = async function(request: object){
 confirmItienary = async function(request: object){
 
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "trips", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "trips", {
 		  method: "POST",
 		  body: new URLSearchParams({...request}),
 		});
@@ -565,7 +565,7 @@ confirmItienary = async function(request: object){
 checkEmail = async function(email: string){
 
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "checkEmail", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "checkEmail", {
 		  method: "POST",
 		  body: JSON.stringify({email: email}),
 		  headers: {
@@ -608,7 +608,7 @@ checkEmail = async function(email: string){
 sendRequest = async function(req: object){
 	
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "sendInvite", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "sendInvite", {
 		  method: "POST",
 		  body: JSON.stringify(req),
 		  headers: {
@@ -649,7 +649,7 @@ sendRequest = async function(req: object){
 
 getItienaryDetails = async function (trip_id:number) {
 	try {
-		const response = await fetch('http://127.0.0.1:5000/api/' + `trips/${trip_id}`, {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `trips/${trip_id}`, {
 			method: "GET",
 			credentials: 'include',
 		  });
@@ -685,7 +685,7 @@ getItienaryDetails = async function (trip_id:number) {
 
 getRequest = async function (req:object) {
 	try {
-		const response = await fetch('http://127.0.0.1:5000/api/' + `checkRequests`, {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `checkRequests`, {
 			method: "POST",
 			credentials: 'include',
 			body: JSON.stringify({...req}),
@@ -727,7 +727,7 @@ getRequest = async function (req:object) {
 
 acceptRequest = async function (req:object) {
 	try {
-		const response = await fetch('http://127.0.0.1:5000/api/' + `acceptInvite`, {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `acceptInvite`, {
 			method: "POST",
 			credentials: 'include',
 			body: JSON.stringify({...req}),
@@ -766,7 +766,7 @@ acceptRequest = async function (req:object) {
 
 declineRequest = async function (req:object) {
 	try {
-		const response = await fetch('http://127.0.0.1:5000/api/' + `declineInvite`, {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `declineInvite`, {
 			method: "POST",
 			credentials: 'include',
 			body: JSON.stringify({...req}),
