@@ -187,7 +187,7 @@ async function prepareJSON(res) {
 // execute .py file
 function exec_py(dataToSendString) {
   return new Promise((resolve, reject) => {
-    const pythonProcess = spawn('python', [path.join(__dirname, '../../data_models', 'trip_fare_prediction.py'), dataToSendString]);
+    const pythonProcess = spawn('/usr/bin/python3', [path.join(__dirname, '../../data_models', 'trip_fare_prediction.py'), dataToSendString]);
     let result = '';
 
     pythonProcess.stdout.on('data', (data) => {
