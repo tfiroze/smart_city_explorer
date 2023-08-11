@@ -106,7 +106,7 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
           fullWidth
           value={name}
           onChange={handleNameChange}
-          style={{ width: '20%' }}
+
         />
 
         <StyledButton

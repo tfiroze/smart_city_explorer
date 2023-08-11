@@ -422,7 +422,6 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
         title="Confirm"
         onClick={() => { updateItinerary() }}
         style={{
-          width: '30%',
           background: '#757de8',
           color: '#ffffff',
           borderRadius: '20px',

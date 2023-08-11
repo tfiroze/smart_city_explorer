@@ -17,6 +17,7 @@ import {
     SpeedDialAction,
     makeStyles,
 } from "@mui/material";
+import LocalTaxiIcon from "@mui/icons-material/LocalTaxi";
 import { Typography, Tooltip, useTheme } from "@mui/material";
 interface IProps {
     items: IVenueItem[]
@@ -54,6 +55,32 @@ export const VenueSelectionMobile: React.FC<IProps> = ({ items }) => {
                                     marginBottom: '10px'
                                 }}
                             />
+                            <Divider sx={{ margin: '10px 0' }} />
+                            <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                                <Typography>
+                                    Rating: <span>4</span>
+                                </Typography>
+
+                                <Typography>
+                                    Busyness: <span>Moderate</span>
+                                </Typography>
+                            </Grid>
+                            <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main }}>
+                                <Button
+                                    title="View"
+                                    onClick={() => { }}
+                                    style={{
+                                        width: '30%',
+                                        background: '#757de8',
+                                        color: '#ffffff',
+                                        borderRadius: '20px',
+                                        padding: '10px 30px',
+                                        fontWeight: 'bold',
+                                    }}
+                                >
+                                    View
+                                </Button>
+                            </Grid>
                         </Card>
                     </Grid>)
             })}
