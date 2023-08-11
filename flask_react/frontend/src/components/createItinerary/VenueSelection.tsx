@@ -241,24 +241,24 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
                 </TimelineContent>
               </TimelineItem>
               {index !== (venues.length-1) && <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
-                <div style={{ width: '48%' }}>
-                  <Typography variant="h6" align="right">
+                {(fareArr && fareArr.length > 0) && <div style={{ width: '48%' }}>
+                  <Typography variant="subtitle1" align="right">
                     Estimated Fare
                   </Typography>
-                  <Typography align="right">$ {Math.ceil(parseInt(fareArr[index]))}</Typography>
+                  <Typography variant="h5" fontWeight={"bold"} align="right">$ {fareArr[index] ? Math.ceil(parseInt(fareArr[index])) : '--'}</Typography>
 
-                </div>
+                </div>}
                 <div style={{ width: '4%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <div style={{ width: '20px', height: '20px', padding: '10px', borderRadius: '50%', backgroundColor: currentTheme.palette.secondary.main, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <div style={{ width: '20px', height: '20px',marginTop:'15px', padding: '10px', borderRadius: '50%', backgroundColor: currentTheme.palette.secondary.main, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <LocalTaxiIcon sx={{ color: ' #757de8' }} />
                   </div>
                 </div>
-                <div style={{ width: '48%' }}>
-                  <Typography variant="h6" component="span">
+                {(duration && duration.length > 0) && <div style={{ width: '48%' }}>
+                  <Typography variant="subtitle1" component="span">
                     Drive For
                   </Typography>
-                  <Typography>{Math.ceil(parseInt(duration[index])/60)} Minutes</Typography>
-                </div>
+                  <Typography variant="h5" fontWeight={"bold"}>{duration[index] ? Math.ceil(parseInt(duration[index])/60) : '--'} Minutes</Typography>
+                </div>}
 
               </div>}
             </>

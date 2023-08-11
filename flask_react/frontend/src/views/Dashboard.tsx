@@ -115,6 +115,8 @@ export const Dashboard = () => {
   const [loader, setLoader] = useState<boolean>(false)
   const [error, setError] = useState<string>("0")
 
+ 
+
   const currentTheme = useTheme();
 
 
@@ -463,7 +465,7 @@ export const Dashboard = () => {
                                       backgroundPosition: 'top', // Center the background image
                                       backgroundSize: 'cover', // Ensure the image covers the entire container
                                       backgroundRepeat: 'no-repeat', // Prevent image repetition
-                                      backgroundImage: `url(${grass})`,
+                                      border: '2px solid #757de8'
                                     }}
                                     item
                                     className="unselectable"

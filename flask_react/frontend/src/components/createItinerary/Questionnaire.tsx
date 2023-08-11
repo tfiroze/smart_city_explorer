@@ -429,15 +429,8 @@ export const Questionnaire: React.FC<IProps> = ({
                         item
                         className="unselectable"
                       >
-                        <Grid xs={12} >
-                          <img
-                            src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                            alt=""
-                            style={{ width: '100%', borderRadius: '5px' }}
-                          />
-                        </Grid>
                         <Grid xs={12}>
-                          <Typography variant="subtitle2" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom: '10px' }}>
+                          <Typography variant="subtitle2" align="center" fontWeight={600} style={{ background: currentTheme.palette.secondary.main, marginBottom: '10px' }}>
                             {toTitleCase(item)}
                           </Typography>
                         </Grid>

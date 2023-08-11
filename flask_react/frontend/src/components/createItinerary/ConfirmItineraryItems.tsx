@@ -124,7 +124,6 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
 
       smartApi.confirmItienary(req)
         .then((results) => {
-          setLoader(false)
           setButtonLoaderConfirm(false)
           console.log(results);
           if (results?.valid && results?.trip_id) {
@@ -257,7 +256,6 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
     }
     smartApi.sendRequest(req)
     .then((results) => {
-      setLoader(false)
       console.log(results);
       if (results?.valid && results?.message) {
         setFriendReqLoading(false)
@@ -281,7 +279,7 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
 
   return (
     <>
-      {loader && false ? <Loader /> :
+      {loader ? <Loader /> :
         error == '7' ? <ErrorPage /> : <Grid container justifyContent="center" alignItems="center">
           <Dialog
             open={oneButtonModal}

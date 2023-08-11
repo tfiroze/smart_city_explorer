@@ -684,6 +684,44 @@ getItienaryDetails = async function (trip_id:number) {
 	}
 }
 
+getRequest = async function (req:object) {
+	try {
+		const response = await fetch('http://127.0.0.1:5000/api/' + `checkRequests`, {
+			method: "POST",
+			credentials: 'include',
+			body: new URLSearchParams({...req})
+		  });
+  
+		if (response.status === 200) {
+			const data = await response.json();
+			console.log('Get Trip Request Response: ', data)
+			if (data?.valid) {
+				return {
+					valid: true,
+					errorType: "0",
+					...data
+				};
+			} else {
+				return {
+					valid: false,
+					errorType: '1'
+				};
+			}
+		} else {
+			return {
+				valid: false,
+				errorType: '2'
+			};
+		}
+	} catch (error) {
+		return {
+			valid: false,
+			errorType: '2'
+		};
+	}
+}
+
+
 
 addFriendsToTrip = async function(request: object){
 	try {

@@ -73,6 +73,9 @@ const Profile = () => {
     const [loader, setLoader] = useState<boolean>(false)
     const [errorPage, setErrorPage] = useState(false)
 
+    const [requestLoader, setRequestLoader] = useState<boolean>(false)
+    const [requestList, setRequestList] = useState<any[]>([])
+
 
     useEffect(() => {
         if (authContext.userInfo?.first_name !== undefined &&
@@ -91,7 +94,7 @@ const Profile = () => {
                 user_id: authContext.userInfo?.user_id
             })
 
-            
+
         }
     }, [])
 
@@ -335,8 +338,6 @@ const Profile = () => {
         }
     };
 
-    console.log(upcomingTrips);
-    
 
     const handlegetTripDetails = () => {
         setLoader(true)
@@ -385,9 +386,45 @@ const Profile = () => {
             });
     }
 
-    const handleItienaray =(text:string)=>{
-        handlegetTripDetails();
+    const handleItienaray = (text: string) => {
+
         setActiveOption(text)
+    }
+
+    const handleRequest = () => {
+        let req = {
+            user_id: authContext.userInfo?.user_id
+        }
+        console.log(req)
+        smartApi.getRequest(req)
+            .then((results) => {
+
+                // console.log(results);
+                // setLoader(false)
+                if (results?.valid && results?.data) {
+                    setRequestList(results.data)
+                } else {
+                    // ... handle the case when results?.valid is falsy ...
+                    setErrorPage(true)
+                }
+            })
+            .catch((error) => {
+                // console.log(error);
+                // setErrorPage(true)
+                // setLoader(false)
+            });
+    }
+
+    const handleProfileClicks = (text: string) => {
+        setActiveOption(text)
+        if (text == 'Dashboard') {
+            navigate('/dashboard')
+        } else if (text == 'Past Trips' || text == 'Upcoming Trips') {
+            handlegetTripDetails();
+        } else if (text == 'Requests') {
+            handleRequest();
+        }
+
     }
 
     const currentTheme = useTheme();
@@ -412,7 +449,7 @@ const Profile = () => {
                             <Divider />
                             <List>
                                 {['Home', 'Update Details', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Dashboard'].map((text, index) => (
-                                    <ListItem button style={{ backgroundColor: activeOption == text ? currentTheme?.palette?.secondary?.main : 'transparent' }} key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => { text === 'Dashboard' ? navigate('/dashboard') : (text === 'Past Trips' || text === "Upcoming Trips") ? handleItienaray(text): setActiveOption(text) }}>
+                                    <ListItem button style={{ backgroundColor: activeOption == text ? currentTheme?.palette?.secondary?.main : 'transparent' }} key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => { handleProfileClicks(text) }}>
                                         <ListItemIcon>
                                             {index === 0 ? <HomeIcon /> :
                                                 index === 1 ? <AdminPanelSettingsOutlinedIcon /> :
@@ -628,10 +665,10 @@ const Profile = () => {
                                     }
                                 </Grid>
 
-                               
+
                             </>}
                             {activeOption == 'Upcoming Trips' && <>
-                            <div style={{ width: '100%', height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll' }}>
+                                <div style={{ width: '100%', height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll' }}>
                                     {(upcomingTrips?.length > 0) && upcomingTrips.map((item: any, index: number) =>
                                         <>
                                             <div
@@ -667,8 +704,30 @@ const Profile = () => {
                                         (upcomingTrips?.length == 0) && <TripNotFound />
                                     }
                                 </div>
-                                
+
                             </>}
+
+                            {activeOption == 'Requests' &&
+                                <>
+                                    {requestLoader ? <></> :
+                                        <>{requestList?.length > 0 && 
+                                        <Grid container md={12} style={{ height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll' }}>
+                                            {requestList.map((el)=>(
+                                                <div style={{width:'100%', padding:'10px', border:'2px solid #757de8'}}>
+                                                <div style={{width:'50%'}}>
+                                                    <Typography align="center">{el.firstname} {el.surname}</Typography>
+                                                    <Typography align="center">Trip Name: {el.trip_name}</Typography>
+                                                </div>
+                                                <div style={{width: '50%'}}>
+
+                                                </div>
+                                            </div>
+                                            )) }
+                                        </Grid>}
+                                        </>
+                                    }
+                                </>
+                            }
                         </Box>
                     </Box>
                 </Container>}</>
