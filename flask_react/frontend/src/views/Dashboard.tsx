@@ -276,22 +276,12 @@ export const Dashboard = () => {
   };
 
   const handleDetailsNavigation =(id: number)=>{
-    smartApi.getItienaryDetails(userInfo.user_id)
+    smartApi.getItienaryDetails(id)
         .then((results) => {
           console.log(results);
-          setLoader(false)
+          // setLoader(false)
           if (results?.valid) {
-            setPastTrips([...results.completedTrips])
-            setUpcomingTrips([...results.upcomingTrips])
-            getPopularPlaces()
-
-            if ((results.upcomingTrips.length > 0) && (results.completedTrips.length <= 0)) {
-              setTab(1)
-            } else if ((results.upcomingTrips.length <= 0) && (results.completedTrips.length > 0)) {
-              setTab(0)
-            } else {
-              setTab(1)
-            }
+            navigate('/ItineraryDetails', { state: { data: results.data} })
           } else {
             // ... handle the case when results?.valid is falsy ...
             setError(results.errorType)
@@ -299,11 +289,11 @@ export const Dashboard = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
-          setError('2')
-          setLoader(false)
+          // console.log(error);
+          // setError('2')
+          // setLoader(false)
         });
-    navigate('/ItineraryDetails', { state: { id: id} })
+    // navigate('/ItineraryDetails', { state: { id: id} })
   }
 
 

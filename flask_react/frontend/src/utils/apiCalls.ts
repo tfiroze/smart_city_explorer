@@ -649,18 +649,19 @@ sendRequest = async function(req: object){
 
 getItienaryDetails = async function (trip_id:number) {
 	try {
-		const response = await fetch('https://csstudent09.ucd.ie/api/' + `trips/${12}`, {
+		const response = await fetch('http://127.0.0.1:5000/api/' + `trips/${12}`, {
 			method: "GET",
 			credentials: 'include',
 		  });
   
 		if (response.status === 200) {
 			const data = await response.json();
-			console.log('Update UserDetails Request Response: ', data)
+			console.log('Get Itienary Request Response: ', data)
 			if (data?.valid) {
 				return {
 					valid: true,
 					errorType: "0",
+					...data
 				};
 			} else {
 				return {

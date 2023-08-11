@@ -30,6 +30,7 @@ interface Venue {
 	name?:string,
 	opening_time?:number;
     closing_time?:number;
+	venue_name?:string
   }
   
   interface IProps {
@@ -67,7 +68,9 @@ export const VenueDetailsModal: React.FC<IProps> = ({venue, onClick}) => {
 				<Grid container xs = {9} style={{ height:'350px',  width:'100%', display:'flex',borderRadius:'20px'}}>
 					<Grid item xs = {3} style={{ height:'350px', borderRadius:'20px'}}></Grid>
 					<Grid item xs = {9} style={{height:'350px', padding:'10px',borderRadius:'20px', display:'flex',flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
-						<Typography variant="h4" style={{color:'#757de8', width:'100%'}} align="left">{venue.name}</Typography>
+						<Typography variant="h4" style={{color:'#757de8', width:'100%'}} align="left">
+						{venue?.name ? venue?.name : venue?.venue_name ? venue?.venue_name :'' }
+							</Typography>
 						<div style={{width:'100%', height:'1px', margin:'10px 0', backgroundColor:'#E0E0E0'}}/>
 						<Typography variant="subtitle2" style={{margin:'10px 0'}}>
 						{venue.description}

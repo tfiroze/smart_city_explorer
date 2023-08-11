@@ -5,9 +5,10 @@ import {
     styled,
     useTheme,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 import { CButton } from "../common/button";
+import { useLocation } from "react-router-dom";
 
 
 const StyledVenueName = styled(Typography)(({ theme }) => ({
@@ -35,20 +36,28 @@ export const VenueCard :React.FC<IProps> = ({
 })  => {
     
     const currentTheme = useTheme();
+    const [widthVal, setWidthVal] = useState<number>(12)
     const showModalDetails = ()=> detailsModalClick? detailsModalClick(venDetails):console.log('Something went wrong!')
     const handleSelection= ()=>{
         (selectCard && venType) ? selectCard(venType, venDetails.venue_id, venDetails) : console.log('Something went wrong!')
     }
+
+    console.log(venDetails);
+    const pathname = useLocation();
+
+    useEffect(()=>{
+        pathname.pathname === '/ItineraryDetails' ? setWidthVal(12) : setWidthVal(3);
+    },[])
     
     return (
         <Grid
             style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
             item
-            xs={3}
+            xs={widthVal}
             onClick={() => { }}
         // className="unselectable"
         >
-            <StyledVenueName noWrap>{venDetails.name}</StyledVenueName>
+            <StyledVenueName noWrap>{venDetails?.name ? venDetails?.name : venDetails?.venue_name ? venDetails?.venue_name :'' }</StyledVenueName>
 
             {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
                     <Checkbox checked={item.selected} />
@@ -56,9 +65,9 @@ export const VenueCard :React.FC<IProps> = ({
 
             <Grid xs={12} item >
                 <img
-                    src={venDetails.image}
+                    src={venDetails?.image ? venDetails?.image : '' }
                     alt=""
-                    style={{ width: '100%', borderRadius: '5px' }}
+                    style={{ width: '100%', borderRadius: '5px', aspectRatio:16/9 }}
 
                 />
             </Grid>
@@ -69,17 +78,17 @@ export const VenueCard :React.FC<IProps> = ({
                 WebkitLineClamp: '3',
                 WebkitBoxOrient: 'vertical',
             }}>
-                {venDetails.description}
+               {venDetails?.description ? venDetails?.description : '' }
             </Typography>
             <Divider sx={{ margin: '10px 0' }} />
             <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
                 <Typography>
-                    Rating: {venDetails.rating}
+                    Rating: {venDetails?.rating ? venDetails?.rating : '' }
                 </Typography>
 
-                <Typography>
+                {venDetails?.busyness && <Typography>
                     Busyness: {(venDetails.busyness >= 40 && venDetails.busyness < 80) ? ' Moderate' : (venDetails.busyness >= 80) ? ' High' : ' Low' }
-                </Typography>
+                </Typography>}
             </Grid>
             <Divider sx={{ margin: '10px 0' }} />
             <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
@@ -102,7 +111,7 @@ export const VenueCard :React.FC<IProps> = ({
                     style={{
                         width: '30%',
                         background:showSelect?  currentTheme.palette.secondary.main : '#757de8',
-                        color: '#757de8',
+                        color:showSelect? '#757de8' : '#fff',
                         borderRadius: '20px',
                         padding: '10px 30px',
                         fontWeight: 'bold',
