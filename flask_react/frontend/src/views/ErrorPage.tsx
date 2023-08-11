@@ -42,10 +42,10 @@ export const ErrorPage = () => {
                 }}
             />
 
-            <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: "80vh", p: 3 }}>
+            <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: "100vh", p: 3 }}>
                 <Grid item xs={11} md={6}>
                     <Box display="flex" flexDirection="column" alignItems="center">
-                        <Typography variant="h3" gutterBottom sx={{ fontWeight: 700, color: theme.palette.primary.dark }}>
+                        <Typography variant="h3" gutterBottom sx={{ fontWeight: 700, color: theme.palette.primary.dark }} align="center">
                             Oops! An Unexpected Encounter!
                         </Typography>
                         <Typography variant="body1" gutterBottom sx={{ color: theme.palette.text.secondary, textAlign: 'center', maxWidth: '80%', mb: 4 }}>

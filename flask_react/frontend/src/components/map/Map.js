@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import venueData from "../../temp/dummy_data/venueData.json";
 import "./Map.css";
+import MarkerClusterGroup from "react-leaflet-markercluster";
 
 const Map = () => {
 	const [onselect, setOnselect] = useState({});
@@ -94,13 +95,15 @@ const Map = () => {
 							attribution="Map tiles by Carto, under CC BY 3.0. Data by OpenStreetMap, under ODbL."
 							url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
 						/>
-						{venueData && (
-							<GeoJSON
-								data={venueData}
-								style={style}
-								onEachFeature={onEachFeature}
-							/>
-						)}
+						<MarkerClusterGroup>
+							{venueData && (
+								<GeoJSON
+									data={venueData}
+									style={style}
+									onEachFeature={onEachFeature}
+								/>
+							)}
+						</MarkerClusterGroup>
 					</MapContainer>
 				</div>
 			</div>

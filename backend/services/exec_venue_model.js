@@ -4,15 +4,17 @@ const createSSHTunnel = require('../db')
 
 function executeIPythonNotebook(ipynbFileName, parameters) {
   try {
+    
     // 1. turn .ipynb into .py script
     execSync(`jupyter nbconvert --to script ${ipynbFileName}`);
 
     // 2. get the name of .py file
     const scriptFileName = ipynbFileName.replace('.ipynb', '.py');
-
+    
     // create the command about executing
     const command = `python ${scriptFileName} ${parameters.join(' ')}`;
 
+    console.log(command, '-------------------')
     // execute Python script and get the result
     const result = execSync(command, { encoding: 'utf8' });
 
@@ -26,7 +28,7 @@ function executeIPythonNotebook(ipynbFileName, parameters) {
 let getAttractionInfo = (req, res, next) => {
 
   const ipynbFileName = '../data_models/Recommendation_model/recommendation_model.ipynb'
-
+  console.log(ipynbFileName);
   // For example of input: 
   // user_zone_input = ["Upper_West_Side", "Upper_East_Side"]
   // user_input_attractions = ["Neighborhood_Market", "Shopping_Center"]

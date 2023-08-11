@@ -1,0 +1,117 @@
+{
+	"type": "FeatureCollection",
+	"features": [
+		{
+			"type": "Feature",
+			"properties": { "zone": "Chelsea/Greenwhich market" },
+			"geometry": {
+				"type": "Polygon",
+				"coordinates": [
+					[
+						[-74.0089, 40.7348],
+						[-74.0089, 40.7597],
+						[-73.9847, 40.7597],
+						[-73.9847, 40.7348],
+						[-74.0089, 40.7348]
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": { "zone": "Lower Manhattan" },
+			"geometry": {
+				"type": "Polygon",
+				"coordinates": [
+					[
+						[-74.0107, 40.7121],
+						[-74.0107, 40.7351],
+						[-73.984, 40.7351],
+						[-73.984, 40.7121],
+						[-74.0107, 40.7121]
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": { "zone": "Midtown Manhattan" },
+			"geometry": {
+				"type": "Polygon",
+				"coordinates": [
+					[
+						[-74.0015, 40.7451],
+						[-74.0015, 40.7708],
+						[-73.9664, 40.7708],
+						[-73.9664, 40.7451],
+						[-74.0015, 40.7451]
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": { "zone": "Other" },
+			"geometry": {
+				"type": "Polygon",
+				"coordinates": [
+					[
+						[-74.0445, 40.6893],
+						[-74.0445, 40.8141],
+						[-73.9266, 40.8141],
+						[-73.9266, 40.6893],
+						[-74.0445, 40.6893]
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": { "zone": "Upper East Side" },
+			"geometry": {
+				"type": "Polygon",
+				"coordinates": [
+					[
+						[-73.9698, 40.7609],
+						[-73.9698, 40.7853],
+						[-73.9525, 40.7853],
+						[-73.9525, 40.7609],
+						[-73.9698, 40.7609]
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": { "zone": "Upper Manhattan" },
+			"geometry": {
+				"type": "Polygon",
+				"coordinates": [
+					[
+						[-73.9546, 40.7911],
+						[-73.9546, 40.8084],
+						[-73.9321, 40.8084],
+						[-73.9321, 40.7911],
+						[-73.9546, 40.7911]
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": { "zone": "Upper West Side" },
+			"geometry": {
+				"type": "Polygon",
+				"coordinates": [
+					[
+						[-73.9895, 40.7666],
+						[-73.9895, 40.8134],
+						[-73.9515, 40.8134],
+						[-73.9515, 40.7666],
+						[-73.9895, 40.7666]
+					]
+				]
+			}
+		}
+	]
+}

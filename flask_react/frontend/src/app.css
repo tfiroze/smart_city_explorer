@@ -9,7 +9,7 @@ body{
   width: 100%;
 }
 
-svg {
+/* svg {
 	font-family: "Russo One", sans-serif;
 	width: 100%; height: 100%;
 }
@@ -31,7 +31,7 @@ svg text {
 		fill: rgba(72,138,204,1); stroke: rgba(54,95,160,0);
 		stroke-dashoffset: -25%; stroke-dasharray: 50% 0; stroke-width: 0;
 	}
-}
+} */
 
 .unselectable {
 	-webkit-touch-callout: none;

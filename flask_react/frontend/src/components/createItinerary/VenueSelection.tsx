@@ -184,11 +184,14 @@ const StyledTaxiFareTypography = styled(Typography)`
 //#endregion
 
 interface IProps {
-  updateItinerary: (data: IItinerary) => void;
-  currentItinerary: IItinerary;
+  fareArr: string[];
+  duration: string[];
+  venues:any;
+  venids: string[];
+  finalize: ()=>void
 }
 
-export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItinerary }) => {
+export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, venues  }) => {
   const [introvertMode, setIntrovertMode] = React.useState(false);
   const [itinerary, setItinerary] = React.useState<IVenueItem[]>([]);
   const [controlsOpen, setControlsOpen] = React.useState(false);
@@ -199,13 +202,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
   const [errorDialogOpen, setErrorDialogOpen] = React.useState(false);
 
   useEffect(() => {
-    const response = [...(venueData as IVenueItem[])];
-    const sortedData = sortData(response.slice(0, 3));
-    const identifiedConflicts = identifyConflicts(sortedData);
-    let temp = currentItinerary;
-    temp.plan = identifiedConflicts
-    // updateItinerary(temp)
-    setItinerary(identifiedConflicts);
+
   }, []);
 
   const addItinerary = (data: IVenueItem) => {
@@ -270,7 +267,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
   const currentTheme = useTheme();
 
   return (
-    <Grid container justifyContent="center" style={{position:'relative'}}>
+    <Grid container justifyContent="center" style={{ position: 'relative' }}>
       {viewVenueItem && (
         <ViewVenueItem
           close={closeViewItem}
@@ -305,7 +302,7 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
       </Dialog>
       <Grid item xs={12} style={{ overflowY: "scroll" }}>
         <Timeline position="alternate-reverse">
-          {itinerary.map((item, index) => (
+          {venues.map((item:any, index:number) => (
             <>
               <TimelineItem key={index} >
                 <TimelineOppositeContent
@@ -314,154 +311,121 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
                   variant="body2"
                   color="text.secondary"
                 >
-                  Time To Visit: Between 9am to 11am
+                  Time To Visit: {index == 0 ? '9:00 Am To 11 Am' : index == 1 ? '11 Am to 1 Pm' : index == 2 ? '1 Pm to 3 Pm' : index == 3 ? '3 Pm to 5 Pm' : index == 4? '5 Pm to 7 Pm' : '7 Pm to 9 Pm'}
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                  <TimelineDot sx={{backgroundColor: currentTheme.palette.secondary.main}}>
+                  <TimelineDot sx={{ backgroundColor: currentTheme.palette.secondary.main }}>
                     <StyledLocationOnIcon />
                   </TimelineDot>
                   {<TimelineConnector />}
                 </TimelineSeparator>
                 <TimelineContent style={{ display: 'flex', justifyContent: 'center' }}>
-                    <Card
+                  <Card
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: '50%',
+                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+                      padding: '15px',
+                      borderRadius: '10px',
+                      backgroundColor: currentTheme.palette.secondary.main
+                    }}
+                  >
+                    <Typography variant="h6" align="left">
+                      {item.name}
+                    </Typography>
+                    <CardMedia
+                      component="img"
+                      alt="times square"
+                      image={item.image}
                       sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        width:'50%',
-                        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                        padding:'15px',
-                        borderRadius:'10px',
-                        backgroundColor: currentTheme.palette.secondary.main 
+                        height: 200,
+                        aspectRatio: 16 / 9,
+                        objectFit: "cover",
+                        borderTopLeftRadius: "4px",
+                        borderRadius: '10px',
+                        marginBottom: '10px'
                       }}
-                    >
-                      <Typography variant="h6" align="left">
-                        {item.title}
-                      </Typography>
-                      <CardMedia
-                        component="img"
-                        alt="times square"
-                        image={item.imgLink}
-                        sx={{
-                          height: 200,
-                          aspectRatio:16/9,
-                          objectFit: "cover",
-                          borderTopLeftRadius: "4px",
-                          borderRadius:'10px',
-                          marginBottom:'10px'
-                        }}
-                      />
-                      <Typography variant="subtitle2" 
+                    />
+                    <Typography variant="subtitle2"
                       sx={{
                         overflow: 'hidden',
                         textOverflow: 'ellipsis',
                         display: '-webkit-box',
                         WebkitLineClamp: '3',
                         WebkitBoxOrient: 'vertical',
-                        
+
                       }}
                       align="left"
-                      >
-                        Venue 1 is a major commercial intersection and neighborhood located in the Midtown Manhattan section of New York City. It is known for its vibrant atmosphere, bright billboards, and massive crowds.
+                    >
+                      {item.description}
+                    </Typography>
+                    <Divider sx={{ margin: '10px 0' }} />
+                    <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
+                      <Typography>
+                        Rating: <span>{item.rating}</span>
                       </Typography>
-                      <Divider sx={{ margin: '10px 0' }} />
-                      <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
-                        <Typography>
-                          Rating: <span>4</span>
-                        </Typography>
 
-                        <Typography>
-                          Busyness: <span>Moderate</span>
-                        </Typography>
-                      </Grid>
-                      <Divider sx={{ margin: '10px 0' }} />
-                      <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main}}>
-                        {/* <CButton
-                          title="Select"
-                          onClick={() => { }}
-                          style={{
-                            width: '30%',
-                            background: '#757de8',
-                            color: '#ffffff',
-                            borderRadius: '20px',
-                            padding: '10px 20px',
-                            fontWeight: 'bold',
-                          }}
-                        /> */}
-                        <CButton
-                          title="View"
-                          onClick={() => { }}
-                          style={{
-                            width: '30%',
-                            background: '#757de8',
-                            color: '#ffffff',
-                            borderRadius: '20px',
-                            padding: '10px 30px',
-                            fontWeight: 'bold',
-                          }}
-                        />
-                      </Grid>
-                    </Card>
+                      <Typography>
+                        Busyness: <span>{(item.busyness >= 40 && item.busyness < 80) ? ' Moderate' : (item.busyness >= 80) ? ' High' : ' Low' }</span>
+                      </Typography>
+                    </Grid>
+                    <Divider sx={{ margin: '10px 0' }} />
+                    <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main }}>
+                      <CButton
+                        title="View"
+                        onClick={() => { }}
+                        style={{
+                          width: '30%',
+                          background: '#757de8',
+                          color: '#ffffff',
+                          borderRadius: '20px',
+                          padding: '10px 30px',
+                          fontWeight: 'bold',
+                        }}
+                      />
+                    </Grid>
+                  </Card>
                 </TimelineContent>
               </TimelineItem>
-              <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
-                <div style={{ width: '48%'}}>
+              {index !== (venues.length-1) && <div style={{ width: '100%', flexDirection: 'row', display: 'flex' }}>
+                <div style={{ width: '48%' }}>
                   <Typography variant="h6" align="right">
                     Estimated Fare
                   </Typography>
-                  <Typography align="right">40 Dollors</Typography>
+                  <Typography align="right">$ {Math.ceil(parseInt(fareArr[index]))}</Typography>
 
                 </div>
-                <div style={{ width: '4%', display:'flex', justifyContent:'center', alignItems:'center' }}>
-                    <div style={{width:'20px',height:'20px',padding:'10px',  borderRadius:'50%', backgroundColor: currentTheme.palette.secondary.main,display:'flex', justifyContent:'center', alignItems:'center'}}>
-                    <LocalTaxiIcon sx={{color:' #757de8'}}/>
-                    </div>
+                <div style={{ width: '4%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <div style={{ width: '20px', height: '20px', padding: '10px', borderRadius: '50%', backgroundColor: currentTheme.palette.secondary.main, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <LocalTaxiIcon sx={{ color: ' #757de8' }} />
+                  </div>
                 </div>
-                <div style={{ width: '48%'}}>
+                <div style={{ width: '48%' }}>
                   <Typography variant="h6" component="span">
                     Drive For
                   </Typography>
-                  <Typography>30mins</Typography>
+                  <Typography>{Math.ceil(parseInt(duration[index])/60)} Minutes</Typography>
                 </div>
 
-              </div>
+              </div>}
             </>
           ))}
         </Timeline>
       </Grid>
-      <SpeedDial
-        ariaLabel="Still Blind"
-        sx={{ bottom: 20, right: 10, position:'absolute' }}
-        icon={<CreateSharpIcon />}
-      >
-        <SpeedDialAction
-          key="Add New Booking"
-          // tooltipOpen
-          icon={<AddSharpIcon />}
-          tooltipTitle="Add New Booking"
-          onClick={handleControlsToggle}
-        />
-        <SpeedDialAction
-          // tooltipOpen
-          key="Batch Edit Time"
-          icon={<AccessAlarmsSharpIcon />}
-          tooltipTitle="Batch Edit Time"
-        />
-        <SpeedDialAction
-          key="Toggle Introvert Mode"
-          icon={
-            introvertMode ? (
-              <SentimentVeryDissatisfiedIcon />
-            ) : (
-              <SentimentVerySatisfiedIcon />
-            )
-          }
-          tooltipTitle={
-            introvertMode ? "Introvert Mode: ON" : "Introvert Mode: OFF"
-          }
-          onClick={handleIntrovertModeToggle}
-        />
-      </SpeedDial>
-      
+      <CButton
+        title="Confirm"
+        onClick={() => {}}
+        style={{
+          width: '30%',
+          background: '#757de8',
+          color: '#ffffff',
+          borderRadius: '20px',
+          padding: '10px 30px',
+          fontWeight: 'bold',
+          margin:'20px 0px'
+        }}
+      />
     </Grid>
   );
 };

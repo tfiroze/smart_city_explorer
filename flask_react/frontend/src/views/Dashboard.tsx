@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+// @ts-nocheck
+import React, { useContext, useEffect, useRef, useState } from "react";
+import AttractionsIcon from '@mui/icons-material/Attractions';
 import { Header } from "../components/dashboard/Header";
 import {
   Button,
@@ -15,7 +17,8 @@ import {
   DialogActions,
   DialogTitle,
   styled,
-  useTheme
+  useTheme,
+  Theme,
 } from "@mui/material";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { CreateItinerary } from "./CreateItinerary";
@@ -25,20 +28,81 @@ import ModeOfTravelIcon from "@mui/icons-material/ModeOfTravel";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import ChoroplethMap from "./MapTest";
 import Choropleth from "../components/map/Choropleth";
-import { MapContainer, TileLayer, Popup, Marker, useMap } from 'react-leaflet';
-
+import { MapContainer, TileLayer, Popup, Marker, useMap, GeoJSON } from 'react-leaflet';
 import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
 import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
 import { toTitleCase } from "../utils/utility_func";
+// import Profile from "../components/profile/Profile"
+import { ProfileDrawer } from "../components/navigation/ProfileDrawer";
+import { smartApi } from "../utils/apiCalls";
+import { AuthContext } from "../utils/AuthContext";
+import { Loader } from "../components/common/loader";
+import { ErrorPage } from "./ErrorPage";
+import { SmallCards } from "../components/dashboard/SmallCards";
+import { VenueDetailsModal } from "../components/createItinerary/VenueDetailsModal";
+import makeStyles from "@mui/styles/makeStyles/makeStyles";
+import { TripNotFound } from "../components/common/tripNotFound";
+import geoData from "../resources/Manhattan_Taxi_Zones.json"
+import L, { divIcon } from "leaflet";
+
+
+import { GeoJSON as LeafletGeoJSON } from "leaflet";
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    "& .MuiPaper-root": {
+      backgroundColor: "transparent",
+      boxShadow: '0 0 0 rgba(0, 0, 0, 0.3)',
+    }
+  }
+}));
+interface PopularPlaces {
+  busyness: number,
+  description: string,
+  image: string,
+  name: string,
+  original_ven_id: string,
+  rating: number
+}
+
+interface Geometry {
+  type: string;
+  coordinates: number[][][][];
+}
+
+interface Properties {
+  shape_area: string;
+  objectid: string;
+  shape_leng: string;
+  location_id: number;
+  zone: string;
+  borough: string;
+}
+
+interface Feature {
+  type: string;
+  properties: Properties;
+  geometry: Geometry;
+}
+
+interface GeoJSONData {
+  type: string;
+  features: Feature[];
+}
+
 
 
 export const Dashboard = () => {
+  const { userInfo } = useContext(AuthContext);
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const [itineraryItems, setItineraryItems] = useState<IItinerary[]>([]);
-  const [pastItems, setPastItineraryItems] = useState<IItinerary[]>([]);
+  const [upcomingTrips, setUpcomingTrips] = useState<IItinerary[]>([]);
+  const [pastTrips, setPastTrips] = useState<IItinerary[]>([]);
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [profileDrawerOpen, setProfileDrawerOpen] = useState<boolean>(false);
   const [dialogItineraryItem, setDialogItineraryItems] = useState<IItinerary | null>(null);
+  const [popularPlacesArr, setPopularPlacesArr] = useState<Array<PopularPlaces>>([])
+  const [openItienaryDetailsModal, setOpenItienaryDetailsModal] = useState<boolean>(false);
+  const [venueDetails, setVenueDetails] = useState({})
 
   const [firstTime, setFirstTime] = useState(false)
 
@@ -46,13 +110,12 @@ export const Dashboard = () => {
 
   const [tab, setTab] = useState(0)
 
+  const [loader, setLoader] = useState<boolean>(false)
+  const [error, setError] = useState<string>("0")
+
   const currentTheme = useTheme();
-  const markAsCompleted = (itemIndex: number) => {
-    const updatedItems = itineraryItems.filter((_, index) => index !== itemIndex);
-    const completedItem = itineraryItems[itemIndex];
-    setPastItineraryItems([...pastItems, completedItem]);
-    setItineraryItems(updatedItems);
-  };
+
+
 
   useEffect(() => {
     firstTimeUser()
@@ -66,181 +129,355 @@ export const Dashboard = () => {
     navigate('/createItinerary')
   }
 
+  const handleClose = () => {
+    setProfileDrawerOpen(false)
+  }
+
+  const handleProfileOpen = () => {
+    setProfileDrawerOpen(true)
+  }
+
+  const getTripInfo = () => {
+    setLoader(true)
+    if (userInfo?.user_id) {
+      smartApi.allTrips(userInfo.user_id)
+        .then((results) => {
+          console.log(results);
+          setLoader(false)
+          if (results?.valid) {
+            setPastTrips([...results.completedTrips])
+            setUpcomingTrips([...results.upcomingTrips])
+            getPopularPlaces()
+          } else {
+            // ... handle the case when results?.valid is falsy ...
+            setError(results.errorType)
+
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          setError('2')
+          setLoader(false)
+        });
+    }
+  }
+
+  const getPopularPlaces = () => {
+
+    smartApi.popularPlaces()
+      .then((results) => {
+        setLoader(false)
+        if (results?.valid && results?.places) {
+          setPopularPlacesArr([...results.places])
+        } else {
+          // ... handle the case when results?.valid is falsy ...
+          setError(results.errorType)
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        setError('2')
+        setLoader(false)
+      });
+
+  }
+
+  useEffect(() => { getTripInfo() }, [])
+  const handItienraryDetailsModal = () => {
+    setOpenItienaryDetailsModal(!openItienaryDetailsModal)
+  }
+
+  const setVenueFullInfo = (venue: object) => {
+    setVenueDetails({ ...venue })
+    handItienraryDetailsModal()
+  }
+
+  const classes = useStyles();
+
+  function getFillColorForZoneGroup(zoneGroup: string) {
+    switch (zoneGroup) {
+      case "Upper Manhattan":
+        return "yellow";
+      case "Lower Manhattan":
+        return "green";
+      case "Upper West Side":
+        return "blue";
+      case "Upper East Side":
+        return "cyan";
+      case "Chelsea/Greenwhich market":
+        return "white";
+      case "Midtown Manhattan":
+        return "#000000";
+      // Add more cases for other zone groups here
+      default:
+        return "red"; // Default color if no match is found
+    }
+  }
+
+  let venue_zone_grouping = {
+    "Upper Manhattan": [128, 127, 243, 120, 244, 116, 42, 152, 41, 74, 75],
+    "Upper West Side": [166, 24, 151, 43, 238, 239, 143, 142],
+    "Upper East Side": [236, 263, 262, 237, 141, 140],
+    "Chelsea/Greenwhich market": [
+      246,
+      68,
+      186,
+      90,
+      100,
+      234,
+      158,
+      249,
+      113,
+      249
+    ],
+    "Lower Manhattan": [
+      107,
+      224,
+      114,
+      211,
+      144,
+      148,
+      232,
+      231,
+      45,
+      13,
+      261,
+      209,
+      87,
+      88,
+      12
+    ],
+    "Midtown Manhattan": [
+      50,
+      48,
+      230,
+      163,
+      161,
+      162,
+      229,
+      233,
+      164,
+      170,
+      137,
+      224,
+      107,
+      234
+    ]
+  };
+
+
 
   return (
     <>
-      {/* Questionnare Screen Start */}
-      <Dialog open={dialogOpen} maxWidth='xl' fullWidth>
-        <DialogTitle>{dialogItineraryItem?.name}</DialogTitle>
-        <DialogContent>
-          <ChoroplethMap data={dialogItineraryItem} />
-        </DialogContent>
-        <DialogActions>
-          <Button variant="contained" onClick={() => setDialogOpen(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-      {/* Questionair screen End  */}
+      {loader && true ? <Loader /> :
+        error !== '0' ? <ErrorPage /> :
+          <>
+            <ProfileDrawer open={profileDrawerOpen} handleClose={handleClose} />
 
 
-      <Grid container style={{ backgroundColor: '#ffff', height:'100vh' }}>
-        <Grid container xs={6} style={{ padding: '15px', overflow:'scroll', height:'100%' }}>
-          <div style={{ width:'100%', height:'10%', marginBottom:'10px'}}>
-            <Header />
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }}>
-              <Grid item xs={12} style={{
-                backgroundPosition: 'center', // Center the background image
-                backgroundSize: 'cover', // Ensure the image covers the entire container
-                backgroundRepeat: 'no-repeat', // Prevent image repetition
-                backgroundImage: `url(${manhattanDarkImage})`,
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                borderRadius: '10px',
-                padding: '30px'
-              }}>
-                {firstTime && <>
-                  <Typography
-                    variant="h5"
-                    align="center"
-                    color="#ffffff"
-                    sx={{ mb: 4 }}
-                    style={{ marginBottom: 0 }}
-                  >
-                    Unleash the magic of <span style={{ color: "#FFC93A" }}>Manhattan</span> in just one day!
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    align="center"
-                    color="#ffffff"
-                    sx={{ mb: 4 }}
-                    style={{ marginBottom: 0 }}
-                  >
-                    Plan your perfect itinerary 🗽
-                  </Typography>
-                  <Box display="flex" justifyContent="center" mt={2}>
-                    <Button
-                      onClick={handleCreateItinerary}
-                      variant="contained"
-                      color="primary"
-                      startIcon={<AddIcon />}
-                    >
-                      CREATE
-                    </Button>
-                  </Box>
-                </>}
-              </Grid>
-            
-            {
-              (itineraryItems?.length >= 0 && pastItems?.length >= 0) &&
-              <>
-                <Grid item xs={12} md={12} style={{ margin: "15px 0px" }}>
-                  <Typography variant="h6" align="left">
-                    My Manhattan Itinerary
-                  </Typography>
-                  <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin:'10px 0px' }}>
-                    <div style={{
-                      width: '20%',
-                      padding: '8px',
-                      cursor: 'pointer',
-                      backgroundColor: tab == 0 ? '#757de8' : 'transparent',
-                      border: tab == 0? '2px solid transparent' : '2px solid #757de8',
-                      marginRight:'20px',
-                      textAlign:'center',
-                      borderRadius:'20px',
-                      color: tab == 0 ? '#ffff': '#757de8'
-                    }}
-                      onClick={() => setTab(0)}>
-                      Upcoming
-                    </div>
-                    <div style={{
-                      width: '20%',
-                      padding: '8px',
-                      cursor: 'pointer',
-                      backgroundColor: tab == 1 ? '#757de8' : 'transparent',
-                      border: tab == 1? '2px solid transparent' : '2px solid #757de8',
-                      textAlign:'center',
-                      borderRadius:'20px',
-                      color: tab == 1 ? '#ffff': '#757de8'
-                    }}
-                      onClick={() => setTab(1)}>
-                      Completed
-                    </div>
+            <Dialog open={dialogOpen} maxWidth='xl' fullWidth>
+              <DialogTitle>{dialogItineraryItem?.name}</DialogTitle>
+              <DialogContent>
+                <ChoroplethMap data={dialogItineraryItem} />
+              </DialogContent>
+              <DialogActions>
+                <Button variant="contained" onClick={() => setDialogOpen(false)}>Close</Button>
+              </DialogActions>
+            </Dialog>
+
+            <Dialog
+              open={openItienaryDetailsModal}
+              onClose={handItienraryDetailsModal}
+              maxWidth="md"
+              fullWidth
+              className={classes.root}
+            >
+              <VenueDetailsModal venue={venueDetails} />
+            </Dialog>
+
+            <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
+              <Grid container xs={6} style={{ padding: '15px', overflow: 'scroll', height: '100%' }}>
+                <div style={{ width: '100%', height: '10%' }}>
+                  <Header />
+                </div>
+                <Grid xs={12} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly', height: '100%' }}>
+                  <Grid item xs={12} style={{
+                    backgroundPosition: 'center', // Center the background image
+                    backgroundSize: 'cover', // Ensure the image covers the entire container
+                    backgroundRepeat: 'no-repeat', // Prevent image repetition
+                    backgroundImage: `url(${manhattanDarkImage})`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    borderRadius: '10px',
+                    padding: '30px',
+                    width: '100%',
+                    height: '30vh'
+                  }}>
+                    {firstTime && <>
+                      <Typography
+                        variant="h5"
+                        align="center"
+                        color="#ffffff"
+                        sx={{ mb: 4 }}
+                        style={{ marginBottom: 0 }}
+                      >
+                        Unleash the magic of <span style={{ color: "#FFC93A" }}>Manhattan</span> in just one day!
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        align="center"
+                        color="#ffffff"
+                        sx={{ mb: 4 }}
+                        style={{ marginBottom: 0 }}
+                      >
+                        Plan your perfect itinerary 🗽
+                      </Typography>
+                      <Box display="flex" justifyContent="center" mt={2}>
+                        <Button
+                          onClick={handleCreateItinerary}
+                          variant="contained"
+                          color="primary"
+                          startIcon={<AddIcon />}
+                        >
+                          CREATE
+                        </Button>
+                      </Box>
+                    </>}
                   </Grid>
-                  <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
-                  {thingsTodo.slice(0, 3).map((item, index) => {
-                  return (
-                    <Grid
-                      style={{ cursor: "pointer", padding: '15px', width: '35%', backgroundColor:currentTheme?.palette?.secondary?.main, marginRight:'5px', borderRadius:'10px' }}
-                      item
-                      className="unselectable"
-                    >
-                      <Grid xs={12} >
-                        <img
-                          src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                          alt=""
-                          style={{ width: '100%', borderRadius: '5px' }}
-                        />
-                      </Grid>
-                      <Grid xs={12}>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                          {toTitleCase(item.venue_name)}
+
+                  {
+                    (upcomingTrips?.length >= 0 || pastTrips?.length >= 0) &&
+                    <>
+                      <Grid item xs={12} md={12} style={{ margin: "15px 0px" }}>
+                        <Typography variant="h6" align="left">
+                          My Manhattan Itinerary
                         </Typography>
-                      </Grid>
+                        {(upcomingTrips?.length == 0 && pastTrips?.length == 0) ?
+                          <>
+                            <TripNotFound />
 
+                          </>
+                          : <>
+                            <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '10px 0px' }}>
+                              {upcomingTrips?.length > 0 && <div style={{
+                                width: '20%',
+                                padding: '8px',
+                                cursor: 'pointer',
+                                backgroundColor: tab == 0 ? '#757de8' : 'transparent',
+                                border: tab == 0 ? '2px solid transparent' : '2px solid #757de8',
+                                marginRight: '20px',
+                                textAlign: 'center',
+                                borderRadius: '20px',
+                                color: tab == 0 ? '#ffff' : '#757de8'
+                              }}
+                                onClick={() => setTab(0)}>
+                                Upcoming
+                              </div>}
+                              {pastTrips?.length > 0 && <div style={{
+                                width: '20%',
+                                padding: '8px',
+                                cursor: 'pointer',
+                                backgroundColor: tab == 1 ? '#757de8' : 'transparent',
+                                border: tab == 1 ? '2px solid transparent' : '2px solid #757de8',
+                                textAlign: 'center',
+                                borderRadius: '20px',
+                                color: tab == 1 ? '#ffff' : '#757de8'
+                              }}
+                                onClick={() => setTab(1)}>
+                                Completed
+                              </div>}
+                            </Grid>
+                            <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row' }}>
+                              {(pastTrips?.length > 0 && tab == 0) && pastTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />
+                              )}
+                              {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />
+                              )}
+                            </Grid>
+                          </>}
+                      </Grid>
+                    </>
+                  }
+                  {(popularPlacesArr && popularPlacesArr.length > 0) && <div style={{ width: '100%', padding: '10px 0px' }}>
+                    <Typography variant="h6" align="left">
+                      Explore Popular Destinations
+                    </Typography>
+                    <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
+                      {popularPlacesArr.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />)}
                     </Grid>
-                  );
-                })}
-                  </Grid>
+
+                  </div>}
                 </Grid>
-              </>
-            }
-            <div style={{ width: '100%' }}>
-              <Typography variant="h6" align="left">
-                Explore Popular Destination
-              </Typography>
-              <Grid direction="row" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }}>
-                {thingsTodo.slice(0, 3).map((item, index) => {
-                  return (
-                    <Grid
-                      style={{ cursor: "pointer", padding: '15px', width: '35%', backgroundColor:currentTheme?.palette?.secondary?.main, marginRight:'5px', borderRadius:'10px' }}
-                      item
-                      className="unselectable"
-                    >
-                      <Grid xs={12} >
-                        <img
-                          src="https://media.istockphoto.com/id/528725265/photo/central-park-aerial-view-manhattan-new-york.jpg?s=2048x2048&w=is&k=20&c=D1ec8s1coWVXA9JoMRfxT-zj0AW6T6b1fDlqftWllkU="
-                          alt=""
-                          style={{ width: '100%', borderRadius: '5px' }}
-                        />
-                      </Grid>
-                      <Grid xs={12}>
-                        <Typography variant="subtitle2" fontWeight={600}>
-                          {toTitleCase(item.venue_name)}
-                        </Typography>
-                      </Grid>
-
-                    </Grid>
-                  );
-                })}
               </Grid>
+              <Grid container xs={6}>
+                <MapContainer
+                  style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
+                  zoom={12}
+                  center={[40.7831, -73.9712]}
+                  // center={[37.5004851, -96.2261503]}
+                  maxBoundsViscosity={1.0}
+                  zoomControl={false}
+                  scrollWheelZoom={false}
+                  dragging={false}
+                  touchZoom={false}
+                  doubleClickZoom={false}
+                  boxZoom={false}
+                  keyboard={false}
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <GeoJSON
+                    data={geoData}
+                    onEachFeature={(feature, layer) => {
+                      const zoneNumber = feature.properties.location_id;
+                      for (const [zoneGroup, zoneNumbers] of Object.entries(
+                        venue_zone_grouping
+                      )) {
+                        if (zoneNumbers.includes(zoneNumber)) {
+                          // Assign a specific color based on the zone group
+                          const popupContent = `<div>${zoneGroup}</div>`;
 
-            </div>
-          </div>
-        </Grid>
-        <Grid container xs={6}>
-          <MapContainer
-            style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
-            zoom={13}
-            center={[40.7831, -73.9712]}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          </MapContainer>
-        </Grid>
-      </Grid>
+                          // Bind the popup content to the layer
+                          layer.bindPopup(popupContent);
+                        }
+                      }
+
+                      // Create a popup content using the zoneNumber or other properties you want to display
+
+                    }}
+
+                    style={(feature) => {
+                      const zoneNumber = feature.properties.location_id; // Assuming someProperty holds the zone number
+                      let fillColor = "red"; // Default color
+
+                      // Loop through the zone_grouping object and check if the zone number is in any of the specified zones
+                      for (const [zoneGroup, zoneNumbers] of Object.entries(
+                        venue_zone_grouping
+                      )) {
+                        if (zoneNumbers.includes(zoneNumber)) {
+                          // Assign a specific color based on the zone group
+                          fillColor = getFillColorForZoneGroup(zoneGroup);
+                          break; // Stop checking once a match is found
+                        }
+                      }
+                      return {
+                        fillColor,
+                        color: "black",
+                        weight: 0.8,
+                        dashArray: "5, 5",
+                        fillOpacity: 0.7
+                      };
+                    }}
+                  />
+                </MapContainer>
+              </Grid>
+            </Grid>
+
+          </>}
+
+
     </>
   );
 };

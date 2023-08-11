@@ -14,6 +14,9 @@ import {
   createStyles,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import { useNavigate } from "react-router-dom";
+import { smartApi } from '../../utils/apiCalls';
+
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   width: "100%",
@@ -56,25 +59,54 @@ const StyledDisclaimer = styled(Typography)(({ theme }) => ({
 }));
 
 interface IProps {
-  data: IItinerary;
+  venids:string[], 
+  date: string
   // completed: (data: IItinerary) => void;
 }
 
 export const ConfirmItineraryItems: React.FC<IProps> = ({ 
-  data, 
+  venids,
+  date
   // completed 
 }) => {
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [open, setOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleFinish = () => {
+    let req = {
+      trip_name: name,
+      date: date,
+      ven_1: venids[0],
+      ven_2: venids[1],
+      ven_3: venids[3],
+      ven_4: venids[4],
+      rest_1: venids[2],
+      rest_2: venids[5],
+    }
+
+    smartApi.confirmItienary(req)
+      .then((results) => {
+        // setLoader(false)
+        // if (results?.valid && results?.data) {
+        //   setDurationArr(results.data)
+        //   setCurrentStep(currentStep + 1);
+        // } else {
+        //   // ... handle the case when results?.valid is falsy ...
+        //   setError(results.errorType)
+        // }
+      })
+      .catch((error) => {
+        // console.log(error);
+        // setError('2')
+        // setLoading(false)
+      });
+
+
     setOpen(true);
-    // completed({
-    //   ...data,
-    //   comments: note,
-    //   name: name,
-    // });
+    navigate("/dashboard");
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,32 +128,19 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
   };
 
   return (
-    <Grid container justifyContent="center" spacing={2}>
-      <StyledPaper>
+    <Grid container justifyContent="center" alignItems="center">
+      <StyledPaper elevation={0} style={{height:'100vh'}}>
         <Typography variant="h6" gutterBottom>
           Confirm Itinerary
         </Typography>
-        <Grid item xs={12} sm={10} md={8} lg={6}>
           <TextField
             label="Itinerary Name"
             fullWidth
             value={name}
             onChange={handleNameChange}
+            style={{width:'20%'}}
           />
-        </Grid>
-        <Grid item xs={12} sm={10} md={8} lg={6}>
-          <StyledTextField
-            id="filled-multiline-flexible"
-            label="Notes (Optional)"
-            multiline
-            maxRows={4}
-            variant="filled"
-            fullWidth
-            value={note}
-            onChange={handleNoteChange}
-          />
-        </Grid>
-        <Grid item xs={12} sm={10} md={8} lg={6}>
+
           <StyledButton
             variant="contained"
             endIcon={<CheckCircleOutlineIcon />}
@@ -129,7 +148,6 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
           >
             Finish Planning
           </StyledButton>
-        </Grid>
         <StyledDisclaimer variant="body2" align="center" mt={2}>
           *Disclaimer: By clicking "Finish Planning," you agree to embark on this amazing adventure with a smile and a sense of humour. Bon voyage!
         </StyledDisclaimer>
