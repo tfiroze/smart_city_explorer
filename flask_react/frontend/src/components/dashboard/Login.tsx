@@ -25,12 +25,18 @@ import { Card, CardContent, CardActions, Snackbar } from "@mui/material";
 import { ForgotPassword } from "../../components/login/ForgotPassword";
 
 
+
 const erroDict: { [key: string]: string } = {
 	'0': '',
 	'1': 'Oops! Your Email or password is not ready for the journey. 🌊 Please check and try again!',
 	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.'
 }
 
+function getCookie(name: string) {
+	const value = `; ${document.cookie}`;
+	const parts = value.split(`; ${name}=`);
+	if (parts.length === 2) return parts.pop()?.split(';').shift();
+}
 
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
@@ -172,6 +178,26 @@ export const Login = () => {
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
 	const handleForgotPasswordDialogOpen = () => setForgotPasswordOpen(!forgotPasswordOpen)
 
+	useEffect(() => {
+		const token = getCookie("token");
+		if (token) {
+			// Verify token with the server
+			smartApi.dashboard(token)
+				.then((results) => {
+					if (results?.valid) {
+
+						navigate("/dashboard");
+					} else {
+
+					}
+				})
+				.catch((error) => {
+					console.log(error);
+				});
+		}
+	}, [navigate]);
+
+
 
 	return (
 		<>
@@ -254,7 +280,7 @@ export const Login = () => {
 								}
 							/>
 						</Box>
-						<span onClick={() => {handleForgotPasswordDialogOpen()}} style={{ cursor: 'pointer' }}>
+						<span onClick={() => { handleForgotPasswordDialogOpen() }} style={{ cursor: 'pointer' }}>
 							<Typography variant="subtitle1" >
 								Password lost? Let's reset it! 🗝️
 							</Typography>

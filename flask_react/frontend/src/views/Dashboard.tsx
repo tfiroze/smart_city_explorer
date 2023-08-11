@@ -275,26 +275,6 @@ export const Dashboard = () => {
     ]
   };
 
-  const handleDetailsNavigation =(id: number)=>{
-    smartApi.getItienaryDetails(id)
-        .then((results) => {
-          console.log(results);
-          // setLoader(false)
-          if (results?.valid) {
-            navigate('/ItineraryDetails', { state: { data: results.data} })
-          } else {
-            // ... handle the case when results?.valid is falsy ...
-            setError(results.errorType)
-
-          }
-        })
-        .catch((error) => {
-          // console.log(error);
-          // setError('2')
-          // setLoader(false)
-        });
-    // navigate('/ItineraryDetails', { state: { id: id} })
-  }
 
 
   return (
@@ -389,7 +369,7 @@ export const Dashboard = () => {
 
                           </>
                           : <>
-                            <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '10px 0px' }}>
+                            <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '5px 0px' }}>
                               {upcomingTrips?.length > 0 && <div style={{
                                 width: '20%',
                                 padding: '8px',
@@ -448,36 +428,7 @@ export const Dashboard = () => {
                                 </Grid>
                               </>
                               )}
-                              {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item:any, index:number) =>
-                                <>
-                                  <Grid
-                                    key={item.trip_id}
-                                    style={{
-                                      cursor: "pointer",
-                                      padding: '15px',
-                                      width: '35%',
-                                      backgroundColor: currentTheme?.palette?.secondary?.main,
-                                      marginRight: '5px',
-                                      borderRadius: '10px',
-                                      backgroundPosition: 'top', // Center the background image
-                                      backgroundSize: 'cover', // Ensure the image covers the entire container
-                                      backgroundRepeat: 'no-repeat', // Prevent image repetition
-                                      backgroundImage: `url(${grass})`,
-                                    }}
-                                    item
-                                    className="unselectable"
-                                    onClick={() => handleDetailsNavigation(item.trip_id)}
-                                  >
-                                    <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
-                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
-                                        {toTitleCase(item.trip_name)}
-                                      </Typography>
-                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
-                                        {dayjs(item.trip_date).format("YYYY-MM-DD")}
-                                      </Typography>
-                                    </Grid>
-                                  </Grid>
-                                </>
+                              {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item, index) => <SmallCards venue={item} onClick={() => { setVenueFullInfo(item) }} />
                               )}
                             </Grid>
                           </>}
@@ -495,68 +446,78 @@ export const Dashboard = () => {
                   </div>}
                 </Grid>
               </Grid>
-              <Grid container xs={6} style={{position:'relative'}}>
-                <MapContainer
-                  style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
-                  zoom={12}
-                  center={[40.7831, -73.9712]}
-                  maxBoundsViscosity={1.0}
-                  zoomControl={false}
-                  scrollWheelZoom={false}
-                  dragging={false}
-                  touchZoom={false}
-                  doubleClickZoom={false}
-                  boxZoom={false}
-                  keyboard={false}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <GeoJSON
-                    data={geoData}
-                    onEachFeature={(feature, layer) => {
-                      const zoneNumber = feature.properties.location_id;
-                      for (const [zoneGroup, zoneNumbers] of Object.entries(
-                        venue_zone_grouping
-                      )) {
-                        if (zoneNumbers.includes(zoneNumber)) {
-                          // Assign a specific color based on the zone group
-                          const popupContent = `<div>${zoneGroup}</div>`;
 
-                          // Bind the popup content to the layer
-                          layer.bindPopup(popupContent);
-                        }
-                      }
-                      // Create a popup content using the zoneNumber or other properties you want to display
-                    }}
-                    style={(feature) => {
-                      const zoneNumber = feature.properties.location_id; // Assuming someProperty holds the zone number
-                      let fillColor = "#ABA9BB"; // Default color
+              {window.innerWidth > 960 && (  // 960px is the breakpoint for 'md' in Material-UI by default.
+                <Grid container item md={6}>
+                  <MapContainer
+                    style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
+                    zoom={12}
+                    center={[40.7831, -73.9712]}
+                    // center={[37.5004851, -96.2261503]}
+                    maxBoundsViscosity={1.0}
+                    zoomControl={false}
+                    scrollWheelZoom={false}
+                    dragging={false}
+                    touchZoom={false}
+                    doubleClickZoom={false}
+                    boxZoom={false}
+                    keyboard={false}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <GeoJSON
+                      data={geoData}
+                      onEachFeature={(feature, layer) => {
+                        const zoneNumber = feature.properties.location_id;
+                        const zoneName = feature.properties.zoneName;
 
-                      // Loop through the zone_grouping object and check if the zone number is in any of the specified zones
-                      for (const [zoneGroup, zoneNumbers] of Object.entries(
-                        venue_zone_grouping
-                      )) {
-                        if (zoneNumbers.includes(zoneNumber)) {
-                          // Assign a specific color based on the zone group
-                          fillColor = getFillColorForZoneGroup(zoneGroup);
-                          break; // Stop checking once a match is found
+                        for (const [zoneGroup, zoneNumbers] of Object.entries(
+                          venue_zone_grouping
+                        )) {
+                          if (zoneNumbers.includes(zoneNumber)) {
+                            // Assign a specific color based on the zone group
+                            const popupContent = `<div>${zoneGroup}</div>`;
+
+                            // Bind the popup content to the layer
+                            layer.bindPopup(popupContent);
+                          }
                         }
-                      }
-                      return {
-                        fillColor,
-                        color: "black",
-                        weight: 0.8,
-                        dashArray: "5, 5",
-                        fillOpacity: 0.7
-                      };
-                    }}
-                  />
-                  
-                </MapContainer>
-                
-              </Grid>
+                        // Create a popup content using the zoneNumber or other properties you want to display
+                      }}
+                      style={(feature) => {
+                        const zoneNumber = feature.properties.location_id; // Assuming someProperty holds the zone number
+                        let fillColor = "#ABA9BB"; // Default color
+
+                        // Loop through the zone_grouping object and check if the zone number is in any of the specified zones
+                        for (const [zoneGroup, zoneNumbers] of Object.entries(
+                          venue_zone_grouping
+                        )) {
+                          if (zoneNumbers.includes(zoneNumber)) {
+                            // Assign a specific color based on the zone group
+                            fillColor = getFillColorForZoneGroup(zoneGroup);
+                            break; // Stop checking once a match is found
+                          }
+                        }
+                        return {
+                          fillColor,
+                          color: "black",
+                          weight: 0.8,
+                          dashArray: "5, 5",
+                          fillOpacity: 0.7
+                        };
+                      }}
+                    />
+                    {/* <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                    <Legend onZoneClick={(zone) => { (zone); }} />
+                  </div> */}
+                  </MapContainer>
+                  <Legend onZoneClick={(zone: string) => {
+                    console.log(`Zone clicked: ${zone}`);
+                  }} />
+                </Grid>
+              )}
             </Grid>
 
           </>}

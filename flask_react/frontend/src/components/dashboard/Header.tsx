@@ -50,18 +50,18 @@ export const Header: React.FC<Partial<IProps>> = ({
   };
   const currentTheme = useTheme();
 
-  const handleLogout = ()=>{
+  const handleLogout = () => {
     document.cookie = `${'token'}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
     authContext.authenticate(false, {
       first_name: "",
       surname: "",
       user_id: "",
       email: "",
-  });
-  localStorage.setItem("user_id", "");
-  localStorage.setItem("email", "");
-  localStorage.setItem("first_name", "");
-  localStorage.setItem("surname", "");
+    });
+    localStorage.setItem("user_id", "");
+    localStorage.setItem("email", "");
+    localStorage.setItem("first_name", "");
+    localStorage.setItem("surname", "");
   }
 
 
@@ -85,7 +85,7 @@ export const Header: React.FC<Partial<IProps>> = ({
           <Switch checked={themeContext.theme === 'dark'} onChange={handleThemeChange} />
         </MenuItem>
         <Divider />
-        <MenuItem onClick={()=>handleLogout()}>
+        <MenuItem onClick={() => handleLogout()}>
           <LogoutIcon />
           <Typography variant="subtitle1">Log Out</Typography>
         </MenuItem>
@@ -95,7 +95,7 @@ export const Header: React.FC<Partial<IProps>> = ({
           <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '8vh', transition: 'height 0.5s' }} />
         </Grid>
         {steps?.length && <Grid item xs={6}>
-          <Stepper activeStep={activeStep} sx={{ mx: "auto", backgroundColor:currentTheme.palette.secondary.main }}>
+          <Stepper activeStep={activeStep} sx={{ mx: "auto", backgroundColor: currentTheme.palette.secondary.main }}>
             {steps?.map((label, index) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>

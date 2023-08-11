@@ -18,37 +18,37 @@ const StyledVenueName = styled(Typography)(({ theme }) => ({
 }));
 
 interface IProps {
-    detailsModalClick?: (arg:any)=>void;
+    detailsModalClick?: (arg: any) => void;
     venDetails?: any;
-    venType?:string;
-    selectCard?:(args1:string, args2:string, args3: any)=>void;
+    venType?: string;
+    selectCard?: (args1: string, args2: string, args3: any) => void;
     showSelect?: boolean
-    isSelected?:boolean
+    isSelected?: boolean
 }
 
-export const VenueCard :React.FC<IProps> = ({
-  detailsModalClick,
-  venDetails,
-  venType,
-  selectCard,
-  showSelect = false,
-  isSelected = false
-})  => {
-    
+export const VenueCard: React.FC<IProps> = ({
+    detailsModalClick,
+    venDetails,
+    venType,
+    selectCard,
+    showSelect = false,
+    isSelected = false
+}) => {
+
     const currentTheme = useTheme();
     const [widthVal, setWidthVal] = useState<number>(12)
-    const showModalDetails = ()=> detailsModalClick? detailsModalClick(venDetails):console.log('Something went wrong!')
-    const handleSelection= ()=>{
+    const showModalDetails = () => detailsModalClick ? detailsModalClick(venDetails) : console.log('Something went wrong!')
+    const handleSelection = () => {
         (selectCard && venType) ? selectCard(venType, venDetails.venue_id, venDetails) : console.log('Something went wrong!')
     }
 
     console.log(venDetails);
     const pathname = useLocation();
 
-    useEffect(()=>{
+    useEffect(() => {
         pathname.pathname === '/ItineraryDetails' ? setWidthVal(12) : setWidthVal(3);
-    },[])
-    
+    }, [])
+
     return (
         <Grid
             style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
@@ -57,7 +57,7 @@ export const VenueCard :React.FC<IProps> = ({
             onClick={() => { }}
         // className="unselectable"
         >
-            <StyledVenueName noWrap>{venDetails?.name ? venDetails?.name : venDetails?.venue_name ? venDetails?.venue_name :'' }</StyledVenueName>
+            <StyledVenueName noWrap>{venDetails?.name ? venDetails?.name : venDetails?.venue_name ? venDetails?.venue_name : ''}</StyledVenueName>
 
             {/* <Grid item xs={1} display="flex" justifyContent="flex-end">
                     <Checkbox checked={item.selected} />
@@ -65,9 +65,9 @@ export const VenueCard :React.FC<IProps> = ({
 
             <Grid xs={12} item >
                 <img
-                    src={venDetails?.image ? venDetails?.image : '' }
+                    src={venDetails?.image ? venDetails?.image : ''}
                     alt=""
-                    style={{ width: '100%', borderRadius: '5px', aspectRatio:16/9 }}
+                    style={{ width: '100%', borderRadius: '5px', aspectRatio: 16 / 9 }}
 
                 />
             </Grid>
@@ -78,16 +78,16 @@ export const VenueCard :React.FC<IProps> = ({
                 WebkitLineClamp: '3',
                 WebkitBoxOrient: 'vertical',
             }}>
-               {venDetails?.description ? venDetails?.description : '' }
+                {venDetails?.description ? venDetails?.description : ''}
             </Typography>
             <Divider sx={{ margin: '10px 0' }} />
             <Grid container style={{ flexDirection: 'row', justifyContent: 'space-between', backgroundColor: currentTheme.palette.secondary.main }}>
                 <Typography>
-                    Rating: {venDetails?.rating ? venDetails?.rating : '' }
+                    Rating: {venDetails?.rating ? venDetails?.rating : ''}
                 </Typography>
 
                 {venDetails?.busyness && <Typography>
-                    Busyness: {(venDetails.busyness >= 40 && venDetails.busyness < 80) ? ' Moderate' : (venDetails.busyness >= 80) ? ' High' : ' Low' }
+                    Busyness: {(venDetails.busyness >= 40 && venDetails.busyness < 80) ? ' Moderate' : (venDetails.busyness >= 80) ? ' High' : ' Low'}
                 </Typography>}
             </Grid>
             <Divider sx={{ margin: '10px 0' }} />
@@ -97,8 +97,8 @@ export const VenueCard :React.FC<IProps> = ({
                     onClick={handleSelection}
                     style={{
                         width: '30%',
-                        background:isSelected? '#757de8' : '#ffffff',
-                        color: isSelected?'#ffffff': '#757de8',
+                        background: isSelected ? '#757de8' : '#ffffff',
+                        color: isSelected ? '#ffffff' : '#757de8',
                         borderRadius: '20px',
                         padding: '10px 20px',
                         fontWeight: 'bold',
@@ -110,8 +110,8 @@ export const VenueCard :React.FC<IProps> = ({
                     onClick={() => showModalDetails()}
                     style={{
                         width: '30%',
-                        background:showSelect?  currentTheme.palette.secondary.main : '#757de8',
-                        color:showSelect? '#757de8' : '#fff',
+                        background: showSelect ? currentTheme.palette.secondary.main : '#757de8',
+                        color: showSelect ? '#757de8' : '#fff',
                         borderRadius: '20px',
                         padding: '10px 30px',
                         fontWeight: 'bold',
