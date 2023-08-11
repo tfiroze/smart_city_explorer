@@ -225,11 +225,11 @@ exports.acceptInviteMW = (req, res, next) => {
         let columnToUpdate
         if (rows[0][0]['trip_part_1'] == 0) {
           columnToUpdate = 'trip_part_1';
-        } else if (rows[0]['trip_part_2'] == 0) {
+        } else if (rows[0][0]['trip_part_2'] == 0) {
           columnToUpdate = 'trip_part_2';
-        } else if (rows[0]['trip_part_3'] == 0) {
+        } else if (rows[0][0]['trip_part_3'] == 0) {
           columnToUpdate = 'trip_part_3';
-        } else if (rows[0]['trip_part_4'] == 0) {
+        } else if (rows[0][0]['trip_part_4'] == 0) {
           columnToUpdate = 'trip_part_4';
         }
         req.body.columnToUpdate = columnToUpdate

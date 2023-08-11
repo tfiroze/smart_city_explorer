@@ -3,7 +3,7 @@
 
 # # Load Data
 
-# In[1]:
+# In[534]:
 
 
 # import modules
@@ -41,24 +41,30 @@ import geopandas as gpd
 from shapely import wkt
 
 
-# In[2]:
+# In[535]:
 
 
 df_venue_static = pd.read_csv('../data_models/Recommendation_model/venue_static.csv')
 df_venue_timings = pd.read_csv('../data_models/Recommendation_model/venue_timings.csv')
 df_venue_merged = pd.read_csv('../data_models/Recommendation_model/venue_merged.csv')
 
+# df_venue_static = pd.read_csv('venue_static.csv')
+# df_venue_timings = pd.read_csv('venue_timings.csv')
+# df_venue_merged = pd.read_csv('venue_merged.csv')
 
-# In[ ]:
+
+# In[536]:
 
 
 df_venue_static = df_venue_static[df_venue_static['venue_type'] != 'LIBRARY']
 df_venue_static.to_csv('../data_models/Recommendation_model/venue_static.csv', index=False)
+# df_venue_static.to_csv('venue_static.csv', index=False)
 
 
-# In[ ]:
+# In[537]:
 
 
+# df_manhattan_zone = pd.read_csv('manhattan_zones.csv')
 df_manhattan_zone = pd.read_csv('../data_models/Recommendation_model/manhattan_zones.csv')
 #df_manhattan_zone.head(50)
 
@@ -67,7 +73,7 @@ df_manhattan_zone = pd.read_csv('../data_models/Recommendation_model/manhattan_z
 
 # ## Split into Hour and Day of the week
 
-# In[ ]:
+# In[538]:
 
 
 df_venue_merged['merged_time'] = pd.to_datetime(df_venue_merged['merged_time'])
@@ -79,7 +85,7 @@ df_venue_merged['day_of_week'] = df_venue_merged['merged_time'].dt.dayofweek
 df_venue_merged['hour_integer'] = df_venue_merged['merged_time'].dt.hour
 
 
-# In[ ]:
+# In[539]:
 
 
 #print(df_venue_merged.head(10))
@@ -87,7 +93,7 @@ df_venue_merged['hour_integer'] = df_venue_merged['merged_time'].dt.hour
 
 # ## Grouping Venue Types
 
-# In[ ]:
+# In[540]:
 
 
 venue_mapping = {
@@ -122,7 +128,7 @@ venue_mapping = {
 df_venue_static['venue_mod_type'] = df_venue_static['venue_type'].replace(venue_mapping)
 
 
-# In[ ]:
+# In[541]:
 
 
 venue_to_zone_dict = {}
@@ -142,7 +148,7 @@ for index, row in df_venue_static.iterrows():
 #print(venue_to_zone_dict)
 
 
-# In[ ]:
+# In[542]:
 
 
 #df_venue_static.head(50)
@@ -150,7 +156,7 @@ for index, row in df_venue_static.iterrows():
 
 # # Clearing Duplicates
 
-# In[ ]:
+# In[543]:
 
 
 # look for duplicates
@@ -160,7 +166,7 @@ for index, row in df_venue_static.iterrows():
 #print('Number of duplicate rows (including first) in the table is:', df_venue_static[df_venue_static.duplicated(keep=False)].shape[0])
 
 
-# In[ ]:
+# In[544]:
 
 
 # look for duplicates
@@ -170,7 +176,7 @@ for index, row in df_venue_static.iterrows():
 #print('Number of duplicate rows (including first) in the table is:', df_venue_timings[df_venue_timings.duplicated(subset=['venue_id', 'day', 'opening_time', 'closing_time'], keep='first')].shape[0])
 
 
-# In[ ]:
+# In[545]:
 
 
 #print('Number of duplicate (excluding first) rows in the table is: ', df_venue_timings.drop_duplicates(subset=['venue_id', 'day', 'opening_time', 'closing_time'], inplace=True))
@@ -179,7 +185,7 @@ for index, row in df_venue_static.iterrows():
 
 # # Grouping Zones
 
-# In[ ]:
+# In[546]:
 
 
 venue_zone_grouping = {
@@ -192,7 +198,7 @@ venue_zone_grouping = {
 }
 
 
-# In[ ]:
+# In[547]:
 
 
 # venue_zone_grouping dictionary
@@ -218,22 +224,23 @@ df_venue_static['zone_group'] = df_venue_static['zone_id'].apply(map_zone_group)
 #print(df_venue_static)
 
 
-# In[ ]:
+# In[548]:
 
 
+# df_venue_static.to_csv('zone_Grouping.csv', index=False)
 df_venue_static.to_csv('../data_models/Recommendation_model/zone_Grouping.csv', index=False)
 
 
 # # Extracting Only Attratcion Types and Ignoring Restaurants
 
-# In[ ]:
+# In[549]:
 
 
 unique_type_values = df_venue_static['venue_mod_type'].unique()
 #unique_type_values
 
 
-# In[ ]:
+# In[550]:
 
 
 specific_venue_types = ['Nature Attractions', 'Shopping Center', 'Tourist Destination', 'Cultural Heritage', 'Neighborhood Market', 'Fashion Convenience',  'Scenic Landmarks', 'Art', 'Religious', 'Park', 'Gifts & Souvenirs']
@@ -245,7 +252,7 @@ df_venue_static_att = df_venue_static[df_venue_static['venue_mod_type'].isin(spe
 #print(df_venue_static_att)
 
 
-# In[ ]:
+# In[551]:
 
 
 # Filter out the restaurant types
@@ -258,14 +265,14 @@ df_venue_restaurant = df_venue_static[df_venue_static['venue_type'].isin(restaur
 #print(df_venue_restaurant)
 
 
-# In[ ]:
+# In[552]:
 
 
 unique_venue_types = df_venue_restaurant['venue_type'].unique()
 #print(unique_venue_types)
 
 
-# In[ ]:
+# In[553]:
 
 
 unique_type_values_att = df_venue_static_att['venue_mod_type'].unique()
@@ -276,7 +283,7 @@ unique_type_values_att = df_venue_static_att['venue_mod_type'].unique()
 
 # ### Input
 
-# In[ ]:
+# In[554]:
 
 
 import sys
@@ -301,7 +308,7 @@ for i in range(len(user_input_restaurants)):
 # user_zone_input = ["Chelsea/Greenwhich market","Upper Manhattan"]
 
 # user_input_attractions = [
-#         "Tourist Destination",
+#         "Art",
 #         "Fashion Convenience",
 #         "Neighborhood Market",
 #         "Shopping Center"
@@ -310,7 +317,7 @@ for i in range(len(user_input_restaurants)):
 # user_input_restaurants = ['FRENCH_RESTAURANT', 'ITALIAN_RESTAURANT']
 
 
-# In[ ]:
+# In[555]:
 
 
 if len(user_input_attractions) < 4:
@@ -357,7 +364,7 @@ if len(user_input_attractions) < 4:
         user_input_attractions = user_input_attractions + slice_most_similar_tags
 
 
-# In[ ]:
+# In[556]:
 
 
 priority_table = pd.DataFrame({
@@ -371,7 +378,7 @@ priority_table = pd.DataFrame({
 })
 
 
-# In[ ]:
+# In[557]:
 
 
 # Assuming the following structure for df_venue_static_att: ['venue_id', 'venue_mod_type']
@@ -412,7 +419,7 @@ for index, row in priority_table.iterrows():
 #print(priority_table)
 
 
-# In[ ]:
+# In[558]:
 
 
 import pandas as pd
@@ -474,7 +481,7 @@ itinerary_timing = itinerary
 
 # ## Zone grouping
 
-# In[ ]:
+# In[559]:
 
 
 zone_group = []
@@ -484,7 +491,7 @@ for group in user_zone_input:
 #zone_group
 
 
-# In[ ]:
+# In[560]:
 
 
 zone_type_dict = {}
@@ -498,7 +505,7 @@ for venue_type in itinerary_timing:
 
 # ## Restaurant Filtering
 
-# In[ ]:
+# In[561]:
 
 
 restaurant_zone_dict = {}
@@ -511,7 +518,7 @@ for restaurant_type in user_input_restaurants:
 #print(restaurant_zone_dict)
 
 
-# In[ ]:
+# In[562]:
 
 
 restaurants_with_zero_zones = []
@@ -552,7 +559,7 @@ for res_type in restaurants_with_zero_zones:
 #print(filled_restaurant_with_zero_zone)
 
 
-# In[ ]:
+# In[563]:
 
 
 restaurant_venue_dict = {}
@@ -569,7 +576,7 @@ for restaurant_type, zones in restaurant_zone_dict.items():
 #print(restaurant_venue_dict)
 
 
-# In[ ]:
+# In[564]:
 
 
 user_venue_per_type_dict = {}
@@ -583,7 +590,7 @@ for venue_type in itinerary_timing:
 #print(user_venue_per_type_dict)
 
 
-# In[ ]:
+# In[565]:
 
 
 types_with_zero_zones = []
@@ -596,7 +603,7 @@ for venue_type, zones in user_venue_per_type_dict.items():
 #print("Venue types with 0 zones:", types_with_zero_zones)
 
 
-# In[ ]:
+# In[566]:
 
 
 def find_distance_between_zones(zone1_polygon, zone2_polygon):
@@ -608,7 +615,7 @@ def find_distance_between_zones(zone1_polygon, zone2_polygon):
     return distance
 
 
-# In[ ]:
+# In[567]:
 
 
 filled_type_with_zero_zone = {}
@@ -640,7 +647,7 @@ for ven_type in types_with_zero_zones:
 #filled_type_with_zero_zone
 
 
-# In[ ]:
+# In[568]:
 
 
 # For venues
@@ -665,7 +672,7 @@ for key in restaurant_venue_dict.keys():
 #print(restaurant_venue_dict)
 
 
-# In[ ]:
+# In[569]:
 
 
 today_day_num = datetime.now().weekday()  # 0: Monday, 6: Sunday
@@ -682,7 +689,7 @@ for attraction_type, venue_ids in user_venue_per_type_dict.items():
 #print(user_venue_per_type_dict)
 
 
-# In[ ]:
+# In[570]:
 
 
 # Update restaurant_zone_dict for restaurants open today
@@ -692,7 +699,7 @@ for restaurant_type, venue_ids in restaurant_venue_dict.items():
 #print(restaurant_venue_dict)
 
 
-# In[ ]:
+# In[571]:
 
 
 manipulated_restaurants = {}
@@ -720,7 +727,7 @@ for restaurant_type, restaurant_ids in restaurant_venue_dict.items():
 #print(manipulated_restaurants)
 
 
-# In[ ]:
+# In[572]:
 
 
 manipulated_venues = {}
@@ -747,7 +754,7 @@ for venue_type, venue_ids in user_venue_per_type_dict.items():
 
 
 
-# In[ ]:
+# In[573]:
 
 
 top_3_restaurants = {}
@@ -783,7 +790,7 @@ for i in range(0, len(restaurant_keys)):
 print(final_restaurants)
 
 
-# In[ ]:
+# In[574]:
 
 
 print('|')
