@@ -377,18 +377,6 @@ export const VenueSelection: React.FC<IProps> = ({ updateItinerary, currentItine
                       </Grid>
                       <Divider sx={{ margin: '10px 0' }} />
                       <Grid container style={{ flexDirection: 'row', justifyContent: 'center', backgroundColor: currentTheme.palette.secondary.main }}>
-                        {/* <CButton
-                          title="Select"
-                          onClick={() => { }}
-                          style={{
-                            width: '30%',
-                            background: '#757de8',
-                            color: '#ffffff',
-                            borderRadius: '20px',
-                            padding: '10px 20px',
-                            fontWeight: 'bold',
-                          }}
-                        /> */}
                         <CButton
                           title="View"
                           onClick={() => { }}

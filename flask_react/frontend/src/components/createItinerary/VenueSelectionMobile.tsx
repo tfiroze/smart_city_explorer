@@ -25,22 +25,25 @@ interface IProps {
 export const VenueSelectionMobile: React.FC<IProps> = ({ items }) => {
     const currentTheme = useTheme();
     return (
-        <Grid container>
+        <Grid container spacing={2} style={{ marginTop: '10px' }}>
             {items.map((item) => {
                 return (
-                    <Grid>
+                    <Grid item xs={12}>
                         <Card
                             sx={{
                                 display: "flex",
                                 flexDirection: "column",
-                                width: '50%',
                                 boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
                                 padding: '15px',
                                 borderRadius: '10px',
                                 backgroundColor: currentTheme.palette.secondary.main
                             }}>
+                            <Typography variant="h6" align="left">
+                                {item.title}
+                            </Typography>
                         </Card>
-                        <Grid>)})
-                        </Grid>
-                        )
+                    </Grid>)
+            })}
+        </Grid>
+    )
 }
