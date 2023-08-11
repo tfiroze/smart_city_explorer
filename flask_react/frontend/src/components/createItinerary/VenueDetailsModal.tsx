@@ -46,7 +46,7 @@ export const VenueDetailsModal: React.FC<IProps> = ({venue, onClick}) => {
 					padding: '10px',
 					position:'relative',
 					display:'flex',
-					backgroundColor:'transparent'
+					backgroundColor:'transparent',
 				}}
 
 			>

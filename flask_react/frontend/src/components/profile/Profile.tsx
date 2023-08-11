@@ -32,6 +32,8 @@ import grass from '../../resources/images/grass.jpg'
 import { TripNotFound } from "../common/tripNotFound";
 import { Loader } from "../common/loader";
 import { ErrorPage } from "../../views/ErrorPage";
+import { LoadingButton } from "@mui/lab";
+import { RequestLoader } from "../common/requestLoader";
 
 const erroDict: { [key: string]: string } = {
     '0': '',
@@ -75,6 +77,9 @@ const Profile = () => {
 
     const [requestLoader, setRequestLoader] = useState<boolean>(false)
     const [requestList, setRequestList] = useState<any[]>([])
+
+    const [acceptBtnLoading, setAcceptBtnLoading] = useState<boolean>(false)
+    const [declineBtnLoading, setDeclineBtnLoading] = useState<boolean>(false)
 
 
     useEffect(() => {
@@ -340,22 +345,27 @@ const Profile = () => {
 
 
     const handlegetTripDetails = () => {
-        setLoader(true)
+        
         if (userRequest?.user_id) {
+            setRequestLoader(true)
             smartApi.allTrips(userRequest.user_id)
                 .then((results) => {
                     console.log(results);
                     setLoader(false)
+                    setRequestLoader(false)
                     // setLoader(false)
                     if (results?.valid) {
                         setPastTrips([...results.completedTrips])
                         setUpcomingTrips([...results.upcomingTrips])
                         setErrorPage(false)
+                    setRequestLoader(false)
+
                         //   getPopularPlaces()
                     } else {
                         // ... handle the case when results?.valid is falsy ...
                         setErrorPage(true)
-                        setLoader(false)
+                    setRequestLoader(false)
+
                     }
                 })
                 .catch((error) => {
@@ -386,33 +396,79 @@ const Profile = () => {
             });
     }
 
-    const handleItienaray = (text: string) => {
-
-        setActiveOption(text)
+    const handleRequest = () => {
+        if(authContext?.userInfo?.user_id){
+            setRequestLoader(true)
+            let req = {
+                user_id: parseInt(authContext.userInfo?.user_id)
+            }
+            console.log(req)
+            smartApi.getRequest(req)
+                .then((results) => {
+                    setRequestLoader(false)
+                    if (results?.valid && results?.data) {
+                        setRequestList(results.data)
+                    } else {
+                        // ... handle the case when results?.valid is falsy ...
+                        setErrorPage(true)
+                    }
+                })
+                .catch((error) => {
+                    setLoader(false)
+                });
+        }
     }
 
-    const handleRequest = () => {
-        let req = {
-            user_id: authContext.userInfo?.user_id
-        }
-        console.log(req)
-        smartApi.getRequest(req)
-            .then((results) => {
+    const handleAcceptRequest = (id: number) => {
+        if(authContext?.userInfo?.user_id){
+            let req = {
+                user_id: parseInt(authContext.userInfo?.user_id),
+                trip_id: id
+            }
+        setAcceptBtnLoading(true)
 
-                // console.log(results);
-                // setLoader(false)
-                if (results?.valid && results?.data) {
-                    setRequestList(results.data)
-                } else {
-                    // ... handle the case when results?.valid is falsy ...
+            smartApi.acceptRequest(req)
+                .then((results) => {
+                    if (results?.valid) {
+                        handleRequest()
+                        setAcceptBtnLoading(false)
+                    } else {
+                        // ... handle the case when results?.valid is falsy ...
+                        setErrorPage(true)
+                        setAcceptBtnLoading(false)
+                    }
+                })
+                .catch((error) => {
                     setErrorPage(true)
-                }
-            })
-            .catch((error) => {
-                // console.log(error);
-                // setErrorPage(true)
-                // setLoader(false)
-            });
+                    setAcceptBtnLoading(false)
+                });
+        }
+    }
+
+    const handleDeclineRequest = (id: number) => {
+        if (authContext?.userInfo?.user_id) {
+            setDeclineBtnLoading(true)
+   
+            let req = {
+                user_id: parseInt(authContext.userInfo?.user_id),
+                trip_id: id
+            }
+            smartApi.acceptRequest(req)
+                .then((results) => {
+                    if (results?.valid) {
+                        handleRequest()
+                        setDeclineBtnLoading(false)
+                    } else {
+                        // ... handle the case when results?.valid is falsy ...
+                        setErrorPage(true)
+                        setDeclineBtnLoading(false)
+                    }
+                })
+                .catch((error) => {
+                    setErrorPage(true)
+                    setDeclineBtnLoading(false)
+                });
+        }
     }
 
     const handleProfileClicks = (text: string) => {
@@ -628,7 +684,7 @@ const Profile = () => {
                                 />
                             </>}
                             {activeOption == 'Past Trips' && <>
-                                <Grid container md={12} style={{ height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll' }}>
+                                {requestLoader?<RequestLoader/>:<Grid container md={12} style={{ height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll' }}>
                                     {(pastTrips?.length > 0) && pastTrips.map((item: any, index: number) =>
                                         <>
                                             <div
@@ -643,17 +699,17 @@ const Profile = () => {
                                                     backgroundPosition: 'top', // Center the background image
                                                     backgroundSize: 'cover', // Ensure the image covers the entire container
                                                     backgroundRepeat: 'no-repeat', // Prevent image repetition
-                                                    backgroundImage: `url(${grass})`,
-                                                    margin: '10px'
+                                                    margin: '10px',
+                                                    border: '2px solid #757de8'
                                                 }}
                                                 className="unselectable"
                                                 onClick={() => { handleDetailsNavigation(item.trip_id) }}
                                             >
                                                 <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
-                                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent' }}>
                                                         {toTitleCase(item.trip_name)}
                                                     </Typography>
-                                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent' }}>
                                                         {dayjs(item.trip_date).format("YYYY-MM-DD")}
                                                     </Typography>
                                                 </Grid>
@@ -663,12 +719,11 @@ const Profile = () => {
                                     {
                                         (pastTrips?.length == 0) && <TripNotFound />
                                     }
-                                </Grid>
-
-
-                            </>}
+                                </Grid>}
+                            </>
+                            }
                             {activeOption == 'Upcoming Trips' && <>
-                                <div style={{ width: '100%', height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll' }}>
+                                {requestLoader ? <RequestLoader/> : <div style={{ width: '100%', height:'50vh', display: 'flex', flexWrap: 'wrap', overflow: 'scroll' }}>
                                     {(upcomingTrips?.length > 0) && upcomingTrips.map((item: any, index: number) =>
                                         <>
                                             <div
@@ -683,17 +738,17 @@ const Profile = () => {
                                                     backgroundPosition: 'top', // Center the background image
                                                     backgroundSize: 'cover', // Ensure the image covers the entire container
                                                     backgroundRepeat: 'no-repeat', // Prevent image repetition
-                                                    backgroundImage: `url(${grass})`,
-                                                    margin: '10px'
+                                                    margin: '10px',
+                                                    border: '2px solid #757de8'
                                                 }}
                                                 className="unselectable"
                                                 onClick={() => { handleDetailsNavigation(item.trip_id) }}
                                             >
                                                 <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
-                                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent' }}>
                                                         {toTitleCase(item.trip_name)}
                                                     </Typography>
-                                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent' }}>
                                                         {dayjs(item.trip_date).format("YYYY-MM-DD")}
                                                     </Typography>
                                                 </Grid>
@@ -703,27 +758,50 @@ const Profile = () => {
                                     {
                                         (upcomingTrips?.length == 0) && <TripNotFound />
                                     }
-                                </div>
+                                </div>}
 
                             </>}
 
                             {activeOption == 'Requests' &&
                                 <>
-                                    {requestLoader ? <></> :
-                                        <>{requestList?.length > 0 && 
-                                        <Grid container md={12} style={{ height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll' }}>
-                                            {requestList.map((el)=>(
-                                                <div style={{width:'100%', padding:'10px', border:'2px solid #757de8'}}>
-                                                <div style={{width:'50%'}}>
-                                                    <Typography align="center">{el.firstname} {el.surname}</Typography>
-                                                    <Typography align="center">Trip Name: {el.trip_name}</Typography>
-                                                </div>
-                                                <div style={{width: '50%'}}>
-
-                                                </div>
-                                            </div>
-                                            )) }
-                                        </Grid>}
+                                    {requestLoader ? <RequestLoader/> :
+                                        <>{requestList?.length > 0 ?
+                                            <Grid container md={12} style={{ height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll', alignItems:'flex-start', justifyContent:'flex-start' }}>
+                                                {requestList.map((el) => (
+                                                    <div style={{ width: '100%', padding: '10px', border: '2px solid #757de8', height: '50px', borderRadius: '10px', display: 'flex', flexDirection: 'row' }}>
+                                                        <div style={{ width: '50%' }}>
+                                                            <Typography align="center" fontWeight={"bold"}>{el.firstname} {el.surname}</Typography>
+                                                            <Typography align="center">Trip: {el.trip_name}</Typography>
+                                                        </div>
+                                                        <div style={{ width: '50%', display: 'flex', justifyContent: 'space-between' }}>
+                                                            <LoadingButton
+                                                                variant="contained"
+                                                                onClick={() => handleAcceptRequest(el.trip_id)}
+                                                                style={{
+                                                                    margin: '10px 0px'
+                                                                }}
+                                                                loading={acceptBtnLoading}
+                                                            >
+                                                                Accept
+                                                            </LoadingButton>
+                                                            <LoadingButton
+                                                                variant="contained"
+                                                                onClick={() => handleDeclineRequest(el.trip_id)}
+                                                                style={{
+                                                                    margin: '10px 0px'
+                                                                }}
+                                                                loading={declineBtnLoading}
+                                                            >
+                                                                Decline
+                                                            </LoadingButton>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </Grid>:
+                                            <Grid container md={12} style={{ height: '100%', display: 'flex', flexWrap: 'wrap', overflow: 'scroll', alignItems:'center', justifyContent:'center' }}>
+                                            <Typography align="center" fontWeight={"bold"}>No Requests Found</Typography>
+                                            </Grid>
+                                            }
                                         </>
                                     }
                                 </>

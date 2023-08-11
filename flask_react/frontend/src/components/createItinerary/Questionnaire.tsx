@@ -205,10 +205,7 @@ export const Questionnaire: React.FC<IProps> = ({
       zoneArray.splice(index, 1);
     }
     setSelectedZones(zoneArray);
-    console.log(zoneArray);
-
     const zoneGroupItems = zoneArray.flatMap((el) => zoneCords.filter((x) => x.zone_group === el));
-    console.log(zoneGroupItems);
     setZoneGroupItems([...zoneGroupItems]);
   };
 
@@ -345,6 +342,7 @@ export const Questionnaire: React.FC<IProps> = ({
                             backgroundColor: currentTheme.palette.secondary.main,
                             borderRadius: "15px",
                           }}
+                          disablePast
                         />
                       </DemoItem>
                     </Grid>
@@ -467,7 +465,7 @@ export const Questionnaire: React.FC<IProps> = ({
               >
                 <CButton
                   title="Next"
-                  onClick={() => submitOptions()}
+                  onClick={() => finishTripQuestionnaire()}
                   style={{
                     width: "50%",
                     background: "#757de8",

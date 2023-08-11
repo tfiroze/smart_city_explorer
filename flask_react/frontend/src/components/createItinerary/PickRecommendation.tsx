@@ -97,7 +97,6 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
     }
 
     const handleCardSelection = (type: string, id: string, details: any) => {
-        console.log(details);
 
         if (type.includes("RESTAURANT")) {
             setRestaurantSelection({
@@ -124,7 +123,7 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
     const handleSubmitSelection = () => {
 
         if (Object.keys(attractionSelection).length == 4 && Object.keys(restaurantSelection).length == 2) {
-            console.log(restaurantSelection, attractionSelection);
+            
             const submissionArray = attractionNameArr.map(key => attractionSelection[key]);
             let restArr = restaurantNameArr.map(key => restaurantSelection[key]);
 
@@ -136,9 +135,6 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
 
             submissionObjArr.splice(2, 0, submissionRestObjArr[0]);
             submissionObjArr.push(submissionRestObjArr[1]);
-
-            console.log(submissionObjArr, 'Submission Object Array');
-
 
             getFare(submissionArray, submissionObjArr)
         } else {

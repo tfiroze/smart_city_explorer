@@ -248,11 +248,11 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
                   <Typography variant="h5" fontWeight={"bold"} align="right">$ {fareArr[index] ? Math.ceil(parseInt(fareArr[index])) : '--'}</Typography>
 
                 </div>}
-                <div style={{ width: '4%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                {(fareArr?.length > 0 || duration?.length > 0)&& <div style={{ width: '4%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <div style={{ width: '20px', height: '20px',marginTop:'15px', padding: '10px', borderRadius: '50%', backgroundColor: currentTheme.palette.secondary.main, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <LocalTaxiIcon sx={{ color: ' #757de8' }} />
                   </div>
-                </div>
+                </div>}
                 {(duration && duration.length > 0) && <div style={{ width: '48%' }}>
                   <Typography variant="subtitle1" component="span">
                     Drive For
