@@ -540,6 +540,7 @@ confirmItienary = async function(request: object){
 			  return {
 				  valid: true,
 				  errorType: "0",
+				  trip_id: data.data.trip_id
 			  };
 		  } else {
 			  return {
@@ -560,6 +561,127 @@ confirmItienary = async function(request: object){
 	  };
   }
 };
+
+checkEmail = async function(email: string){
+
+	try {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "checkEmail", {
+		  method: "POST",
+		  body: JSON.stringify({email: email}),
+		  headers: {
+			'Content-Type': 'application/json'
+		  }
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Get CheckEmail Request Response: ', data)
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+				  user_id: data.user_id
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1',
+				  message: data.message
+			  };
+		  }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2',
+			  message: 'Something Went Wrong'
+		  };
+	  }
+  } catch (error) {
+	  return {
+		  valid: false,
+		  errorType: '2',
+		  message: 'Something Went Wrong!'
+	  };
+  }
+};
+
+sendRequest = async function(req: object){
+	console.log(req);
+	
+	try {
+	  const response = await fetch('http://127.0.0.1:5000/api/' + "sendInvite", {
+		  method: "POST",
+		  body: JSON.stringify(req),
+		  headers: {
+			'Content-Type': 'application/json'
+		  }
+		});
+
+	  if (response.status === 200) {
+		  const data = await response.json();
+		  console.log('Get CheckEmail Request Response: ', data)
+		  if (data?.valid && data?.message) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+				  message: data.message
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1',
+				  message: data.message
+			  };
+		  }
+	  } else {
+		  return {
+			  valid: false,
+			  errorType: '2'
+		  };
+	  }
+  } catch (error) {
+	  return {
+		  valid: false,
+		  errorType: '2'
+	  };
+  }
+};
+
+getItienaryDetails = async function (trip_id:number) {
+	try {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `trips/${12}`, {
+			method: "GET",
+			credentials: 'include',
+		  });
+  
+		if (response.status === 200) {
+			const data = await response.json();
+			console.log('Update UserDetails Request Response: ', data)
+			if (data?.valid) {
+				return {
+					valid: true,
+					errorType: "0",
+				};
+			} else {
+				return {
+					valid: false,
+					errorType: '1'
+				};
+			}
+		} else {
+			return {
+				valid: false,
+				errorType: '2'
+			};
+		}
+	} catch (error) {
+		return {
+			valid: false,
+			errorType: '2'
+		};
+	}
+}
+
 
 addFriendsToTrip = async function(request: object){
 	try {

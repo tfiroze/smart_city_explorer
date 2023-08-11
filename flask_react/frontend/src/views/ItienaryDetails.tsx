@@ -83,7 +83,7 @@ export const ItineraryDetails = () => {
         maxWidth="sm"
         fullWidth
       >
-        <FriendsModal />
+        {/* <FriendsModal /> */}
       </Dialog>
 
       <Dialog

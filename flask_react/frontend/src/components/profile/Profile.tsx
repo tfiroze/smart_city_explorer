@@ -12,7 +12,7 @@ import LuggageRoundedIcon from "@mui/icons-material/LuggageRounded";
 import Divider from "@mui/material/Divider";
 import Paper from "@mui/material/Paper";
 import { ProfileDrawer } from "../navigation/ProfileDrawer";
-import { Dialog, Drawer, Grid, List, ListItem, ListItemIcon, ListItemText, TextField } from "@mui/material";
+import { Dialog, Drawer, Grid, List, ListItem, ListItemIcon, ListItemText, TextField, useTheme } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import LuggageIcon from "@mui/icons-material/Luggage";
@@ -26,6 +26,10 @@ import { CButton } from "../common/button";
 import { smartApi } from "../../utils/apiCalls";
 import { MessagePopups } from "../common/messagePopups";
 import IItinerary from "../../models/IItinerary";
+import { toTitleCase } from "../../utils/utility_func";
+import dayjs from "dayjs";
+import grass from '../../resources/images/grass.jpg'
+import { TripNotFound } from "../common/tripNotFound";
 
 const erroDict: { [key: string]: string } = {
     '0': '',
@@ -81,6 +85,8 @@ const Profile = () => {
                 email: authContext.userInfo?.email,
                 user_id: authContext.userInfo?.user_id
             })
+
+            handlegetTripDetails()
         }
     }, [])
 
@@ -343,12 +349,12 @@ const Profile = () => {
               })
               .catch((error) => {
                 console.log(error);
-                // setError('2')
+                setError('2')
                 // setLoader(false)
               });
           }
     }
-
+    const currentTheme = useTheme();
     return (
         <Container>
             <Dialog
@@ -367,8 +373,8 @@ const Profile = () => {
                     <Typography variant="h6" sx={{ marginBottom: 2, marginLeft: 1 }}>Navigation</Typography>
                     <Divider />
                     <List>
-                        {['Home', 'Update Details', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Dashboard', 'Weather'].map((text, index) => (
-                            <ListItem button key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => {text === 'Dashboard'?navigate('/dashboard'): setActiveOption(text)}}>
+                        {['Home', 'Update Details', 'Update Password', 'Requests', 'Past Trips', 'Upcoming Trips', 'Dashboard'].map((text, index) => (
+                            <ListItem button style={{backgroundColor:activeOption == text?  currentTheme?.palette?.secondary?.main : 'transparent'}}  key={text} sx={{ '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.08)' } }} onClick={() => {text === 'Dashboard'?navigate('/dashboard'): setActiveOption(text)}}>
                                 <ListItemIcon>
                                     {index === 0 ? <HomeIcon /> :
                                         index === 1 ? <AdminPanelSettingsOutlinedIcon /> :
@@ -377,7 +383,7 @@ const Profile = () => {
                                                     index === 4 ? <HistoryIcon /> :
                                                         index === 5 ? <LuggageIcon /> :
                                                             index === 6 ? <LocalAirportIcon /> :
-                                                            <WbSunnyIcon />}
+                                                            <></>}
                                 </ListItemIcon>
                                 <ListItemText primary={text} />
                             </ListItem>
@@ -548,9 +554,81 @@ const Profile = () => {
                     </>}
                     {activeOption == 'Past Trips' && <>
 
-                        <Grid container md={12} style={{height:'100%', display:'flex', flexWrap:'wrap', overflow:'scroll', border:'2px solid black'}}>
-                            
+                        <Grid container md={12} style={{height:'100%', display:'flex', flexWrap:'wrap', overflow:'scroll'}}>
+                        {(pastTrips?.length > 0) && pastTrips.map((item: any, index: number) =>
+                                <>
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      padding: '15px',
+                                      width: '30%',
+                                      height:'10%',
+                                      backgroundColor: currentTheme?.palette?.secondary?.main,
+                                      marginRight: '5px',
+                                      borderRadius: '10px',
+                                      backgroundPosition: 'top', // Center the background image
+                                      backgroundSize: 'cover', // Ensure the image covers the entire container
+                                      backgroundRepeat: 'no-repeat', // Prevent image repetition
+                                      backgroundImage: `url(${grass})`,
+                                      margin:'10px'
+                                    }}
+                                    className="unselectable"
+                                    onClick={() => {}}
+                                  >
+                                    <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
+                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                        {toTitleCase(item.trip_name)}
+                                      </Typography>
+                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                        {dayjs(item.trip_date).format("YYYY-MM-DD")}
+                                      </Typography>
+                                    </Grid>
+                                  </div>
+                                </>
+                              )}
+                              {
+                                (pastTrips?.length == 0) && <TripNotFound />
+                              }
                         </Grid>
+                    </>}
+                    {activeOption == 'Upcoming Trips' && <>
+
+                        <div  style={{width:'100%',height:'100%', display:'flex', flexWrap:'wrap', overflow:'scroll'}}>
+                        {(upcomingTrips?.length > 0) && upcomingTrips.map((item: any, index: number) =>
+                                <>
+                                  <div
+                                    style={{
+                                      cursor: "pointer",
+                                      padding: '15px',
+                                      width: '30%',
+                                      height:'10%',
+                                      backgroundColor: currentTheme?.palette?.secondary?.main,
+                                      marginRight: '5px',
+                                      borderRadius: '10px',
+                                      backgroundPosition: 'top', // Center the background image
+                                      backgroundSize: 'cover', // Ensure the image covers the entire container
+                                      backgroundRepeat: 'no-repeat', // Prevent image repetition
+                                      backgroundImage: `url(${grass})`,
+                                      margin:'10px'
+                                    }}
+                                    className="unselectable"
+                                    onClick={() => {}}
+                                  >
+                                    <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
+                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                        {toTitleCase(item.trip_name)}
+                                      </Typography>
+                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                        {dayjs(item.trip_date).format("YYYY-MM-DD")}
+                                      </Typography>
+                                    </Grid>
+                                  </div>
+                                </>
+                              )}
+                              {
+                                (upcomingTrips?.length == 0) && <TripNotFound />
+                              }
+                        </div>
                     </>}
                 </Box>
             </Box>

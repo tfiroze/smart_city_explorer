@@ -49,6 +49,22 @@ export const Header: React.FC<Partial<IProps>> = ({
     return themeContext.theme === 'dark' ? '#757de8' : '#757de8';
   };
   const currentTheme = useTheme();
+
+  const handleLogout = ()=>{
+    document.cookie = `${'token'}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    authContext.authenticate(false, {
+      first_name: "",
+      surname: "",
+      user_id: "",
+      email: "",
+  });
+  localStorage.setItem("user_id", "");
+  localStorage.setItem("email", "");
+  localStorage.setItem("first_name", "");
+  localStorage.setItem("surname", "");
+  }
+
+
   return (
     <>
       <Menu
@@ -69,7 +85,7 @@ export const Header: React.FC<Partial<IProps>> = ({
           <Switch checked={themeContext.theme === 'dark'} onChange={handleThemeChange} />
         </MenuItem>
         <Divider />
-        <MenuItem>
+        <MenuItem onClick={()=>handleLogout()}>
           <LogoutIcon />
           <Typography variant="subtitle1">Log Out</Typography>
         </MenuItem>
