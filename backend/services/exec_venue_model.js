@@ -6,13 +6,13 @@ function executeIPythonNotebook(ipynbFileName, parameters) {
   try {
     
     // 1. turn .ipynb into .py script
-    execSync(`jupyter nbconvert --to script ${ipynbFileName}`);
+    execSync(`/home/student/.local/bin/jupyter-nbconvert --to script ${ipynbFileName}`);
 
     // 2. get the name of .py file
     const scriptFileName = ipynbFileName.replace('.ipynb', '.py');
     
     // create the command about executing
-    const command = `python ${scriptFileName} ${parameters.join(' ')}`;
+    const command = `/usr/bin/python3 ${scriptFileName} ${parameters.join(' ')}`;
 
     console.log(command, '-------------------')
     // execute Python script and get the result
