@@ -100,7 +100,7 @@ let getVenueInfo = (req, res, next) => {
     let venueIds = req.body.venueIds
     try {
         let dbOperation = (conn) => {
-            let sqlStr = 'select original_ven_id,name,image,rating,description from venue_static where original_ven_id in (?)'
+            let sqlStr = 'select original_ven_id,name,image,rating,description,latitude,longitude from venue_static where original_ven_id in (?)'
             conn.query(sqlStr, [venueIds], (err, result) => {
                 if(err) {
                     console.error(err)

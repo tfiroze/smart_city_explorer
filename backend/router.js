@@ -52,7 +52,7 @@ router.post('/checkEmail', friendController.checkEmail);
 // 2. API to send an invite
 router.post('/sendInvite', friendController.sendInvite, friendController.addTripRequest);
 // 3. API to check trip requests
-router.post('/checkRequests', friendController.checkRequests);
+router.post('/checkRequests', friendController.checkRequests, friendController.checkRequestsMW, friendController.checkRequestsMW2);
 // 4. API to accept an invite
 router.post('/acceptInvite', friendController.acceptInvite);
 // 5. API to decline an invite
