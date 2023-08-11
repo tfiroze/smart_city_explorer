@@ -54,7 +54,7 @@ router.post('/sendInvite', friendController.sendInvite, friendController.addTrip
 // 3. API to check trip requests
 router.post('/checkRequests', friendController.checkRequests, friendController.checkRequestsMW, friendController.checkRequestsMW2);
 // 4. API to accept an invite
-router.post('/acceptInvite', friendController.acceptInvite);
+router.post('/acceptInvite', friendController.acceptInvite, friendController.acceptInviteMW, friendController.acceptInviteMW2);
 // 5. API to decline an invite
 router.post('/declineInvite', friendController.declineInvite);
 

@@ -188,51 +188,111 @@ exports.checkRequestsMW2 = (req, res) => {
   }
 }
 
-
-
-
-// 3. API to accept an invite
-exports.acceptInvite = (req, res) => {
-  const { trip_id, user_id } = req.body;
-
-  createSSHTunnel(async (connection) => {
-    try {
-      await connection.execute('UPDATE trip_requests SET confirmation_status = ? WHERE trip_id = ? AND requested_user_id = ?', ['accepted', trip_id, user_id]);
-
-      // Fetch current trip participants
-      const [tripInfo] = await connection.execute('SELECT trip_part_1, trip_part_2, trip_part_3, trip_part_4 FROM trip_info WHERE trip_id = ?', [trip_id]);
-
-      if (tripInfo.length === 0) {
-        return res.status(404).json({valid:false, message: 'Trip not found.' });
-      }
-
-      const tripData = tripInfo[0];
-      let columnToUpdate;
-
-      if (!tripData.trip_part_1) {
-        columnToUpdate = 'trip_part_1';
-      } else if (!tripData.trip_part_2) {
-        columnToUpdate = 'trip_part_2';
-      } else if (!tripData.trip_part_3) {
-        columnToUpdate = 'trip_part_3';
-      } else if (!tripData.trip_part_4) {
-        columnToUpdate = 'trip_part_4';
-      }
-
-      if (columnToUpdate) {
-        await connection.execute(`UPDATE trip_info SET ${columnToUpdate} = ? WHERE trip_id = ?`, [user_id, trip_id]);
-        res.status(200).json({valid:true, message: 'Invite accepted and user added as a trip participant.' });
-      } else {
-        res.status(400).json({valid:false, message: 'All participant slots are full. Cannot accept invite.' });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({valid:false, message: 'There was an error.', error: error.message });
-    } finally {
-      connection.end();
+// (Required: trip_id, user_id)
+exports.acceptInvite = (req, res, next) => {
+  try {
+    let dbOperation = (conn) => {
+      let sqlStr = 'UPDATE trip_requests SET confirmation_status = ? WHERE trip_id = ? AND requested_user_id = ?'
+      conn.query(sqlStr, ['accepted', req.body.trip_id, req.body.user_id], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        conn.end()
+        next()
+      })
     }
-  });
-};
+    createSSHTunnel(dbOperation)
+  }catch(err) {
+    console.error(err)
+    return res.status(200).send({valid: false, message:"There is an error", error:err})
+  }
+}
+
+exports.acceptInviteMW = (req, res, next) => {
+  try{
+    let dbOperation = (conn) => {
+      let sqlStr = 'SELECT trip_part_1, trip_part_2, trip_part_3, trip_part_4 FROM trip_info WHERE trip_id = ?'
+      conn.query(sqlStr, [req.body.trip_id], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        let columnToUpdate
+        if (rows[0][0]['trip_part_1'] == 0) {
+          columnToUpdate = 'trip_part_1';
+        } else if (rows[0]['trip_part_2'] == 0) {
+          columnToUpdate = 'trip_part_2';
+        } else if (rows[0]['trip_part_3'] == 0) {
+          columnToUpdate = 'trip_part_3';
+        } else if (rows[0]['trip_part_4'] == 0) {
+          columnToUpdate = 'trip_part_4';
+        }
+        req.body.columnToUpdate = columnToUpdate
+        conn.end()
+        next()
+      })
+    }
+    createSSHTunnel(dbOperation)
+  }catch(err){
+    console.error(err)
+    return res.status(200).send({valid: false, message:"There is an error", error:err})
+  }
+}
+
+exports.acceptInviteMW2 = (req, res) => {
+  try {
+    let dbOperation = (conn) => {
+      let sqlStr = `UPDATE trip_info SET ${req.body.columnToUpdate}=? WHERE trip_id=?`
+      conn.query(sqlStr, [ req.body.user_id, req.body.trip_id], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        return res.status(200).json({valid:true, message: 'Invite accepted and user added as a trip participant.' });
+      })
+    }
+    createSSHTunnel(dbOperation)
+  }catch(err){
+    console.error(err)
+    return res.status(200).send({valid: false, message:"There is an error", error:err})
+  }
+}
+
+
+// const [tripInfo] = await connection.execute('SELECT trip_part_1, trip_part_2, trip_part_3, trip_part_4 FROM trip_info WHERE trip_id = ?', );
+
+//       if (tripInfo.length === 0) {
+//         return res.status(404).json({valid:false, message: 'Trip not found.' });
+//       }
+
+//       const tripData = tripInfo[0];
+//       let columnToUpdate;
+
+//       if (!tripData.trip_part_1) {
+//         columnToUpdate = 'trip_part_1';
+//       } else if (!tripData.trip_part_2) {
+//         columnToUpdate = 'trip_part_2';
+//       } else if (!tripData.trip_part_3) {
+//         columnToUpdate = 'trip_part_3';
+//       } else if (!tripData.trip_part_4) {
+//         columnToUpdate = 'trip_part_4';
+//       }
+
+//       if (columnToUpdate) {
+//         await connection.execute(`UPDATE trip_info SET ${columnToUpdate} = ? WHERE trip_id = ?`, [user_id, trip_id]);
+//         res.status(200).json({valid:true, message: 'Invite accepted and user added as a trip participant.' });
+//       } else {
+//         res.status(400).json({valid:false, message: 'All participant slots are full. Cannot accept invite.' });
+//       }
+
+
 
 // 4. API to decline an invite
 exports.declineInvite = (req, res) => {
