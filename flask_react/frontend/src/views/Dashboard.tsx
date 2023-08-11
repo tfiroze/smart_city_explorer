@@ -44,6 +44,7 @@ import makeStyles from "@mui/styles/makeStyles/makeStyles";
 import { TripNotFound } from "../components/common/tripNotFound";
 import geoData from "../resources/Manhattan_Taxi_Zones.json"
 import L, { divIcon } from "leaflet";
+import Hidden from '@material-ui/core/Hidden';
 
 
 import { GeoJSON as LeafletGeoJSON } from "leaflet";
@@ -52,7 +53,24 @@ const useStyles = makeStyles((theme: Theme) => ({
     "& .MuiPaper-root": {
       backgroundColor: "transparent",
       boxShadow: '0 0 0 rgba(0, 0, 0, 0.3)',
+
+    },
+    mapContainer: {
+      height: "100vh",
+      width: "100%",
+      borderTopLeftRadius: '50px',
+      borderBottomLeftRadius: '50px'
+    },
+    zoneLabel: {
+      backgroundColor: "transparent",
+      border: "none",
+      color: "#000",
+      fontWeight: "bold",
+      fontSize: "12px",
+      textShadow: "2px 2px 2px #FFF"
     }
+
+
   }
 }));
 interface PopularPlaces {
@@ -219,25 +237,36 @@ export const Dashboard = () => {
 
   const classes = useStyles();
 
+  const COLORS = {
+    UPPER_MANHATTAN: "#FAD02E",  // Muted Gold
+    LOWER_MANHATTAN: "#2A9D8F",  // Teal
+    UPPER_WEST_SIDE: "#E76F51",  // Burnt Coral
+    UPPER_EAST_SIDE: "#264653",  // Dark Slate Blue
+    CHELSEA_GREENWICH_MARKET: "#F4A261",  // Sandy Brown
+    MIDTOWN_MANHATTAN: "#E9C46A",  // Pale Yellow
+    DEFAULT: "#D3D3D3"  // Light Grey (for areas not specifically categorized)
+  };
+
+
   function getFillColorForZoneGroup(zoneGroup: string) {
     switch (zoneGroup) {
       case "Upper Manhattan":
-        return "yellow";
+        return COLORS.UPPER_MANHATTAN;
       case "Lower Manhattan":
-        return "green";
+        return COLORS.LOWER_MANHATTAN;
       case "Upper West Side":
-        return "blue";
+        return COLORS.UPPER_WEST_SIDE;
       case "Upper East Side":
-        return "cyan";
+        return COLORS.UPPER_EAST_SIDE;
       case "Chelsea/Greenwhich market":
-        return "white";
+        return COLORS.CHELSEA_GREENWICH_MARKET;
       case "Midtown Manhattan":
-        return "#000000";
-      // Add more cases for other zone groups here
+        return COLORS.MIDTOWN_MANHATTAN;
       default:
-        return "red"; // Default color if no match is found
+        return COLORS.DEFAULT;
     }
   }
+
 
   let venue_zone_grouping = {
     "Upper Manhattan": [128, 127, 243, 120, 244, 116, 42, 152, 41, 74, 75],
@@ -321,7 +350,7 @@ export const Dashboard = () => {
             </Dialog>
 
             <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
-              <Grid container xs={6} style={{ padding: '15px', overflow: 'scroll', height: '100%' }}>
+              <Grid container item xs={12} md={6} style={{ padding: '15px', overflow: 'scroll', height: '100%' }}>
                 <div style={{ width: '100%', height: '10%' }}>
                   <Header />
                 </div>
@@ -434,74 +463,83 @@ export const Dashboard = () => {
                   </div>}
                 </Grid>
               </Grid>
-              <Grid container xs={6}>
-                <MapContainer
-                  style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
-                  zoom={12}
-                  center={[40.7831, -73.9712]}
-                  // center={[37.5004851, -96.2261503]}
-                  maxBoundsViscosity={1.0}
-                  zoomControl={false}
-                  scrollWheelZoom={false}
-                  dragging={false}
-                  touchZoom={false}
-                  doubleClickZoom={false}
-                  boxZoom={false}
-                  keyboard={false}
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <GeoJSON
-                    data={geoData}
-                    onEachFeature={(feature, layer) => {
-                      const zoneNumber = feature.properties.location_id;
-                      for (const [zoneGroup, zoneNumbers] of Object.entries(
-                        venue_zone_grouping
-                      )) {
-                        if (zoneNumbers.includes(zoneNumber)) {
-                          // Assign a specific color based on the zone group
-                          const popupContent = `<div>${zoneGroup}</div>`;
 
-                          // Bind the popup content to the layer
-                          layer.bindPopup(popupContent);
+              {window.innerWidth > 960 && (  // 960px is the breakpoint for 'md' in Material-UI by default.
+                <Grid container item md={6}>
+                  <MapContainer
+                    style={{ height: "100vh", width: "100%", borderTopLeftRadius: '50px', borderBottomLeftRadius: '50px' }}
+                    zoom={12}
+                    center={[40.7831, -73.9712]}
+                    // center={[37.5004851, -96.2261503]}
+                    maxBoundsViscosity={1.0}
+                    zoomControl={false}
+                    scrollWheelZoom={false}
+                    dragging={false}
+                    touchZoom={false}
+                    doubleClickZoom={false}
+                    boxZoom={false}
+                    keyboard={false}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <GeoJSON
+                      data={geoData}
+                      onEachFeature={(feature, layer) => {
+                        const zoneNumber = feature.properties.location_id;
+                        const zoneName = feature.properties.zoneName;
+
+                        for (const [zoneGroup, zoneNumbers] of Object.entries(
+                          venue_zone_grouping
+                        )) {
+                          if (zoneNumbers.includes(zoneNumber)) {
+                            // Assign a specific color based on the zone group
+                            const popupContent = `<div>${zoneGroup}</div>`;
+
+                            // Bind the popup content to the layer
+                            // layer.bindPopup(popupContent);
+                            layer.bindTooltip(popupContent);//(zoneName, { permanent: true, direction: "center", className: classes.zoneLabel }).openTooltip();
+
+                          }
                         }
-                      }
 
-                      // Create a popup content using the zoneNumber or other properties you want to display
+                        // Create a popup content using the zoneNumber or other properties you want to display
 
-                    }}
+                      }}
 
-                    style={(feature) => {
-                      const zoneNumber = feature.properties.location_id; // Assuming someProperty holds the zone number
-                      let fillColor = "red"; // Default color
 
-                      // Loop through the zone_grouping object and check if the zone number is in any of the specified zones
-                      for (const [zoneGroup, zoneNumbers] of Object.entries(
-                        venue_zone_grouping
-                      )) {
-                        if (zoneNumbers.includes(zoneNumber)) {
-                          // Assign a specific color based on the zone group
-                          fillColor = getFillColorForZoneGroup(zoneGroup);
-                          break; // Stop checking once a match is found
+                      style={(feature) => {
+                        const zoneNumber = feature.properties.location_id; // Assuming someProperty holds the zone number
+                        let fillColor = "red"; // Default color
+
+                        // Loop through the zone_grouping object and check if the zone number is in any of the specified zones
+                        for (const [zoneGroup, zoneNumbers] of Object.entries(
+                          venue_zone_grouping
+                        )) {
+                          if (zoneNumbers.includes(zoneNumber)) {
+                            // Assign a specific color based on the zone group
+                            fillColor = getFillColorForZoneGroup(zoneGroup);
+                            break; // Stop checking once a match is found
+                          }
                         }
-                      }
-                      return {
-                        fillColor,
-                        color: "black",
-                        weight: 0.8,
-                        dashArray: "5, 5",
-                        fillOpacity: 0.7
-                      };
-                    }}
-                  />
-                  {/* <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
+                        return {
+                          fillColor,
+                          color: "black",
+                          weight: 0.8,
+                          dashArray: "5, 5",
+                          fillOpacity: 0.7
+                        };
+                      }}
+                    />
+                    {/* <div style={{ position: 'absolute', top: '10px', right: '10px' }}>
                     <Legend onZoneClick={(zone) => { (zone); }} />
                   </div> */}
-                </MapContainer>
-              </Grid>
+                  </MapContainer>
+                </Grid>
+              )}
             </Grid>
+
 
           </>}
 

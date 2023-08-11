@@ -372,7 +372,7 @@ export const Register: React.FC<IProps> = ({
 			<DialogContent>
 				<Grid container spacing={3}>
 					<Grid item md={6} xs={12} lg={6}>
-						<Box my={2}>
+						<Box my={1}>
 							<TextField
 								label="First Name"
 								placeholder="Please enter your first name..."
@@ -393,7 +393,7 @@ export const Register: React.FC<IProps> = ({
 						</Box>
 					</Grid>
 					<Grid item md={6} xs={12} lg={6}>
-						<Box my={2}>
+						<Box my={1}>
 							<TextField
 								label="Last Name"
 								placeholder="Please enter your last name..."

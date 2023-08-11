@@ -278,25 +278,16 @@ export const ForgotPassword: React.FC<IProps> = ({
 				<Grid container spacing={2}>
 					<Grid item xs={12} sm={8}>
 						<Box display="flex" alignItems="center">
-							<EmailIcon color="primary" style={{ marginRight: theme.spacing(1) }} />
 
 							<TextField
 								fullWidth
 								label="Email Address"
 								variant="outlined"
-
-								// onChange={handleEmailChange}
 								type="email"
 								autoComplete="email"
 								required
-
-								// disabled={disableEmailInput}
-								// label="Email"
 								placeholder="Please enter your email..."
-
 								color="primary"
-
-
 								name="email"
 								value={passwordRequest.email}
 								onChange={handleInputOnChange}
@@ -306,7 +297,15 @@ export const ForgotPassword: React.FC<IProps> = ({
 										? "Your Email is off on a tropical getaway! 🏝️ Please provide a valid email address so we can catch up."
 										: ""
 								}
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<MailOutlineIcon color="primary" />
+										</InputAdornment>
+									),
+								}}
 							/>
+
 						</Box>
 					</Grid>
 					<Grid item md={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
