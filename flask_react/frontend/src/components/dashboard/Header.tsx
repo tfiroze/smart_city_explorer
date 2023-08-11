@@ -17,6 +17,7 @@ import {
   styled,
   Button,
   TextField,
+  Hidden
 } from "@mui/material";
 import NightsStayIcon from "@mui/icons-material/NightsStay";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -247,46 +248,36 @@ export const Header: React.FC<Partial<IProps>> = ({
             }}
           />
         </LogoImage>
-        {steps.length > 0 && (
-          <Grid item xs={6}>
-            <Stepper
-              activeStep={activeStep}
-              sx={{
-                mx: "auto",
-                // backgroundColor: currentTheme.palette.secondary.main,
-                padding: "5px",
-              }}
-            >
-              {steps.map((label, index) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+        <Hidden xsDown>
+          <Grid item xs={6} className="viewDtailsModal">
+            {steps.length > 0 && (
+              <Stepper
+                activeStep={activeStep}
+                sx={{
+                  mx: "auto",
+                  padding: "5px",
+                }}
+              >
+                {steps.map((label, index) => (
+                  <Step key={label}>
+                    <StepLabel>{label}</StepLabel>
+                  </Step>
+                ))}
+              </Stepper>
+            )}
           </Grid>
-        )}
 
+        </Hidden>
         <Grid
           item
-          xs={steps.length ? 4 : 10}
+          md={steps.length ? 4 : 10}
+          xs={10}
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: "flex-end",
           }}
         >
-          {/* <WelcomeText variant="h5" align='left'>
-            Welcome {toSentenceCase(userInfo?.first_name || '')}! 👋
-          </WelcomeText> */}
-
-          <Badge
-            badgeContent={friendRequest.length}
-            color="primary"
-            style={{ marginRight: "15px", cursor: "pointer" }}
-            onClick={(event) => setfriendAnchorEl(event.currentTarget)}
-          >
-            <MailIcon color="action" />
-          </Badge>
           <StyledAvatar onClick={(event) => setAnchorEl(event.currentTarget)} />
         </Grid>
       </HeaderContainer>

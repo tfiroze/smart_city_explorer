@@ -47,7 +47,7 @@ import tagMapping from "../../temp/tag_mapping";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { useNavigate } from "react-router-dom";
 import { MessagePopups } from "../common/messagePopups";
-import { log } from "console";
+import { Itinerary } from "../dashboard/Itinerary";
 
 
 
@@ -95,6 +95,7 @@ interface IProps {
 
 export const Questionnaire: React.FC<IProps> = ({
   updateItinerary,
+  currentItinerary,
 }) => {
   const [tags, setTags] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -146,9 +147,12 @@ export const Questionnaire: React.FC<IProps> = ({
           setTags([...results.attraction_type]);
           setZoneGroup([...results.zone_group]);
           setSubCategory([...results?.cusine_type])
+          // alert('dd')
         } else {
           // ... handle the case when results?.valid is falsy ...
+
         }
+
       })
       .catch((error) => {
         console.log(error);
@@ -277,17 +281,18 @@ export const Questionnaire: React.FC<IProps> = ({
 
 
 
+
     const request = {
       date: dateString,
       zoneGroup: zoneGroupArr.map(replaceSpacesWithUnderscores),
       attractions: attractionsArr.map(replaceSpacesWithUnderscores),
       cusine: cusineArr.map(replaceSpacesWithUnderscores)
-    }
 
-    updateItinerary(request)
+    }
+    updateItinerary(currentItinerary);
   }
 
-
+  // console.log('edd')
   return (
     <>
       <Dialog
@@ -310,7 +315,8 @@ export const Questionnaire: React.FC<IProps> = ({
         <Grid container>
           <Grid
             item
-            xs={6}
+            xs={12}
+            md={6}
             style={{ overflow: "scroll", height: "90vh", padding: "10px" }}
           >
             <Container>
@@ -325,7 +331,10 @@ export const Questionnaire: React.FC<IProps> = ({
               >
                 <span
                   onClick={() => { handleGoBack() }}
-                  style={{ cursor: 'pointer', padding: '5px', border: '2px solid #757de8', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  style={{
+                    cursor: 'pointer', padding: '5px',
+                    borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center'
+                  }}>
                   <ArrowBackIosNewIcon sx={{ color: '#757de8' }} />
                 </span>
                 <Typography variant="h5" align="center" width={"80%"}>
@@ -333,7 +342,7 @@ export const Questionnaire: React.FC<IProps> = ({
                 </Typography>
               </Grid>
               <Alert severity="info">Select the date for your trip to Manhattan.</Alert>
-              <Accordion>
+              <Accordion style={{ marginBottom: '10px' }}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls="date-picker-content"
@@ -365,7 +374,7 @@ export const Questionnaire: React.FC<IProps> = ({
               <Alert severity="info">Select the Attraction types which you are interested in seeing</Alert>
               <div style={{ width: "100%", marginTop: "20px" }}>
 
-                <Accordion>
+                <Accordion style={{ marginBottom: '10px' }}>
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1a-content"
@@ -410,10 +419,10 @@ export const Questionnaire: React.FC<IProps> = ({
                   </AccordionDetails>
                 </Accordion>
               </div>
-              <div style={{ width: "100%", marginTop: "20px" }}>
+              <div style={{ width: "100%" }}>
                 <Divider />
                 <Alert severity="info">Choose your preferred cuisine for the trip.</Alert>
-                <Accordion style={{ marginTop: '20px' }}>
+                <Accordion style={{ marginBottom: '10px' }}>
                   <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                     <Typography variant="h6">Select Cuisine Type</Typography>
                   </AccordionSummary>
@@ -440,6 +449,7 @@ export const Questionnaire: React.FC<IProps> = ({
                   </AccordionDetails>
                 </Accordion>
               </div>
+              <Alert severity="info">Select the zone groups which you are interested in exploring</Alert>
               <Accordion>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -523,7 +533,7 @@ export const Questionnaire: React.FC<IProps> = ({
 
             </Container>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={0} md={6}>
             <MapContainer
               style={{
                 height: "100%",

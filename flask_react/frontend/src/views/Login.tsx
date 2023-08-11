@@ -15,61 +15,51 @@ import { AuthContext } from "../utils/AuthContext";
 import { CButton } from "../components/common/button";
 import { useNavigate } from "react-router-dom";
 import { ForgotPassword } from "../components/login/ForgotPassword";
-import { StyledPaper, StyledButton } from '../styles/loginStyles';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { styled } from '@mui/system';
+import { StyledPaper, StyledButton } from "../styles/loginStyles";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { styled } from "@mui/system";
 import { Divider } from "@mui/material";
 
-
-
 const erroDict: { [key: string]: string } = {
-	'0': '',
-	'1': 'Oops! Your Email or password is not ready for the journey. 🌊 Please check and try again!',
-	'2': 'Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.',
-	'3': 'An unknown error occurred. Please try again later.'
-
-}
-
-
+	"0": "",
+	"1": "Oops! Your Email or password is not ready for the journey. 🌊 Please check and try again!",
+	"2": "Oops! Our journey encountered a hiccup. 🌊 Please check again or try later.",
+	"3": "An unknown error occurred. Please try again later.",
+};
 
 const iconStyle = {
-	color: '#757de8',
-	fontSize: '1.5rem',
+	color: "#757de8",
+	fontSize: "1.5rem",
 };
 const LoginButton = styled(CButton)(({ theme }) => ({
-	background: '#757de8',
-	color: 'white',
-	padding: '10px 20px',
-	borderRadius: '4px',
-	transition: 'all 0.3s ease',
-	fontSize: '1rem',
+	background: "#757de8",
+	color: "white",
+	padding: "10px 20px",
+	borderRadius: "4px",
+	transition: "all 0.3s ease",
+	fontSize: "1rem",
 	fontWeight: 600,
-	boxShadow: '0px 2px 15px rgba(0, 0, 0, 0.1)',
-	'&:hover': {
-		background: '#6066d0', // Slightly darkened color for hover effect
-		boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.12)',
+	boxShadow: "0px 2px 15px rgba(0, 0, 0, 0.1)",
+	"&:hover": {
+		background: "#6066d0", // Slightly darkened color for hover effect
+		boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.12)",
 	},
-	[theme.breakpoints.down('xs')]: {
-		width: '100%',
+	[theme.breakpoints.down("xs")]: {
+		width: "100%",
 	},
 }));
 const StyledTypography = styled(Typography)(({ theme }) => ({
 	color: theme.palette.primary.main,
 	fontFamily: "'Roboto', sans-serif",
-	textShadow: '1px 1px 3px rgba(0, 0, 0, 0.1)',
+	textShadow: "1px 1px 3px rgba(0, 0, 0, 0.1)",
 	fontWeight: 300,
-	marginBottom: '20px',
+	marginBottom: "20px",
 }));
-
-
-
 
 // const StyledPaper = styled(Paper)(({ theme }) => ({
 // 	padding: theme.spacing(3),
 // }));
-
-
 
 export const Login = () => {
 	const [registerOpen, setRegisterOpen] = useState(false);
@@ -79,10 +69,10 @@ export const Login = () => {
 		email: "",
 		password: "",
 	});
-	const [error, setError] = useState<string>("0")
-	const [loading, setLoading] = useState(false)
+	const [error, setError] = useState<string>("0");
+	const [loading, setLoading] = useState(false);
 	const theme = useTheme();
-	const isSmallScreen = useMediaQuery(theme.breakpoints.down('xs'));
+	const isSmallScreen = useMediaQuery(theme.breakpoints.down("xs"));
 
 	const navigate = useNavigate();
 
@@ -91,7 +81,7 @@ export const Login = () => {
 		password: false,
 	});
 
-	const [forgotPasswordOpen, setForgotPasswordOpen] = useState<boolean>(false)
+	const [forgotPasswordOpen, setForgotPasswordOpen] = useState<boolean>(false);
 
 	const formValidator = () => {
 		if (
@@ -103,11 +93,10 @@ export const Login = () => {
 	};
 
 	const StyledForgotPasswordButton = styled(StyledButton)({
-		'&:hover': {
-			textDecoration: 'underline', // Underlines the text on hover
+		"&:hover": {
+			textDecoration: "underline", // Underlines the text on hover
 		},
 	});
-
 
 	const validateEmail = (email: string) => {
 		if (
@@ -151,34 +140,48 @@ export const Login = () => {
 		});
 
 	const handleSubmit = () => {
-		setLoading(true)
-		smartApi.login(loginRequest)
+		setLoading(true);
+		smartApi
+			.login(loginRequest)
 			.then((results) => {
 				console.log(results);
 
 				if (results?.valid && results?.token && results?.tokenExpirationTime) {
-					nagvigateToDashboard(results.token, results.tokenExpirationTime)
+					nagvigateToDashboard(results.token, results.tokenExpirationTime);
 				} else {
 					// ... handle the case when results?.valid is falsy ...
-					setError(results.errorType)
-					setLoading(false)
+					setError(results.errorType);
+					setLoading(false);
 				}
 			})
 			.catch((error) => {
 				console.log(error);
-				setError('2')
-				setLoading(false)
+				setError("2");
+				setLoading(false);
 			});
 	};
-
-	function setCookie(name: string, value: string | null | undefined, expires: string) {
-		const secure = window.location.protocol === 'https:'; // check if it's a secure origin
-		document.cookie = `${name}=${value}; expires=${expires}; path=/;${secure ? 'secure;' : ''} HttpOnly; SameSite=Strict`;
+	function setCookie(
+		name: string,
+		value: string | null | undefined,
+		expires: string
+	) {
+		document.cookie = `${name}=${value}; expires=${expires}; path=/`;
 	}
 
+	// function setCookie(
+	// 	name: string,
+	// 	value: string | null | undefined,
+	// 	expires: string
+	// ) {
+	// 	const secure = window.location.protocol === "https:"; // check if it's a secure origin
+	// 	document.cookie = `${name}=${value}; expires=${expires}; path=/;${
+	// 		secure ? "secure;" : ""
+	// 	} HttpOnly; SameSite=Strict`;
+	// }
 
 	const nagvigateToDashboard = (token: string, tokenExpirationTime: string) => {
-		smartApi.dashboard(token)
+		smartApi
+			.dashboard(token)
 			.then((results) => {
 				console.log(results);
 
@@ -198,25 +201,25 @@ export const Login = () => {
 					localStorage.setItem("email", results.email);
 					localStorage.setItem("first_name", results.firstname);
 					localStorage.setItem("surname", results.surname);
-					setError('0')
-					setLoading(false)
+					setError("0");
+					setLoading(false);
 					navigate("/dashboard");
 				} else {
 					// ... handle the case when results?.valid is falsy ...
-					setError(results.errorType)
-					setLoading(false)
+					setError(results.errorType);
+					setLoading(false);
 				}
 			})
 			.catch((error) => {
 				console.log(error);
-				setError('2')
-				setLoading(false)
+				setError("2");
+				setLoading(false);
 			});
-	}
+	};
 
 	const handleRegisterDialogOpen = () => setRegisterOpen(!registerOpen);
-	const handleForgotPasswordDialogOpen = () => setForgotPasswordOpen(!forgotPasswordOpen)
-
+	const handleForgotPasswordDialogOpen = () =>
+		setForgotPasswordOpen(!forgotPasswordOpen);
 
 	return (
 		<>
@@ -289,19 +292,33 @@ export const Login = () => {
 						/>
 					</Grid>
 					<Grid item xs={12}>
-						<span onClick={() => { handleForgotPasswordDialogOpen() }} style={{ cursor: 'pointer' }}>
-							<Typography variant="body2" align="left" style={{ marginTop: '10px', cursor: 'pointer' }}>
-								<span onClick={handleForgotPasswordDialogOpen} style={{ textDecoration: 'underline', color: theme.palette.primary.main }}>
+						<span
+							onClick={() => {
+								handleForgotPasswordDialogOpen();
+							}}
+							style={{ cursor: "pointer" }}
+						>
+							<Typography
+								variant="body2"
+								align="left"
+								style={{ marginTop: "10px", cursor: "pointer" }}
+							>
+								<span
+									onClick={handleForgotPasswordDialogOpen}
+									style={{
+										textDecoration: "underline",
+										color: theme.palette.primary.main,
+									}}
+								>
 									Password lost? Let's reset it! 🗝️
 								</span>
 							</Typography>
-
-
-
 						</span>
-						{error !== '0' && <Typography variant="subtitle1" color="error">
-							{erroDict[error.toString()]}
-						</Typography>}
+						{error !== "0" && (
+							<Typography variant="subtitle1" color="error">
+								{erroDict[error.toString()]}
+							</Typography>
+						)}
 						{/* <FormControlLabel
 							control={
 								<Checkbox
@@ -312,7 +329,14 @@ export const Login = () => {
 							label="Remember Me?"
 						/> */}
 					</Grid>
-					<Grid item xs={12} container direction="row" justifyContent="flex-start" alignItems="center">
+					<Grid
+						item
+						xs={12}
+						container
+						direction="row"
+						justifyContent="flex-start"
+						alignItems="center"
+					>
 						<Grid item>
 							<LoginButton
 								title="LOGIN"
@@ -320,15 +344,14 @@ export const Login = () => {
 								onClick={formValidator}
 							/>
 						</Grid>
-						<Grid item style={{ flexGrow: 1, textAlign: 'right' }}>
+						<Grid item style={{ flexGrow: 1, textAlign: "right" }}>
 							<Button onClick={handleRegisterDialogOpen}>
 								Need an account?
 							</Button>
 						</Grid>
 					</Grid>
-
 				</Grid>
-			</StyledPaper >
+			</StyledPaper>
 		</>
 	);
 };
