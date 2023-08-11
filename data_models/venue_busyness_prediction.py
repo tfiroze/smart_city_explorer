@@ -1,4 +1,4 @@
-import joblib
+
 import pandas as pd
 import json
 import numpy as np
@@ -28,7 +28,7 @@ input_data = np.array([[hour, weekday, temperature_2m, apparent_temperature, pre
 
 #venue_id =3031
 # model_path = f'data_models\model_venue_busyness\bestime_{venue_id}.pkl'
-model_directory = '..\data_models'
+model_directory = '../data_models'
 model_subdirectory = 'model_venue_busyness'
 model_filename = f'bestime_{venue_id}.pkl'
 
