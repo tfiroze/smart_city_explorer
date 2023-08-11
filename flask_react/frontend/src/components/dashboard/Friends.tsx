@@ -26,7 +26,8 @@ interface IProps {
 	onSubmit: (arg: string) => void
 	loading: boolean,
 	isError: boolean,
-	errorMessage: string
+	errorMessage: string,
+	friendList?: string[]
 }
 
 export const FriendsModal: React.FC<IProps> = ({
@@ -34,6 +35,7 @@ export const FriendsModal: React.FC<IProps> = ({
 	loading = false,
 	isError = false,
 	errorMessage,
+	friendList
 }) => {
 	const [error, setError] = useState<string>("0")
 	const [modalView, setModalView] = useState<number>(0)
@@ -140,14 +142,21 @@ export const FriendsModal: React.FC<IProps> = ({
 						</Grid> :
 						<Grid item xs={12} sm={12} md={12} lg={12} style={{ padding: "10px" }}>
 							<Grid xs={12} style={{ padding: '2px', display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
-								<div style={{ padding: '5px', border: '2px solid #757de8', borderRadius: '10px', display: 'flex', alignItems: 'center' }}>
-									<Avatar>A</Avatar>
-									<span style={{ margin: '0px 10px' }}>anish@gmail.com</span>
-								</div>
+								{(friendList && friendList?.length > 0) && friendList.map(el => <div style={{ padding: '5px', border: '2px solid #757de8', borderRadius: '10px', display: 'flex', alignItems: 'center', margin:'10px' }}>
+									<Avatar>{el ? el.split('')[0] : ''}</Avatar>
+									<span style={{ margin: '0px 10px' }}>{el}</span>
+								</div>)}
 							</Grid>
 						</Grid>
 					}
-					<span style={{ cursor: 'pointer' }} onClick={handleModalView}><Typography>{modalView == 1 ? 'Add Friends' : 'View Friends'}</Typography></span>
+					{(friendList && friendList?.length > 0) && 
+					<div style={{width:'100%', display:'flex', justifyContent:'flex-end'}}>
+					<span style={{ cursor: 'pointer',border: '2px solid #757de8', padding:'5px', borderRadius:'5px' }} onClick={handleModalView}>
+						<Typography>{modalView == 1 ? 'Add Friends' : 'View Friends'}
+						</Typography>
+						
+					</span>	
+					</div>}
 				</Grid>
 			</Paper>
 		</>

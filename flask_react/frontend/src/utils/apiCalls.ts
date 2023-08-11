@@ -636,7 +636,8 @@ sendRequest = async function(req: object){
 	  } else {
 		  return {
 			  valid: false,
-			  errorType: '2'
+			  errorType: '2',
+			  message: "Request Already Sent!"
 		  };
 	  }
   } catch (error) {
@@ -649,7 +650,7 @@ sendRequest = async function(req: object){
 
 getItienaryDetails = async function (trip_id:number) {
 	try {
-		const response = await fetch('http://127.0.0.1:5000/api/' + `trips/${12}`, {
+		const response = await fetch('http://127.0.0.1:5000/api/' + `trips/${trip_id}`, {
 			method: "GET",
 			credentials: 'include',
 		  });

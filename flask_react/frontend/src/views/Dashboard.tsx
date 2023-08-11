@@ -276,30 +276,31 @@ export const Dashboard = () => {
   };
 
   const handleDetailsNavigation =(id: number)=>{
+    setLoader(true)
     smartApi.getItienaryDetails(id)
         .then((results) => {
           console.log(results);
-          // setLoader(false)
+          
           if (results?.valid) {
             navigate('/ItineraryDetails', { state: { data: results.data} })
+            setLoader(false)
           } else {
             // ... handle the case when results?.valid is falsy ...
             setError(results.errorType)
-
+            setLoader(false)
           }
         })
         .catch((error) => {
           // console.log(error);
-          // setError('2')
-          // setLoader(false)
+          setError('2')
+          setLoader(false)
         });
-    // navigate('/ItineraryDetails', { state: { id: id} })
   }
 
 
   return (
     <>
-      {loader && true ? <Loader /> :
+      {loader ? <Loader /> :
         error !== '0' ? <ErrorPage /> :
           <>
             <ProfileDrawer open={profileDrawerOpen} handleClose={handleClose} />

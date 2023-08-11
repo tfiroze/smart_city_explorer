@@ -15,6 +15,8 @@ import {
   Dialog,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import { useNavigate } from "react-router-dom";
 import { smartApi } from '../../utils/apiCalls';
 import { Loader } from '../common/loader';
@@ -95,6 +97,10 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
   const [emailMessage, setEmailMessage] = useState<string>("")
   const [emailError, setEmailError] = useState<boolean>(false)
 
+  const [emailSentPop, setEmailSentPop] = useState<boolean>(false)
+
+  const [friendsCount, setFriendsCount] = useState<number>(0)
+
 
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
@@ -122,7 +128,7 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
           setButtonLoaderConfirm(false)
           console.log(results);
           if (results?.valid && results?.trip_id) {
-            // setOpen(true);
+            setOpen(true);
             // navigate("/dashboard");
             setTripId(results.trip_id)
             setDisableFinishBtn(true)
@@ -151,9 +157,15 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
   };
 
   const handleAddFriends = () => {
-      if(tripid){
+      if(tripid && friendsCount < 4){
+        setEmailError(false)
         handleFriendsModal()
-      }else{
+        setEmailMessage("")
+      }else if(tripid && friendsCount == 4){
+        setErrorMessage('Only 4 friends can be added!')
+        handleOneButtonPopup()
+      }
+      else{
         setErrorMessage('Please Confirm your Trip to add Friends!')
         handleOneButtonPopup()
       }
@@ -192,6 +204,7 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
       return;
     }
     setOpen(false);
+    setEmailSentPop(false)
   };
 
   const setErrorMessage = (message: string) => {
@@ -212,8 +225,6 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
     setFriendReqLoading(true)
     smartApi.checkEmail(email)
         .then((results) => {
-          setFriendReqLoading(false)
-
           console.log(results);
           if (results?.valid && results?.user_id) {
             sendFriendRequest(results.user_id)
@@ -223,6 +234,8 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
             setError(results.errorType)
             setEmailMessage(results.message)
             setEmailError(true)
+          setFriendReqLoading(false)
+
           }
         })
         .catch((error) => {
@@ -247,11 +260,10 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
       setLoader(false)
       console.log(results);
       if (results?.valid && results?.message) {
-        // setOpen(true);
-        // navigate("/dashboard");
-        
-        
-        
+        setFriendReqLoading(false)
+        handleFriendsModal()
+        setEmailSentPop(true)
+        setFriendsCount(friendsCount+1)
       } else {
         // ... handle the case when results?.valid is falsy ...
         setError(results.errorType)
@@ -261,7 +273,7 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
     .catch((error) => {
       // console.log(error);
       setError('2')
-      // setLoader(false)
+      setLoader(false)
       // setDisableFinishBtn(false)
       // setLoading(false)
     });
@@ -319,27 +331,38 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
               Finish Planning
             </LoadingButton>
 
+            <div style={{display:'flex', justifyContent:'center', alignItems:'center',  width:'40%'}}>
             <StyledButton
               variant="contained"
-              endIcon={<CheckCircleOutlineIcon />}
+              endIcon={<GroupAddIcon />}
               onClick={handleAddFriends}
+              style={{margin:'0px 10px'}}
             >
-              Add upto 5 Friends!
+              Add upto 4 Friends!
             </StyledButton>
-            <StyledDisclaimer variant="body2" align="center" mt={2}>
-              *Disclaimer: By clicking "Finish Planning," you agree to embark on this amazing adventure with a smile and a sense of humour. Bon voyage!
-            </StyledDisclaimer>
             <StyledButton
               variant="contained"
-              endIcon={<CheckCircleOutlineIcon />}
+              endIcon={<DashboardIcon />}
               onClick={()=>{navigate("/dashboard")}}
+              style={{margin:'0px 10px'}}
+              disabled={tripid ? false : true}
             >
               Dashboard
             </StyledButton>
+            </div>
+            <StyledDisclaimer variant="body2" align="center" mt={2}>
+              *Disclaimer: By clicking "Finish Planning," you agree to embark on this amazing adventure with a smile and a sense of humour. Bon voyage!
+            </StyledDisclaimer>
+          
           </StyledPaper>
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert severity="success" sx={{ width: '100%' }}>
               Congratulations! Your itinerary has been confirmed. Now get ready for an amazing adventure!
+            </Alert>
+          </Snackbar>
+          <Snackbar open={emailSentPop} autoHideDuration={6000} onClose={handleClose}>
+            <Alert severity="success" sx={{ width: '100%' }}>
+              Email Sent!
             </Alert>
           </Snackbar>
         </Grid>}

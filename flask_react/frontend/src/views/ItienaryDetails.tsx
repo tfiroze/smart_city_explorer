@@ -116,7 +116,7 @@ export const ItineraryDetails = () => {
     }
   }
 
-  const handleHome = () =>{
+  const handleHome = () => {
     navigate('/dashboard')
   }
 
@@ -128,7 +128,13 @@ export const ItineraryDetails = () => {
         maxWidth="sm"
         fullWidth
       >
-        {/* <FriendsModal /> */}
+        <FriendsModal onSubmit={()=>{}}
+          loading={false}
+          isError={false}
+          errorMessage={""}
+          friendList = {(data?.friend_id && data.friend_id?.length>0)?data.friend_email:[]}
+        
+        />
       </Dialog>
 
       <Dialog
@@ -138,7 +144,7 @@ export const ItineraryDetails = () => {
         fullWidth
         className={classes.root}
       >
-        <VenueDetailsModal venue={venueData[activeIndex]} onClick={handItienraryDetailsModal}/>
+        <VenueDetailsModal venue={venueData[activeIndex]} onClick={handItienraryDetailsModal} />
       </Dialog>
       <Grid container style={{ backgroundColor: '#ffff', height: '100vh' }}>
         <Grid container xs={12} style={{ height: '10vh', }}>
@@ -148,17 +154,17 @@ export const ItineraryDetails = () => {
           <Grid container xs={12} style={{ width: '100%', height: '100%', zIndex: 10, background: 'transparent' }}>
             <Grid item xs={5} style={{ background: 'transparent', alignItems: 'center', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
               <div style={{ width: '80%', padding: '10px', textAlign: 'center', background: 'white', borderRadius: '15px', display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
-              <span onClick={() => handleHome()} style={{ width: '30px', height: '30px', borderRadius: '30px', margin: '1px', cursor: 'pointer' }}>
+                <span onClick={() => handleHome()} style={{ width: '30px', height: '30px', borderRadius: '30px', margin: '1px', cursor: 'pointer' }}>
                   <ArrowBackIosIcon />
                 </span>
                 <Typography variant="h5" fontWeight={"bold"}>{data?.name ? data?.name : ''}</Typography>
                 <div>
                   <AvatarGroup max={4} onClick={() => handleFriendsModal()}>
-                    {data?.friend_email && data?.friend_email.map((el: string)=>
-                    <><Avatar>{el?el.split('')[0] : ''}</Avatar>
-                    </>
-                    
-                    ) }
+                    {data?.friend_email && data?.friend_email.map((el: string) =>
+                      <><Avatar>{el ? el.split('')[0] : ''}</Avatar>
+                      </>
+
+                    )}
                   </AvatarGroup>
                 </div>
               </div>
@@ -184,12 +190,12 @@ export const ItineraryDetails = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               />
-              {/* <Marker
+              {(venueData && venueData[activeIndex] && venueData[activeIndex].latitude) && <Marker
                 icon={purpleIcon}
-                position={[item.latitude, item.longitude]}
+                position={[venueData[activeIndex].latitude, venueData[activeIndex].longitude]}
               >
 
-              </Marker> */}
+              </Marker>}
             </MapContainer>
           </Grid>
         </Grid>

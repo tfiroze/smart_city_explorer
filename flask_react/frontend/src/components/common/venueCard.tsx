@@ -24,6 +24,8 @@ interface IProps {
     selectCard?:(args1:string, args2:string, args3: any)=>void;
     showSelect?: boolean
     isSelected?:boolean
+    setWidth?:number,
+    showButtons?:boolean
 }
 
 export const VenueCard :React.FC<IProps> = ({
@@ -32,7 +34,9 @@ export const VenueCard :React.FC<IProps> = ({
   venType,
   selectCard,
   showSelect = false,
-  isSelected = false
+  isSelected = false,
+  setWidth,
+  showButtons = true
 })  => {
     
     const currentTheme = useTheme();
@@ -53,7 +57,7 @@ export const VenueCard :React.FC<IProps> = ({
         <Grid
             style={{ cursor: "pointer", padding: '20px', borderRadius: '15px', margin: '10px', backgroundColor: currentTheme.palette.secondary.main }}
             item
-            xs={widthVal}
+            xs={setWidth? setWidth: widthVal}
             onClick={() => { }}
         // className="unselectable"
         >
@@ -105,7 +109,7 @@ export const VenueCard :React.FC<IProps> = ({
                         border: '2px solid #757de8'
                     }}
                 />}
-                <CButton
+                {showButtons && <CButton
                     title="View"
                     onClick={() => showModalDetails()}
                     style={{
@@ -116,7 +120,7 @@ export const VenueCard :React.FC<IProps> = ({
                         padding: '10px 30px',
                         fontWeight: 'bold',
                     }}
-                />
+                />}
             </Grid>
 
         </Grid>
