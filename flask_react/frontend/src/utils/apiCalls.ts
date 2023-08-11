@@ -162,7 +162,7 @@ class SmartCityApi {
 
 	allTrips = async function (user_id: string) {
 		try {
-			const response = await fetch('http://127.0.0.1:5000/api/' + `trips/all/${user_id}`, {
+			const response = await fetch('https://csstudent09.ucd.ie/api/' + `trips/all/${user_id}`, {
 				method: "GET",
 			});
 			if (response.status === 200) {
@@ -190,7 +190,7 @@ class SmartCityApi {
 
 	getQuestionnaire = async function (token: string) {
 		try {
-			const response = await fetch('https://csstudent09.ucd.ie' + "/api/tripinfoquestionnaire", {
+			const response = await fetch('https://csstudent09.ucd.ie/api/' + "tripinfoquestionnaire", {
 				method: "GET",
 				headers: {
 					"token": token, // Add the token in the headers with the key "token"
@@ -294,7 +294,7 @@ class SmartCityApi {
 
 popularPlaces = async function(){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "popularPlaces", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "popularPlaces", {
 		  method: "GET",
 		});
 
@@ -329,7 +329,7 @@ popularPlaces = async function(){
 
 updatePassword = async function(request: object, token:string){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "password", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "password", {
 		  method: "PATCH",
 		  body: new URLSearchParams({...request}),
 		  credentials: 'include',
@@ -368,7 +368,7 @@ updatePassword = async function(request: object, token:string){
 
 updateUserDetails = async function(request: object){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "/users", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "users", {
 		  method: "PUT",
 		  body: new URLSearchParams({...request}),
 		  credentials: 'include',
@@ -404,7 +404,7 @@ updateUserDetails = async function(request: object){
 
 getRecommendation = async function(request: object){
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "venues", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "venues", {
 		  method: "POST",
 		  body: JSON.stringify({...request}),
 		  headers: {
@@ -446,7 +446,7 @@ getFare = async function(request: object){
 	
 	
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "fare", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "fare", {
 		  method: "POST",
 		  body: JSON.stringify({...request}),
 		  headers: {
@@ -487,7 +487,7 @@ getFare = async function(request: object){
 getDuration = async function(request: object){
 	
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "duration", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "duration", {
 		  method: "POST",
 		  body: JSON.stringify({...request}),
 		  headers: {
@@ -528,7 +528,7 @@ getDuration = async function(request: object){
 confirmItienary = async function(request: object){
 
 	try {
-	  const response = await fetch('http://127.0.0.1:5000/api/' + "trips", {
+	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "trips", {
 		  method: "POST",
 		  body: new URLSearchParams({...request}),
 		});

@@ -22,59 +22,70 @@ let weathercode = 0
 // let visibility = 21526
 let windspeed_10m = 6
 
-function start(req, res) {
+// ... other imports ...
+
+async function start(req, res) {
     try {
-        let dbOperation = (conn) => {
-            let sqlStr = 'SELECT hash_ven_id FROM venue_static WHERE original_ven_id=?'
-            conn.query(sqlStr, [req.body.venue_id], (err, result) => {
-                if(err) {
-                    console.log(err.message)
-                    conn.end()
-                    return res.status(400).send(err.message)
-                }
-            }).then(([rows]) => {
-                hash_ven_id = rows[0]['hash_ven_id']
-                pickup_weekday_num = new Date(req.body.date).getDay()
-                if(req.body.hour) hour = req.body.hour
+        const dbOperation = async (conn) => {
+            let sqlStr = 'SELECT hash_ven_id FROM venue_static WHERE original_ven_id=?';
+            const [rows] = await conn.query(sqlStr, [req.body.venue_id]);
 
-                // run functions here
-                getWeather(req)
+            if (!rows || rows.length === 0) {
+                throw new Error("No matching entry found for venue ID.");
+            }
 
-                // // prepare JSON data and execute model
-                prepareJSON(res)
-                conn.end()
-            })
+            hash_ven_id = rows[0]['hash_ven_id'];
+            pickup_weekday_num = new Date(req.body.date).getDay();
+            if (req.body.hour) hour = req.body.hour;
+
+            await getWeather(req);
+            await prepareJSON(res);
+            conn.end();
         }
-        createSSHTunnel(dbOperation)
+
+        await createSSHTunnel(dbOperation);
     } catch (err) {
-        console.error(err)
+        console.error(err);
+        res.status(500).send(err.message);
     }
 }
 
-function getWeather(req) {
-    const filePath = path.join(__dirname, 'weather', 'weather_forcast.json')
-    const newDate = req.body.date + 'T12:00:00Z'
+async function getWeather(req) {
+    const filePath = path.join(__dirname, 'weather', 'weather_forcast.json');
+    const newDate = req.body.date + 'T12:00:00Z';
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
-        try {
-        const weatherData = JSON.parse(data)
-        for (let i=0; i<weatherData['6_hourly_forecast'].length; i++) {
-            if(newDate === weatherData['6_hourly_forecast'][i]['FCTTIME']){
-                symbolText = weatherData['6_hourly_forecast'][i]['symbol_text']
-                temperature_2m = weatherData['6_hourly_forecast'][i]['temp']
-                precipitation = weatherData['6_hourly_forcast'][i]['rain']
-                windspeed_10m = weatherData['6_hourly_forcast'][i]['wind']
-                // convert symbolText to weathercode
-                let last8 = symbolText.slice(-8);
-                weathercode = getWeatherCode(last8)
-                break;
-            }
+    try {
+        const data = await fs.readFile(filePath, 'utf8');
+        const weatherData = JSON.parse(data);
+
+        const forecast = weatherData['6_hourly_forecast'].find(forecast => forecast['FCTTIME'] === newDate);
+
+        if (!forecast) {
+            throw new Error("Weather data not found for the provided date.");
         }
-        }catch (err) {
-            console.error(err)
-        }
-    })
+
+        symbolText = forecast['symbol_text'];
+        temperature_2m = forecast['temp'];
+        precipitation = forecast['rain'];
+        windspeed_10m = forecast['wind'];
+
+        let last8 = symbolText.slice(-8);
+        weathercode = getWeatherCode(last8);
+
+        // Logging the processed weather data
+        console.log("Processed Weather Data:");
+        console.log("Symbol Text:", symbolText);
+        console.log("Temperature:", temperature_2m);
+        console.log("Precipitation:", precipitation);
+        console.log("Wind Speed:", windspeed_10m);
+        console.log("Weather Code:", weathercode);
+
+    } catch (err) {
+        console.error(err);
+        throw err;  // Rethrow to be caught in the parent function
+    }
 }
+
 
 function getWeatherCode(last8) {
     if (last8.includes("rain") || last8.includes("snow") || last8.includes("shower") || last8.includes("sleet") || last8.includes("storm") || last8.includes("drizzle")) {
@@ -91,24 +102,26 @@ function getWeatherCode(last8) {
 
 // prepare data
 async function prepareJSON(res) {
-
     for (let i = 0; i < 5; i++) {
         const dataToSend = {
             hash_ven_id: hash_ven_id,
-            hour: hour,
+            hour: parseInt(hour, 10),  // Convert to integer
             weekday: weekday,
-            temperature_2m: temperature_2m,
-            apparent_temperature: temperature_2m + 2.4,
-            precipitation: precipitation,
+            temperature_2m: parseFloat(temperature_2m),  // Convert to float
+            apparent_temperature: parseFloat(temperature_2m) + 2.4,  // Corrected calculation
+            precipitation: parseFloat(precipitation),  // Convert to float
             weathercode: weathercode,
             visibility: 21526,
-            windspeed_10m: windspeed_10m
+            windspeed_10m: parseFloat(windspeed_10m)  // Convert to float
         };
-        const dataToSendString = JSON.stringify(dataToSend);
 
+        // Logging the JSON object structure
+        console.log("JSON Data to Send:", dataToSend);
+
+        const dataToSendString = JSON.stringify(dataToSend);
         try {
             const result = await exec_py(dataToSendString);
-            return res.status(200).send(result)
+            return res.status(200).send(result);
         } catch (error) {
             console.error('Error from Python:', error);
         }
@@ -118,7 +131,7 @@ async function prepareJSON(res) {
 // execute .py file
 function exec_py(dataToSendString) {
     return new Promise((resolve, reject) => {
-        const pythonProcess = spawn('python', [path.join(__dirname, '../../data_models', 'venue_busyness_prediction.py'), dataToSendString]);
+        const pythonProcess = spawn('/usr/bin/python3', [path.join(__dirname, '../../data_models', 'venue_busyness_prediction.py'), dataToSendString]);
         let result = '';
 
         pythonProcess.stdout.on('data', (data) => {
