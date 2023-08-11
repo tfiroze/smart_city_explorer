@@ -279,7 +279,7 @@ let popularPlaces = (req, res, next) => {
                 const currentHour = currentTime.getHours()
 
                 // the url should be the ip address of server
-                const apiUrl = 'http://127.0.0.1:5000/api/busyness';
+                const apiUrl = 'https://csstudent09.ucd.ie/api/busyness';
                 const promises = [];
 
                 for (let i = 0; i < places.length; i++) {
