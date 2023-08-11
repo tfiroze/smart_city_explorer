@@ -531,24 +531,22 @@ confirmItienary = async function(request: object){
 	  const response = await fetch('http://127.0.0.1:5000/api/' + "trips", {
 		  method: "POST",
 		  body: new URLSearchParams({...request}),
-		//   credentials: 'include',
 		});
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Get Duration Request Response: ', data)
-		//   if (data?.valid) {
-		// 	  return {
-		// 		  valid: true,
-		// 		  errorType: "0",
-		// 		  ...data
-		// 	  };
-		//   } else {
-		// 	  return {
-		// 		  valid: false,
-		// 		  errorType: '1'
-		// 	  };
-		//   }
+		  console.log('Get Confirmation Itienary Request Response: ', data)
+		  if (data?.valid) {
+			  return {
+				  valid: true,
+				  errorType: "0",
+			  };
+		  } else {
+			  return {
+				  valid: false,
+				  errorType: '1'
+			  };
+		  }
 	  } else {
 		  return {
 			  valid: false,

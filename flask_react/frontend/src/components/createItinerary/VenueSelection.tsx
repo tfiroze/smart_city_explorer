@@ -191,7 +191,7 @@ interface IProps {
   finalize: ()=>void
 }
 
-export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, venues  }) => {
+export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, venues,finalize  }) => {
   const [introvertMode, setIntrovertMode] = React.useState(false);
   const [itinerary, setItinerary] = React.useState<IVenueItem[]>([]);
   const [controlsOpen, setControlsOpen] = React.useState(false);
@@ -415,7 +415,7 @@ export const VenueSelection: React.FC<IProps> = ({ fareArr,duration, venids, ven
       </Grid>
       <CButton
         title="Confirm"
-        onClick={() => {}}
+        onClick={() => {finalize()}}
         style={{
           width: '30%',
           background: '#757de8',
