@@ -207,7 +207,7 @@ let getUserIds = (req, res, next) => {
                     venueDetail['friend_email'] = []
                 }else {
                     const requestedUserIds = [...rows[0].map(item => item.requested_user_id)]
-                    venueDetail['friend_id'] = requestedUserIds.sort((a, b) => a - b)
+                    venueDetail['friend_id'] = requestedUserIds
                     venueDetail['friend_email'] = []
                 }
                 req.body.venueDetail = venueDetail
@@ -237,6 +237,7 @@ let getUserInfo = (req, res) => {
                 }
             }).then((rows) => {
                 rows[0].sort((a, b) => a.user_id - b.user_id)
+                venueDetail['friend_id'].sort((a,b) => a - b)
                 for(let i=0;i<rows[0].length;i++){
                     if(rows[0][i]['user_id'] == venueDetail['owner_id']){
                         venueDetail['owner_email'] = rows[0][i]['email']
