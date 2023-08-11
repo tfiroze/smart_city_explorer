@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useNavigate } from "react-router-dom";
+import { smartApi } from '../../utils/apiCalls';
 
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -75,6 +76,35 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
   const navigate = useNavigate();
 
   const handleFinish = () => {
+    let req = {
+      trip_name: name,
+      date: date,
+      ven_1: venids[0],
+      ven_2: venids[1],
+      ven_3: venids[3],
+      ven_4: venids[4],
+      rest_1: venids[2],
+      rest_2: venids[5],
+    }
+
+    smartApi.confirmItienary(req)
+      .then((results) => {
+        // setLoader(false)
+        // if (results?.valid && results?.data) {
+        //   setDurationArr(results.data)
+        //   setCurrentStep(currentStep + 1);
+        // } else {
+        //   // ... handle the case when results?.valid is falsy ...
+        //   setError(results.errorType)
+        // }
+      })
+      .catch((error) => {
+        // console.log(error);
+        // setError('2')
+        // setLoading(false)
+      });
+
+
     setOpen(true);
     navigate("/dashboard");
   };
