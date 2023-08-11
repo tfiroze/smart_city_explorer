@@ -266,47 +266,25 @@ exports.acceptInviteMW2 = (req, res) => {
 }
 
 
-// const [tripInfo] = await connection.execute('SELECT trip_part_1, trip_part_2, trip_part_3, trip_part_4 FROM trip_info WHERE trip_id = ?', );
-
-//       if (tripInfo.length === 0) {
-//         return res.status(404).json({valid:false, message: 'Trip not found.' });
-//       }
-
-//       const tripData = tripInfo[0];
-//       let columnToUpdate;
-
-//       if (!tripData.trip_part_1) {
-//         columnToUpdate = 'trip_part_1';
-//       } else if (!tripData.trip_part_2) {
-//         columnToUpdate = 'trip_part_2';
-//       } else if (!tripData.trip_part_3) {
-//         columnToUpdate = 'trip_part_3';
-//       } else if (!tripData.trip_part_4) {
-//         columnToUpdate = 'trip_part_4';
-//       }
-
-//       if (columnToUpdate) {
-//         await connection.execute(`UPDATE trip_info SET ${columnToUpdate} = ? WHERE trip_id = ?`, [user_id, trip_id]);
-//         res.status(200).json({valid:true, message: 'Invite accepted and user added as a trip participant.' });
-//       } else {
-//         res.status(400).json({valid:false, message: 'All participant slots are full. Cannot accept invite.' });
-//       }
-
-
-
-// 4. API to decline an invite
+// (Required: trip_id, user_id)
 exports.declineInvite = (req, res) => {
-  const { trip_id, user_id } = req.body;
-
-  createSSHTunnel(async (connection) => {
-    try {
-      await connection.execute('DELETE FROM trip_requests WHERE trip_id = ? AND requested_user_id = ?', [trip_id, user_id]);
-      res.status(200).json({valid:true, message: 'Invite declined.' });
-    } catch (error) {
-      console.error('Error:', error);
-      res.status(500).json({valid:false, message: 'There was an error.', error: error.message });
-    } finally {
-      connection.end();
+  try {
+    let dbOperation = (conn) => {
+      let sqlStr = 'DELETE FROM trip_requests WHERE trip_id = ? AND requested_user_id = ?'
+      conn.query(sqlStr, [req.body.trip_id, req.body.user_id], (err, result) => {
+        if(err) {
+          console.error(err)
+          conn.end()
+          return res.status(200).send({ valid: false, message: 'There is an error', error:err })
+        }
+      }).then((rows) => {
+        conn.end()
+        res.status(200).json({valid:true, message: 'Invite declined.' });
+      })
     }
-  });
+    createSSHTunnel(dbOperation)
+  }catch(err) {
+    console.error(err)
+    return res.status(200).send({valid: false, message:"There is an error", error:err})
+  }
 }
