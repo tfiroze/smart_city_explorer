@@ -23,7 +23,7 @@ return (
     onClick={onClick}
     loading={loading}
     style={{
-      display: 'inline-block',
+      // display: 'inline-block',
       outline: 'none',
       cursor: 'pointer',
       fontSize: '14px',

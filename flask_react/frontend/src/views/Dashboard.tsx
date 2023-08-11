@@ -146,7 +146,6 @@ export const Dashboard = () => {
     if (userInfo?.user_id) {
       smartApi.allTrips(userInfo.user_id)
         .then((results) => {
-          console.log(results);
           setLoader(false)
           if (results?.valid) {
             setPastTrips([...results.completedTrips])
@@ -167,7 +166,6 @@ export const Dashboard = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
           setError('2')
           setLoader(false)
         });
@@ -187,7 +185,6 @@ export const Dashboard = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
         setError('2')
         setLoader(false)
       });
@@ -281,7 +278,6 @@ export const Dashboard = () => {
     setLoader(true)
     smartApi.getItienaryDetails(id)
         .then((results) => {
-          console.log(results);
           
           if (results?.valid) {
             navigate('/ItineraryDetails', { state: { data: results.data} })
@@ -434,17 +430,17 @@ export const Dashboard = () => {
                                     backgroundPosition: 'center', // Center the background image
                                     backgroundSize: 'cover', // Ensure the image covers the entire container
                                     backgroundRepeat: 'no-repeat', // Prevent image repetition
-                                    backgroundImage: `url(${grass})`,
+                                    border: '2px solid #757de8'
                                   }}
                                   item
                                   className="unselectable"
-                                  onClick={() => onClick && onClick()}
+                                  onClick={() => handleDetailsNavigation(item.trip_id)}
                                 >
                                   <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
-                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent'}}>
                                       {toTitleCase(item.trip_name)}
                                     </Typography>
-                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
+                                    <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent'}}>
                                       {dayjs(item.trip_date).format("YYYY-MM-DD")}
                                     </Typography>
                                   </Grid>
@@ -454,7 +450,7 @@ export const Dashboard = () => {
                               {(upcomingTrips?.length > 0 && tab == 1) && upcomingTrips.slice(0, 3).map((item:any, index:number) =>
                                 <>
                                   <Grid
-                                    key={item.trip_id}
+                                    key={item?.trip_id}
                                     style={{
                                       cursor: "pointer",
                                       padding: '15px',
@@ -472,11 +468,11 @@ export const Dashboard = () => {
                                     onClick={() => handleDetailsNavigation(item.trip_id)}
                                   >
                                     <Grid xs={12} style={{ backgroundColor: 'transparent' }}>
-                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
-                                        {toTitleCase(item.trip_name)}
+                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent'}}>
+                                        {toTitleCase(item?.trip_name)}
                                       </Typography>
-                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent', color: 'black' }}>
-                                        {dayjs(item.trip_date).format("YYYY-MM-DD")}
+                                      <Typography variant="subtitle2" fontWeight={600} align="center" style={{ backgroundColor: 'transparent' }}>
+                                        {dayjs(item?.trip_date).format("YYYY-MM-DD")}
                                       </Typography>
                                     </Grid>
                                   </Grid>

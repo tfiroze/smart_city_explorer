@@ -25,7 +25,7 @@ export const InviteFriends: React.FC<IProps> = ({ moveNext, newItemDetails, upda
 		let tmpLst: string[] = [];
 
 		invited.forEach((item) => {
-			console.log(item == userToDelete, userToDelete, item);
+			
 			if (item != userToDelete) {
 				tmpLst.push(item);
 			}

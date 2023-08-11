@@ -13,6 +13,7 @@ import {
   Theme,
   createStyles,
   Dialog,
+  useTheme,
 } from "@mui/material";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
@@ -25,6 +26,8 @@ import { AuthContext } from '../../utils/AuthContext';
 import { MessagePopups } from '../common/messagePopups';
 import { FriendsModal } from '../dashboard/Friends';
 import { LoadingButton } from '@mui/lab';
+import { FinalItinerary } from '../common/finalItinerary';
+import FeedbackIcon from '@mui/icons-material/Feedback';
 
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
@@ -90,7 +93,7 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
   const [openFriendsModal, setOpenFriendsModal] = useState<boolean>(false);
 
   const [disableFinishBtn, setDisableFinishBtn] = useState<boolean>(false);
-  const [buttonLoaderConfirm, setButtonLoaderConfirm] = useState<boolean>(false); 
+  const [buttonLoaderConfirm, setButtonLoaderConfirm] = useState<boolean>(false);
   const [friendReqLoading, setFriendReqLoading] = useState<boolean>(false)
 
   const [disableTextBox, setDisableTextBox] = useState<boolean>(false)
@@ -120,19 +123,17 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
         rest_2: venids[5],
         user_id: authContext.userInfo?.user_id
       }
-      console.log(req);
 
       smartApi.confirmItienary(req)
         .then((results) => {
           setButtonLoaderConfirm(false)
-          console.log(results);
           if (results?.valid && results?.trip_id) {
             setOpen(true);
             // navigate("/dashboard");
             setTripId(results.trip_id)
             setDisableFinishBtn(true)
             setDisableTextBox(true)
-            
+
           } else {
             // ... handle the case when results?.valid is falsy ...
             setError(results.errorType)
@@ -140,7 +141,6 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
           }
         })
         .catch((error) => {
-          // console.log(error);
           setError('2')
           setLoader(false)
           setDisableFinishBtn(false)
@@ -156,18 +156,18 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
   };
 
   const handleAddFriends = () => {
-      if(tripid && friendsCount < 4){
-        setEmailError(false)
-        handleFriendsModal()
-        setEmailMessage("")
-      }else if(tripid && friendsCount == 4){
-        setErrorMessage('Only 4 friends can be added!')
-        handleOneButtonPopup()
-      }
-      else{
-        setErrorMessage('Please Confirm your Trip to add Friends!')
-        handleOneButtonPopup()
-      }
+    if (tripid && friendsCount < 4) {
+      setEmailError(false)
+      handleFriendsModal()
+      setEmailMessage("")
+    } else if (tripid && friendsCount == 4) {
+      setErrorMessage('Only 4 friends can be added!')
+      handleOneButtonPopup()
+    }
+    else {
+      setErrorMessage('Please Confirm your Trip to add Friends!')
+      handleOneButtonPopup()
+    }
   }
 
   const validateTripName = (name: string) => {
@@ -219,68 +219,59 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
     setOneButtonModal(!oneButtonModal)
   }
 
-  const handleAddFriendReq = (email: string)=>{
-    console.log(email);
+  const handleAddFriendReq = (email: string) => {
     setFriendReqLoading(true)
     smartApi.checkEmail(email)
-        .then((results) => {
-          console.log(results);
-          if (results?.valid && results?.user_id) {
-            sendFriendRequest(results.user_id)
-            setEmailError(false)
-          } else {
-            // ... handle the case when results?.valid is falsy ...
-            setError(results.errorType)
-            setEmailMessage(results.message)
-            setEmailError(true)
+      .then((results) => {
+        if (results?.valid && results?.user_id) {
+          sendFriendRequest(results.user_id)
+          setEmailError(false)
+        } else {
+          // ... handle the case when results?.valid is falsy ...
+          setError(results.errorType)
+          setEmailMessage(results.message)
+          setEmailError(true)
           setFriendReqLoading(false)
 
-          }
-        })
-        .catch((error) => {
-          // console.log(error);
-          setError('2')
-          setFriendReqLoading(false)
-          
-          // setLoader(false)
-          // setDisableFinishBtn(false)
-          // setLoading(false)
-        });
+        }
+      })
+      .catch((error) => {
+        setError('2')
+        setFriendReqLoading(false)
+      });
   }
 
-  const sendFriendRequest = (id: number)=>{
+  const sendFriendRequest = (id: number) => {
     let req = {
       user_id: id,
       trip_id: tripid,
       trip_owner_id: authContext.userInfo?.user_id ? parseInt(authContext.userInfo?.user_id) : 0
     }
     smartApi.sendRequest(req)
-    .then((results) => {
-      console.log(results);
-      if (results?.valid && results?.message) {
-        setFriendReqLoading(false)
-        handleFriendsModal()
-        setEmailSentPop(true)
-        setFriendsCount(friendsCount+1)
-      } else {
-        // ... handle the case when results?.valid is falsy ...
-        setError(results.errorType)
-        
-      }
-    })
-    .catch((error) => {
-      // console.log(error);
-      setError('2')
-      setLoader(false)
-      // setDisableFinishBtn(false)
-      // setLoading(false)
-    });
-  }
+      .then((results) => {
+        if (results?.valid && results?.message) {
+          setFriendReqLoading(false)
+          handleFriendsModal()
+          setEmailSentPop(true)
+          setFriendsCount(friendsCount + 1)
+        } else {
+          // ... handle the case when results?.valid is falsy ...
+          setError(results.errorType)
 
+        }
+      })
+      .catch((error) => {
+        setError('2')
+        setLoader(false)
+        // setDisableFinishBtn(false)
+        // setLoading(false)
+      });
+  }
+  const currentTheme = useTheme();
   return (
     <>
       {loader ? <Loader /> :
-        error == '7' ? <ErrorPage /> : <Grid container justifyContent="center" alignItems="center">
+        error != '0' ? <ErrorPage /> : <Grid container justifyContent="center" alignItems="center">
           <Dialog
             open={oneButtonModal}
             onClose={handleOneButtonPopup}
@@ -296,14 +287,14 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
             maxWidth="sm"
             fullWidth
           >
-            <FriendsModal 
-            onSubmit={handleAddFriendReq} 
-            loading={friendReqLoading}
-            isError={emailError}
-            errorMessage={emailMessage}
+            <FriendsModal
+              onSubmit={handleAddFriendReq}
+              loading={friendReqLoading}
+              isError={emailError}
+              errorMessage={emailMessage}
             />
           </Dialog>
-          <StyledPaper elevation={0} style={{ height: '100vh' }}>
+          <StyledPaper elevation={0} style={{ height: '100vh', backgroundColor: currentTheme.palette.secondary.main }}>
             <Typography variant="h6" gutterBottom>
               Confirm Itinerary
             </Typography>
@@ -329,29 +320,43 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
               Finish Planning
             </LoadingButton>
 
-            <div style={{display:'flex', justifyContent:'center', alignItems:'center',  width:'40%'}}>
-            <StyledButton
-              variant="contained"
-              endIcon={<GroupAddIcon />}
-              onClick={handleAddFriends}
-              style={{margin:'0px 10px'}}
-            >
-              Add upto 4 Friends!
-            </StyledButton>
-            <StyledButton
-              variant="contained"
-              endIcon={<DashboardIcon />}
-              onClick={()=>{navigate("/dashboard")}}
-              style={{margin:'0px 10px'}}
-              disabled={tripid ? false : true}
-            >
-              Dashboard
-            </StyledButton>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '40%' }}>
+              <StyledButton
+                variant="contained"
+                endIcon={<GroupAddIcon />}
+                onClick={handleAddFriends}
+                style={{ margin: '0px 10px' }}
+              >
+                Add upto 4 Friends!
+              </StyledButton>
+              <StyledButton
+                variant="contained"
+                endIcon={<DashboardIcon />}
+                onClick={() => { navigate("/dashboard") }}
+                style={{ margin: '0px 10px' }}
+                disabled={tripid ? false : true}
+              >
+                Dashboard
+              </StyledButton>
             </div>
             <StyledDisclaimer variant="body2" align="center" mt={2}>
               *Disclaimer: By clicking "Finish Planning," you agree to embark on this amazing adventure with a smile and a sense of humour. Bon voyage!
             </StyledDisclaimer>
-          
+            <div style={{margin:'20px 0'}}>
+              <Typography align="center">Please Rate Us!</Typography>
+              <StyledButton
+                variant="contained"
+                endIcon={<FeedbackIcon />}
+                onClick={() => { window.open("https://docs.google.com/forms/d/e/1FAIpQLSc4-XVz7SxWEt0oA4C_U-qphXZeL_9iWXtYhTp-pObNcQtx4g/viewform?usp=sf_link", "_blank", "noreferrer") }}
+                style={{ margin: '0px 10px' }}
+                disabled={tripid ? false : true}
+              >
+                Feedback
+              </StyledButton>
+            </div>
+
+            <FinalItinerary />
+
           </StyledPaper>
           <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
             <Alert severity="success" sx={{ width: '100%' }}>

@@ -120,7 +120,7 @@ exports.checkRequestsMW = (req, res, next) => {
   }
   try{
     let dbOperation = (conn) => {
-      let sqlStr = 'SELECT trip_id,trip_name FROM trip_info WHERE trip_id = ?'
+      let sqlStr = 'SELECT trip_id,trip_name FROM trip_info WHERE trip_id in (?)'
       conn.query(sqlStr, [ids], (err, result) => {
         if(err) {
           console.error(err)
@@ -157,7 +157,7 @@ exports.checkRequestsMW2 = (req, res) => {
   }
   try {
     let dbOperation = (conn) => {
-      let sqlStr = 'SELECT user_id,email,firstname,surname FROM user_info WHERE user_id = ?'
+      let sqlStr = 'SELECT user_id,email,firstname,surname FROM user_info WHERE user_id in (?)'
       conn.query(sqlStr, [ids], (err, result) => {
         if(err) {
           console.error(err)

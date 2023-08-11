@@ -46,7 +46,7 @@ export const VenueCard :React.FC<IProps> = ({
         (selectCard && venType) ? selectCard(venType, venDetails.venue_id, venDetails) : console.log('Something went wrong!')
     }
 
-    console.log(venDetails);
+    
     const pathname = useLocation();
 
     useEffect(()=>{

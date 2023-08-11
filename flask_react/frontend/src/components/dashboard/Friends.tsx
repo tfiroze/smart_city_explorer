@@ -27,7 +27,8 @@ interface IProps {
 	loading: boolean,
 	isError: boolean,
 	errorMessage: string,
-	friendList?: string[]
+	friendList?: string[],
+	hideAddFriend?:boolean
 }
 
 export const FriendsModal: React.FC<IProps> = ({
@@ -35,7 +36,8 @@ export const FriendsModal: React.FC<IProps> = ({
 	loading = false,
 	isError = false,
 	errorMessage,
-	friendList
+	friendList,
+	hideAddFriend = false
 }) => {
 	const [error, setError] = useState<string>("0")
 	const [modalView, setModalView] = useState<number>(0)
@@ -43,6 +45,10 @@ export const FriendsModal: React.FC<IProps> = ({
 
 
 	const navigate = useNavigate();
+
+	useEffect(()=>{
+		hideAddFriend ? setModalView(1) : setModalView(0)
+	},[])
 
 	const [format, setformat] = useState({
 		email: false,
@@ -151,11 +157,11 @@ export const FriendsModal: React.FC<IProps> = ({
 					}
 					{(friendList && friendList?.length > 0) && 
 					<div style={{width:'100%', display:'flex', justifyContent:'flex-end'}}>
-					<span style={{ cursor: 'pointer',border: '2px solid #757de8', padding:'5px', borderRadius:'5px' }} onClick={handleModalView}>
+					{!hideAddFriend&&<span style={{ cursor: 'pointer',border: '2px solid #757de8', padding:'5px', borderRadius:'5px' }} onClick={handleModalView}>
 						<Typography>{modalView == 1 ? 'Add Friends' : 'View Friends'}
 						</Typography>
 						
-					</span>	
+					</span>	}
 					</div>}
 				</Grid>
 			</Paper>

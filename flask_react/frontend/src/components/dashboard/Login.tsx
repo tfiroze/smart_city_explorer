@@ -107,7 +107,7 @@ export const Login = () => {
 		setLoading(true)
 		smartApi.login(loginRequest)
 			.then((results) => {
-				console.log(results);
+				
 
 				if (results?.valid && results?.token && results?.tokenExpirationTime) {
 					nagvigateToDashboard(results.token, results.tokenExpirationTime)
@@ -118,7 +118,7 @@ export const Login = () => {
 				}
 			})
 			.catch((error) => {
-				console.log(error);
+				
 				setError('2')
 				setLoading(false)
 			});
@@ -135,7 +135,7 @@ export const Login = () => {
 	const nagvigateToDashboard = (token: string, tokenExpirationTime: string) => {
 		smartApi.dashboard(token)
 			.then((results) => {
-				console.log(results);
+				
 
 				if (results?.valid) {
 					const d = new Date(tokenExpirationTime);
@@ -163,7 +163,7 @@ export const Login = () => {
 				}
 			})
 			.catch((error) => {
-				console.log(error);
+				
 				setError('2')
 				setLoading(false)
 			});
