@@ -19,11 +19,15 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import React, { ChangeEvent, useState } from "react";
 import IRegisterRequest from "../../models/IRegisterRequest";
 import { smartApi } from "../../utils/apiCalls";
+import StyledDivider from "../../styles/StyledDivider";
 import { CButton } from "../common/button";
 import { LoadingButton } from "@mui/lab";
 import { TransitionProps } from "@mui/material/transitions";
 import { makeStyles } from '@mui/styles';
 import { Theme } from '@mui/material';
+import EmailIcon from '@mui/icons-material/Email';
+import LockIcon from '@mui/icons-material/Lock';
+
 
 interface IProps {
 	open: boolean;
@@ -410,7 +414,7 @@ export const Register: React.FC<IProps> = ({
 						</Box>
 					</Grid>
 				</Grid>
-
+				<StyledDivider text="Email Verification" icon={<EmailIcon color="primary" />} />
 				<Grid container xs={12}>
 					<Grid item md={8}>
 						<Box my={2}>
@@ -469,6 +473,8 @@ export const Register: React.FC<IProps> = ({
 						}
 					/>
 				</Box>
+				<StyledDivider text="Set Your Password" icon={<LockIcon color="primary" />} />
+
 				<Box my={2}>
 					<TextField
 						label="Password"

@@ -343,6 +343,14 @@ export const ForgotPassword: React.FC<IProps> = ({
 						}
 					/>
 				</Box>
+				<Box my={2} display="flex" alignItems="center">
+					<Divider flexItem style={{ flexGrow: 1 }} />
+					<Box mx={2} display="flex" alignItems="center">
+						<VpnKeyIcon color="primary" style={{ marginRight: theme.spacing(1) }} />
+						<Typography variant="caption" color="textSecondary">Enter New Password</Typography>
+					</Box>
+					<Divider flexItem style={{ flexGrow: 1 }} />
+				</Box>
 				<Box my={2}>
 					<TextField
 						label="Password"
