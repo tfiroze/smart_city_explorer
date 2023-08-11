@@ -14,6 +14,9 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from '@mui/material/useMediaQuery';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import MailOutlineIcon from '@material-ui/icons/MailOutline';
+
 
 interface IProps {
 	open: boolean;
@@ -48,7 +51,9 @@ export const ForgotPassword: React.FC<IProps> = ({
 		confirmPassword: false,
 		captcha: false
 	});
-
+	const [email, setEmail] = useState<string>('');
+	const [snackBarOpen, setSnackBarOpen] = useState<boolean>(false);
+	const [snackBarMessage, setSnackBarMessage] = useState<string>('');
 
 	const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
 
@@ -61,6 +66,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
 	const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
+
 
 	const handleInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
 		setPasswordRequest({
@@ -266,21 +272,31 @@ export const ForgotPassword: React.FC<IProps> = ({
 				message="Email Sent"
 				key={snackState.Transition.name}
 			/>
-			<DialogTitle style={{ textAlign: "center", color: theme.palette.primary.main }}>{"Let's Recover Your Password"}</DialogTitle>
+			<DialogTitle style={{ textAlign: "center", color: theme.palette.primary.main }}>{"Reset Your Password"}</DialogTitle>
 			<Divider />
 			<DialogContent>
 				<Grid container spacing={2}>
 					<Grid item xs={12} sm={8}>
 						<Box display="flex" alignItems="center">
 							<EmailIcon color="primary" style={{ marginRight: theme.spacing(1) }} />
+
 							<TextField
-								disabled={disableEmailInput}
-								label="Email"
-								placeholder="Please enter your email..."
-								variant="outlined"
-								color="primary"
 								fullWidth
+								label="Email Address"
+								variant="outlined"
+
+								// onChange={handleEmailChange}
 								type="email"
+								autoComplete="email"
+								required
+
+								// disabled={disableEmailInput}
+								// label="Email"
+								placeholder="Please enter your email..."
+
+								color="primary"
+
+
 								name="email"
 								value={passwordRequest.email}
 								onChange={handleInputOnChange}
@@ -387,13 +403,13 @@ export const ForgotPassword: React.FC<IProps> = ({
 					hoverStyle={{
 						background: '#f0f0f7',
 					}}
-					aria-label="Cancel password recovery"
+					aria-label="Cancel password reset"
 					onClick={handleForgotPasswordDialogOpen}
 				/>
 
 				<CButton
 					startIcon={<CheckCircleIcon />}
-					title="REGISTER"
+					title="Reset"
 					onClick={formValidator}
 					loading={submitLoading}
 					style={{
@@ -407,10 +423,9 @@ export const ForgotPassword: React.FC<IProps> = ({
 						background: '#5b5da8',
 					}}
 					disabled={disableSubmit}
-					aria-label="Submit password recovery"
+					aria-label="Confirm password reset"
 				/>
 			</DialogActions>
-
 		</Dialog>
 	);
 };

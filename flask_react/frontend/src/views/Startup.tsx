@@ -96,7 +96,7 @@ export const Startup = () => {
           justifyContent: 'center',
           flexDirection: 'column',
           zIndex: 3,
-          padding: isMobile ? 2 : 4,  // sit hier by vir responsive goed wat krediet dief leunaar vir my gevra het 
+          padding: isMobile ? 2 : 4,
         }}
       >
         <motion.div
@@ -104,34 +104,62 @@ export const Startup = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 2, delay: 0.2 }}
         >
-          <Typography variant="h2" component="div" style={{ color: 'white' }}>
+          <Typography
+            variant="h2"
+            component="div"
+            sx={{
+              color: '#FFFFFF',
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
+              fontWeight: 300,
+              fontSize: {
+                xs: "2rem",
+                sm: "3rem",
+                md: "4rem",
+              }
+            }}
+          >
             SMART CITY EXPLORER
           </Typography>
         </motion.div>
-        <Typography variant="subtitle1" style={{ fontStyle: 'italic', marginTop: '20px', color: 'white' }}>
+
+        <Typography
+          variant="subtitle1"
+          sx={{
+            fontStyle: 'italic',
+            mt: 2,
+            color: '#FFFFFF',
+            textShadow: '1px 1px 3px rgba(0, 0, 0, 0.5)',
+            fontSize: {
+              xs: "0.9rem",
+              sm: "1rem",
+              md: "1.2rem",
+            }
+          }}
+        >
           Amidst Manhattan's buzz, let's seize every moment!
         </Typography>
-        <Box mt={isMobile ? 2 : 4}>
-          <Tooltip title="Don't be shy, click me!">
-            <CButton
-              aria-label="Start Exploring"
-              title="Start Exploring"
-              onClick={handleLoginModal}
-              style={{
-                background: '#FFFFFF',
-                color: '#008080',
-                borderRadius: '20px',
-                padding: '10px 30px',
-                fontWeight: 'bold',
-                transition: '0.3s',
-                '&:hover': {
-                  background: '#008080',
-                  color: '#FFFFFF'
-                }
-              }}
-            />
 
-          </Tooltip>
+        <Box mt={isMobile ? 2 : 4}>
+
+          <CButton
+            aria-label="Start Exploring"
+            title="Start Exploring"
+            onClick={handleLoginModal}
+            style={{
+              background: '#FFFFFF',
+              color: '#008080',
+              borderRadius: '20px',
+              padding: '10px 30px',
+              fontWeight: 'bold',
+              transition: '0.3s',
+              '&:hover': {
+                background: '#008080',
+                color: '#FFFFFF'
+              }
+            }}
+          />
+
+
         </Box>
       </Box>
     </Box>
