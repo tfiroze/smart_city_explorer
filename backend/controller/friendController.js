@@ -8,13 +8,13 @@ exports.checkEmail = (req, res) => {
     try {
       const [rows] = await connection.execute('SELECT * FROM user_info WHERE email = ?', [email]);
       if (rows.length > 0) {
-        res.status(200).json({ message: 'Email exists.', user_id: rows[0].user_id });
+        res.status(200).json({ valid: true, message: 'Email exists.', user_id: rows[0].user_id });
       } else {
-        res.status(404).json({ message: 'Email not found.' });
+        res.status(404).json({ valid:false, message: 'Email not found.' });
       }
     } catch (error) {
       console.error('Error:', error);
-      res.status(500).json({ message: 'There was an error.', error: error.message });
+      res.status(500).json({valid:false, message: 'There was an error.', error:error.message});
     } finally {
       connection.end();
     }
@@ -29,14 +29,14 @@ exports.sendInvite = (req, res) => {
     try {
       const [rows] = await connection.execute('SELECT * FROM trip_requests WHERE requested_user_id = ? AND trip_id = ?', [user_id, trip_id]);
       if (rows.length > 0) {
-        res.status(400).json({ message: 'Request already sent.' });
+        res.status(400).json({ valid:false, message: 'Request already sent.' });
       } else {
         await connection.execute('INSERT INTO trip_requests (trip_id, trip_owner_id, requested_user_id, confirmation_status) VALUES (?, ?, ?, ?)', [trip_id, trip_owner_id, user_id, 'awaiting']);
-        res.status(200).json({ message: 'Invite sent.' });
+        res.status(200).json({valid:true, message: 'Invite sent.' });
       }
     } catch (error) {
       console.error('Error:', error);
-      res.status(500).json({ message: 'There was an error.', error: error.message });
+      res.status(500).json({valid:false, message: 'There was an error.', error: error.message});
     } finally {
       connection.end();
     }
@@ -69,13 +69,13 @@ exports.checkRequests = (req, res) => {
           }
         }
 
-        res.status(200).json({ message: 'Trip requests found.', requests: tripRequests });
+        res.status(200).json({valid:true, message: 'Trip requests found.', requests: tripRequests });
       } else {
-        res.status(404).json({ message: 'No trip requests found.' });
+        res.status(404).json({valid:false, message: 'No trip requests found.' });
       }
     } catch (selectError) {
       console.error('Error executing SELECT query:', selectError);
-      res.status(500).json({ message: 'There was an error fetching the trip requests.', error: selectError.message });
+      res.status(500).json({valid:false, message: 'There was an error fetching the trip requests.', error: selectError.message });
     } finally {
       connection.end();
     }
@@ -94,7 +94,7 @@ exports.acceptInvite = (req, res) => {
       const [tripInfo] = await connection.execute('SELECT trip_part_1, trip_part_2, trip_part_3, trip_part_4 FROM trip_info WHERE trip_id = ?', [trip_id]);
 
       if (tripInfo.length === 0) {
-        return res.status(404).json({ message: 'Trip not found.' });
+        return res.status(404).json({valid:false, message: 'Trip not found.' });
       }
 
       const tripData = tripInfo[0];
@@ -112,13 +112,13 @@ exports.acceptInvite = (req, res) => {
 
       if (columnToUpdate) {
         await connection.execute(`UPDATE trip_info SET ${columnToUpdate} = ? WHERE trip_id = ?`, [user_id, trip_id]);
-        res.status(200).json({ message: 'Invite accepted and user added as a trip participant.' });
+        res.status(200).json({valid:true, message: 'Invite accepted and user added as a trip participant.' });
       } else {
-        res.status(400).json({ message: 'All participant slots are full. Cannot accept invite.' });
+        res.status(400).json({valid:false, message: 'All participant slots are full. Cannot accept invite.' });
       }
     } catch (error) {
       console.error('Error:', error);
-      res.status(500).json({ message: 'There was an error.', error: error.message });
+      res.status(500).json({valid:false, message: 'There was an error.', error: error.message });
     } finally {
       connection.end();
     }
@@ -132,10 +132,10 @@ exports.declineInvite = (req, res) => {
   createSSHTunnel(async (connection) => {
     try {
       await connection.execute('DELETE FROM trip_requests WHERE trip_id = ? AND requested_user_id = ?', [trip_id, user_id]);
-      res.status(200).json({ message: 'Invite declined.' });
+      res.status(200).json({valid:true, message: 'Invite declined.' });
     } catch (error) {
       console.error('Error:', error);
-      res.status(500).json({ message: 'There was an error.', error: error.message });
+      res.status(500).json({valid:false, message: 'There was an error.', error: error.message });
     } finally {
       connection.end();
     }
