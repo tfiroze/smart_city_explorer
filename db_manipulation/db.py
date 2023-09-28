@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 ssh_host = '137.43.49.79'
 ssh_port = 22
 ssh_username = 'student'
-ssh_password = 'Ucd-cs-2023!'
+
 
 mysql_user = 'root'
 mysql_password = 'Group@18'
