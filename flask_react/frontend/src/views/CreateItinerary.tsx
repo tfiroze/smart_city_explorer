@@ -92,7 +92,6 @@ export const CreateItinerary: React.FC<IProps> = ({
         }
       })
       .catch((error) => {
-        console.log(error);
         setError('2')
       });
   }
@@ -108,7 +107,6 @@ export const CreateItinerary: React.FC<IProps> = ({
 
     smartApi.getFare(req)
       .then((results) => {
-        console.log(results);
 
         if (results?.valid && results?.data) {
           setFareArr(results.data)
@@ -122,7 +120,6 @@ export const CreateItinerary: React.FC<IProps> = ({
         }
       })
       .catch((error) => {
-        console.log(error);
         setError('2')
         // setLoading(false)
       });
@@ -146,7 +143,6 @@ export const CreateItinerary: React.FC<IProps> = ({
         }
       })
       .catch((error) => {
-        console.log(error);
         setError('2')
         // setLoading(false)
       });

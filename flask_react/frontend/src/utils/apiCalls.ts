@@ -11,7 +11,7 @@ class SmartCityApi {
 	) 
 	: Promise<IRegisterResults>
 	{
-		console.log(request);
+		// console.log(request);
 		
 
 		try {
@@ -23,7 +23,7 @@ class SmartCityApi {
 
 			if (response.status === 200) {
 				const data = await response.json();
-				console.log('Register User Request Response: ', data)
+				// console.log('Register User Request Response: ', data)
 				if (data?.valid) {
 					return {
 						valid: true,
@@ -42,7 +42,7 @@ class SmartCityApi {
 				};
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			return {
 				valid: false,
 				errorType: '2'
@@ -61,7 +61,7 @@ class SmartCityApi {
 
 			if (response.status === 200) {
 				const data = await response.json();
-				console.log('Verify Email Request Response: ', data)
+				// console.log('Verify Email Request Response: ', data)
 				if (data?.valid) {
 					return {
 						valid: true,
@@ -80,7 +80,7 @@ class SmartCityApi {
 				};
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			return {
 				valid: false,
 				errorType: '2'
@@ -97,7 +97,7 @@ class SmartCityApi {
 
 			if (response.status === 200) {
 				const data = await response.json();
-				console.log('Login Request Response: ', data)
+				// console.log('Login Request Response: ', data)
 				if (data?.valid) {
 					return {
 						valid: true,
@@ -118,7 +118,7 @@ class SmartCityApi {
 				};
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			return {
 				valid: false,
 				errorType: '2'
@@ -127,7 +127,7 @@ class SmartCityApi {
 	};
 
 	dashboard = async function (token: string) {
-		console.log(token);
+		// console.log(token);
 
 		try {
 			const response = await fetch('https://csstudent09.ucd.ie/api/' + "users", {
@@ -138,7 +138,7 @@ class SmartCityApi {
 			});
 			if (response.status === 200) {
 				const data = await response.json();
-				console.log('User Dashbord Request Response: ', data)
+				// console.log('User Dashbord Request Response: ', data)
 					return {
 					  valid: true,
 					  token: token,
@@ -152,7 +152,7 @@ class SmartCityApi {
 				  };
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			return {
 			  valid: false,
 			  errorType: '2'
@@ -167,7 +167,7 @@ class SmartCityApi {
 			});
 			if (response.status === 200) {
 				const data = await response.json();
-				console.log('All Trips Request Response: ', data)
+				// console.log('All Trips Request Response: ', data)
 					return {
 					  valid: true,
 					  errorType: "0",
@@ -180,7 +180,7 @@ class SmartCityApi {
 				  };
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			return {
 			  valid: false,
 			  errorType: '2'
@@ -198,7 +198,7 @@ class SmartCityApi {
 			});
 			if (response.status === 200) {
 				const data = await response.json();
-				console.log('User Dashbord Request Response: ', data)
+				// console.log('User Dashbord Request Response: ', data)
 					return {
 					  valid: true,
 					  ...data
@@ -209,7 +209,7 @@ class SmartCityApi {
 				  };
 			}
 		} catch (error) {
-			console.log(error);
+			// console.log(error);
 			return {
 			  valid: false,
 			};
@@ -226,7 +226,7 @@ class SmartCityApi {
 
 		  if (response.status === 200) {
 			  const data = await response.json();
-			  console.log('Verify Forgot Password Captcha Request Response: ', data)
+			//   console.log('Verify Forgot Password Captcha Request Response: ', data)
 			  if (data?.valid) {
 				  return {
 					  valid: true,
@@ -245,7 +245,7 @@ class SmartCityApi {
 			  };
 		  }
 	  } catch (error) {
-		  console.log(error);
+		//   console.log(error);
 		  return {
 			  valid: false,
 			  errorType: '2'
@@ -254,7 +254,7 @@ class SmartCityApi {
   };
 
   forgotPassword = async function(request: IForgotPasswordRequest){
-	console.log(request);
+	// console.log(request);
 	
 	try {
 	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "password", {
@@ -265,7 +265,7 @@ class SmartCityApi {
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Forgot Password Request Response: ', data)
+		//   console.log('Forgot Password Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,
@@ -284,7 +284,7 @@ class SmartCityApi {
 		  };
 	  }
   } catch (error) {
-	  console.log(error);
+	//   console.log(error);
 	  return {
 		  valid: false,
 		  errorType: '2'
@@ -300,7 +300,7 @@ popularPlaces = async function(){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Popular Places Request Response: ', data)
+		//   console.log('Popular Places Request Response: ', data)
 		  if (data?.length > 0) {
 			  return {
 				  valid: true,
@@ -340,7 +340,7 @@ updatePassword = async function(request: object, token:string){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Update Password Request Response: ', data)
+		//   console.log('Update Password Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,
@@ -376,7 +376,7 @@ updateUserDetails = async function(request: object){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Update UserDetails Request Response: ', data)
+		//   console.log('Update UserDetails Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,
@@ -415,7 +415,7 @@ getRecommendation = async function(request: object){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Get Recommendation Request Response: ', data)
+		//   console.log('Get Recommendation Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,
@@ -457,7 +457,7 @@ getFare = async function(request: object){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Get Fare Request Response: ', data)
+		//   console.log('Get Fare Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,
@@ -498,7 +498,7 @@ getDuration = async function(request: object){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Get Duration Request Response: ', data)
+		//   console.log('Get Duration Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,
@@ -535,7 +535,7 @@ confirmItienary = async function(request: object){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Get Confirmation Itienary Request Response: ', data)
+		//   console.log('Get Confirmation Itienary Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,
@@ -575,7 +575,7 @@ checkEmail = async function(email: string){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Get CheckEmail Request Response: ', data)
+		//   console.log('Get CheckEmail Request Response: ', data)
 		  if (data?.valid) {
 			  return {
 				  valid: true,
@@ -606,7 +606,6 @@ checkEmail = async function(email: string){
 };
 
 sendRequest = async function(req: object){
-	console.log(req);
 	
 	try {
 	  const response = await fetch('https://csstudent09.ucd.ie/api/' + "sendInvite", {
@@ -619,7 +618,7 @@ sendRequest = async function(req: object){
 
 	  if (response.status === 200) {
 		  const data = await response.json();
-		  console.log('Get CheckEmail Request Response: ', data)
+		//   console.log('Get CheckEmail Request Response: ', data)
 		  if (data?.valid && data?.message) {
 			  return {
 				  valid: true,
@@ -657,7 +656,7 @@ getItienaryDetails = async function (trip_id:number) {
   
 		if (response.status === 200) {
 			const data = await response.json();
-			console.log('Get Itienary Request Response: ', data)
+			// console.log('Get Itienary Request Response: ', data)
 			if (data?.valid) {
 				return {
 					valid: true,
@@ -689,17 +688,99 @@ getRequest = async function (req:object) {
 		const response = await fetch('https://csstudent09.ucd.ie/api/' + `checkRequests`, {
 			method: "POST",
 			credentials: 'include',
-			body: new URLSearchParams({...req})
+			body: JSON.stringify({...req}),
+			headers: {
+				'Content-Type': 'application/json'
+			  }
 		  });
   
 		if (response.status === 200) {
 			const data = await response.json();
-			console.log('Get Trip Request Response: ', data)
+			// console.log('Get Trip Request Response: ', data)
 			if (data?.valid) {
 				return {
 					valid: true,
 					errorType: "0",
 					...data
+				};
+			} else {
+				return {
+					valid: true,
+					errorType: '1',
+					data: []
+				};
+			}
+		} else {
+			return {
+				valid: true,
+				errorType: '2',
+				data: []
+			};
+		}
+	} catch (error) {
+		return {
+			valid: false,
+			errorType: '2'
+		};
+	}
+}
+
+acceptRequest = async function (req:object) {
+	try {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `acceptInvite`, {
+			method: "POST",
+			credentials: 'include',
+			body: JSON.stringify({...req}),
+			headers: {
+				'Content-Type': 'application/json'
+			  }
+		  });
+  
+		if (response.status === 200) {
+			const data = await response.json();
+			// console.log('Get Trip Request Response: ', data)
+			if (data?.valid) {
+				return {
+					valid: true,
+					errorType: "0",
+				};
+			} else {
+				return {
+					valid: false,
+					errorType: '1'
+				};
+			}
+		} else {
+			return {
+				valid: false,
+				errorType: '2'
+			};
+		}
+	} catch (error) {
+		return {
+			valid: false,
+			errorType: '2'
+		};
+	}
+}
+
+declineRequest = async function (req:object) {
+	try {
+		const response = await fetch('https://csstudent09.ucd.ie/api/' + `declineInvite`, {
+			method: "POST",
+			credentials: 'include',
+			body: JSON.stringify({...req}),
+			headers: {
+				'Content-Type': 'application/json'
+			  }
+		  });
+  
+		if (response.status === 200) {
+			const data = await response.json();
+			if (data?.valid) {
+				return {
+					valid: true,
+					errorType: "0",
 				};
 			} else {
 				return {
@@ -723,6 +804,7 @@ getRequest = async function (req:object) {
 
 
 
+
 addFriendsToTrip = async function(request: object){
 	try {
 		const response = await fetch('https://csstudent09.ucd.ie/api/' + "venues", {
@@ -733,7 +815,7 @@ addFriendsToTrip = async function(request: object){
   
 		if (response.status === 200) {
 			const data = await response.json();
-			console.log('Update UserDetails Request Response: ', data)
+			// console.log('Update UserDetails Request Response: ', data)
 			if (data?.valid) {
 				return {
 					valid: true,

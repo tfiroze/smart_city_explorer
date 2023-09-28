@@ -72,7 +72,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 		setDisableSubmit(true)
 		setSubmitLoading(true)
 		smartApi.forgotPassword(passwordRequest).then((results) => {
-			console.log(results);
+			
 
 			if (results?.valid) {
 				setDisableSubmit(true)
@@ -100,7 +100,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 			}
 		})
 			.catch((error) => {
-				console.log(error);
+				
 				setError('2')
 				setDisableVerify(false)
 				setDisableSubmit(false)
@@ -112,7 +112,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 		setDisableVerify(true)
 		setVerifyLoading(true)
 		smartApi.verifyForgotPasswordEmail(passwordRequest?.email).then((results) => {
-			console.log(results);
+			
 			if (results?.valid) {
 				setDisableSubmit(false)
 				setEmailDisableInput(true)
@@ -127,7 +127,7 @@ export const ForgotPassword: React.FC<IProps> = ({
 			}
 		})
 			.catch((error) => {
-				console.log(error);
+				
 				setError('2')
 				setDisableVerify(false)
 				setVerifyLoading(false)
@@ -235,7 +235,6 @@ export const ForgotPassword: React.FC<IProps> = ({
 
 	const handleSnackClick = (
 	) => () => {
-		console.log('called snack bar')
 		setSnackState({
 			open: true,
 			Transition: Fade

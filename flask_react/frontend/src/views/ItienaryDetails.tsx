@@ -41,6 +41,7 @@ import makeStyles from "@mui/styles/makeStyles/makeStyles";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import L from "leaflet";
+import { smartApi } from "../utils/apiCalls";
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
@@ -73,12 +74,19 @@ export const ItineraryDetails = () => {
   const [activeIndex, setActiveIndex] = useState<number>(0)
 
 
+  const [friendReqLoading, setFriendReqLoading] = useState<boolean>(false)
+  const [emailMessage, setEmailMessage] = useState<string>("")
+  const [emailError, setEmailError] = useState<boolean>(false)
+
+
+  const [friendsCount, setFriendsCount] = useState<number>(0)
+
+
   const classes = useStyles();
   const location = useLocation();
 
   useEffect(() => {
     setData(location.state.data)
-    console.log(location.state.data)
     let venues: any = []
     let keyName = ['ven_1', 'ven_2', 'rest_1', 'ven_3', 'ven_4', 'rest_2']
     keyName.map((el) => {
@@ -92,7 +100,6 @@ export const ItineraryDetails = () => {
 
   const handleFriendsModal = () => setOpenFriendsModal(!openFriendsModal)
   const handItienraryDetailsModal = () => {
-    console.log('Called Details');
     setOpenItienaryDetailsModal(!openItienaryDetailsModal)
   }
 
@@ -101,10 +108,8 @@ export const ItineraryDetails = () => {
   const navigate = useNavigate();
 
   const handleForward = () => {
-    console.log(activeIndex)
     if ((activeIndex < (venueData.length - 1)) && (activeIndex >= 0)) {
       setActiveIndex(activeIndex + 1)
-      console.log(venueData[activeIndex + 1]);
 
     }
   }
@@ -120,6 +125,7 @@ export const ItineraryDetails = () => {
     navigate('/dashboard')
   }
 
+
   return (
     <>
       <Dialog
@@ -133,6 +139,7 @@ export const ItineraryDetails = () => {
           isError={false}
           errorMessage={""}
           friendList = {(data?.friend_id && data.friend_id?.length>0)?data.friend_email:[]}
+          hideAddFriend={true}
         
         />
       </Dialog>
@@ -153,17 +160,16 @@ export const ItineraryDetails = () => {
         <Grid container xs={12} style={{ position: 'relative', height: '90vh', }}>
           <Grid container xs={12} style={{ width: '100%', height: '100%', zIndex: 10, background: 'transparent' }}>
             <Grid item xs={5} style={{ background: 'transparent', alignItems: 'center', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
-              <div style={{ width: '80%', padding: '10px', textAlign: 'center', background: 'white', borderRadius: '15px', display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+              <div style={{ width: '80%', padding: '10px', textAlign: 'center', background: currentTheme.palette.secondary.main, borderRadius: '15px', display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
                 <span onClick={() => handleHome()} style={{ width: '30px', height: '30px', borderRadius: '30px', margin: '1px', cursor: 'pointer' }}>
-                  <ArrowBackIosIcon />
+                  <ArrowBackIosIcon sx={{ color: '#757de8' }}/>
                 </span>
                 <Typography variant="h5" fontWeight={"bold"}>{data?.name ? data?.name : ''}</Typography>
                 <div>
-                  <AvatarGroup max={4} onClick={() => handleFriendsModal()}>
+                  <AvatarGroup max={4} onClick={() => handleFriendsModal()} style={{cursor:'pointer'}}>
                     {data?.friend_email && data?.friend_email.map((el: string) =>
-                      <><Avatar>{el ? el.split('')[0] : ''}</Avatar>
-                      </>
-
+                      <Avatar>{el ? el.split('')[0] : ''}</Avatar>
+                      
                     )}
                   </AvatarGroup>
                 </div>
