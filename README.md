@@ -70,3 +70,9 @@ Several potential improvements and expansions have been identified:
 
 The project has the potential to refine and expand to provide unique solutions for urban exploration.
 
+
+
+
+
+https://github.com/tfiroze/Smart-City-Explorer/assets/31386972/c2414e85-edfb-42f3-8a90-2dd2910dbe53
+
