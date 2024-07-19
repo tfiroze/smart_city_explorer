@@ -8,13 +8,14 @@ let secretKey = 'This is the smart_city_explorer app'
 // get all upcoming trip info of one user (Required: user_id)
 let upcomingTripsInfo = (req, res, next) => {
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             // let sqlStr = 'SELECT * FROM trip_info JOIN trip_user ON trip_info.trip_id=trip_user.trip_id JOIN user_info ON user_info.user_id=trip_user.user_id WHERE user_info.user_id=?'
             let sqlStr = 'select * from trip_info where trip_owner = ? and trip_date > now()'
             conn.query(sqlStr, [req.params.user_id], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'Failed to get trips information'})
                 }
             }).then(([rows]) => {
@@ -22,7 +23,8 @@ let upcomingTripsInfo = (req, res, next) => {
                 next()
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     } catch (err) {
         console.error(err)
         return res.status(200).send({valid: false, message:'Failed to get trip info'})
@@ -32,22 +34,24 @@ let upcomingTripsInfo = (req, res, next) => {
 // get all completed trip info of one user (Required: user_id)
 let completedTripsInfo = (req, res) => {
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             // let sqlStr = 'SELECT * FROM trip_info JOIN trip_user ON trip_info.trip_id=trip_user.trip_id JOIN user_info ON user_info.user_id=trip_user.user_id WHERE user_info.user_id=?'
             let sqlStr = 'select * from trip_info where trip_owner = ? and trip_date < now()'
             conn.query(sqlStr, [req.params.user_id], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'Failed to get trips information'})
                 }
             }).then(([rows]) => {
                 req.res_json.completedTrips = rows
-                conn.end()
+                conn.release()
                 return res.status(200).send(req.res_json)
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     } catch (err) {
         console.error(err)
         return res.status(200).send({valid: false, message:'Failed to get trip info'})
@@ -58,12 +62,13 @@ let completedTripsInfo = (req, res) => {
 let getVenueIds = (req, res, next) => {
     let venueDetail = {}
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             let sqlStr = 'select * from trip_info where trip_id=?'
             conn.query(sqlStr, [req.params.trip_id], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'Failed to get trip information'})
                 }
             }).then(([rows]) => {
@@ -84,11 +89,12 @@ let getVenueIds = (req, res, next) => {
                 req.body.venueDetail = venueDetail
                 req.body.venueIds = venueIds
                 
-                conn.end()
+                conn.release()
                 next()
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     } catch (err) {
         console.error(err)
         return res.status(200).send({valid: false, message: 'Failed to get trip info'})
@@ -99,12 +105,13 @@ let getVenueInfo = (req, res, next) => {
     let venueDetail = req.body.venueDetail
     let venueIds = req.body.venueIds
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             let sqlStr = 'select original_ven_id,name,image,rating,description,latitude,longitude from venue_static where original_ven_id in (?)'
             conn.query(sqlStr, [venueIds], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'There is an error',error:err.message})
                 }
             }).then((rows) => {
@@ -184,18 +191,19 @@ let getVenueInfo = (req, res, next) => {
                             venueDetail['rest_2']['longitude'] = places[i]['longitude']
                         }
                     }
-                    conn.end();
+                    conn.release();
                     req.body.venueDetail = venueDetail
                     next()
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    conn.end();
+                    conn.release();
                     return res.status(500).send({valid:false, message:'Internal Server Error',error:error.message});
                 })
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch (err) {
         console.error(err)
         return res.status(200).send({valid:false, message: "There is an error", error: err.message})
@@ -205,12 +213,13 @@ let getVenueInfo = (req, res, next) => {
 let getUserIds = (req, res, next) => {
     let venueDetail = req.body.venueDetail
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = 'select trip_owner_id, requested_user_id from trip_requests where trip_owner_id=? and trip_id=?'
             conn.query(sqlStr, [venueDetail['owner_id'], venueDetail['trip_id']], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'There is an error',error:err.message})
                 }
             }).then((rows) => {
@@ -223,11 +232,12 @@ let getUserIds = (req, res, next) => {
                     venueDetail['friend_email'] = []
                 }
                 req.body.venueDetail = venueDetail
-                conn.end()
+                conn.release()
                 next()
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid:200, message:"There is an error", error: err.message})
@@ -239,12 +249,13 @@ let getUserInfo = (req, res) => {
     const userIds = venueDetail['friend_id']
     userIds.push(parseInt(venueDetail['owner_id']))
     try{
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             sqlStr = 'select user_id,email from user_info where user_id in (?)'
             conn.query(sqlStr, [userIds], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'There is an error',error:err.message})
                 }
             }).then((rows) => {
@@ -260,11 +271,12 @@ let getUserInfo = (req, res) => {
                 for(let i=0;i<rows[0].length;i++) {
                     venueDetail['friend_email'].push(rows[0][i]['email'])
                 }
-                conn.end()
+                conn.release()
                 return res.status(200).send({valid:true, data:venueDetail})
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid:false, message:"There is an error", error:err.message})
@@ -274,20 +286,22 @@ let getUserInfo = (req, res) => {
 // update trip content (Required: trip_id, trip_name, trip_owner, trip_date, trip_status, [trip_part_1, trip_part_2, trip_part_3, trip_part_4], trip_ven_1, trip_ven_2, trip_ven_3, trip_ven_4, trip_rest_1, trip_rest_2)
 let updateTrip = (req, res) => {
     try{
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = `update trip_info set trip_id=?, trip_name=?, trip_owner=?, trip_date=?, trip_status=?, trip_ven_1=?, trip_ven_2=?, trip_ven_3=?, trip_ven_4=?, trip_rest_1=?, trip_rest_2=? WHERE trip_id=?`
             conn.query(sqlStr, [req.body.trip_name, req.body.user_id, req.body.date, req.body.ven_1, req.body.ven_2, req.body.ven_3, req.body.ven_4, req.body.rest_1, req.body.rest_2], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Failed to update trip information'})
                 }
             }).then(([rows]) => {
-                conn.end()
+                conn.release()
                 return res.status(200).send({valid: true,message: 'Succeed to update trip information'})
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid: false, message: 'Failed to update trip'})
@@ -297,25 +311,27 @@ let updateTrip = (req, res) => {
 // create new trip (Required: trip_name, trip_owner, trip_date, trip_status, [trip_part_1, trip_part_2, trip_part_3, trip_part_4], trip_ven_1, trip_ven_2, trip_ven_3, trip_ven_4, trip_rest_1, trip_rest_2) (Return: trip_id)
 let addTrip = (req, res, next) => {
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             let sqlStr = 'insert into trip_info (trip_name, trip_owner, trip_date, trip_ven_1, trip_ven_2, trip_ven_3, trip_ven_4, trip_rest_1, trip_rest_2) values (?, ?, ?, ?, ?, ?, ?, ?, ?)'
             conn.query(sqlStr, [req.body.trip_name, req.body.user_id, req.body.date, req.body.ven_1, req.body.ven_2, req.body.ven_3, req.body.ven_4, req.body.rest_1, req.body.rest_2], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Failed to add new trip'})
                 }
             }).then(([rows]) => {
                 if(rows.affectedRows === 1){
-                    conn.end()
+                    conn.release()
                     next()
                 }else {
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Failed to add new trip'})
                 }
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid: false, message: 'Failed to add new trip'})
@@ -324,20 +340,22 @@ let addTrip = (req, res, next) => {
 
 let returnTripId = (req, res) => {
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             let sqlStr = 'select trip_id from trip_info  where trip_name=? and trip_owner=? and trip_date=? and trip_ven_1=? and trip_ven_2=? and trip_ven_3=? and trip_ven_4=? and trip_rest_1=? and trip_rest_2=?'
             conn.query(sqlStr, [req.body.trip_name, req.body.user_id, req.body.date, req.body.ven_1, req.body.ven_2, req.body.ven_3, req.body.ven_4, req.body.rest_1, req.body.rest_2 ], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Failed to add new trip'})
                 }
             }).then(([rows]) => {
-                conn.end()
+                conn.release()
                 return res.status(200).send({valid: true, data: rows[0]})
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid: false, message: 'Failed to add new trip'})
@@ -347,19 +365,21 @@ let returnTripId = (req, res) => {
 // delete trip (Required: trip_id)
 let deleteTrip = (req, res) => {
     try{
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = `delete from trip_info where trip_id=?`
             conn.query(sqlStr, [req.body.trip_id], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'Failed to delete trip'})
                 }}).then(([rows]) => {
-                conn.end()
+                conn.release()
                 return res.status(200).send({valid: true,message: 'Succeed to delete trip'})
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid: false, message: 'Failed to delete trip'})
@@ -372,17 +392,18 @@ let getTripInfoQuestionnaireMW = (req, res, next) => {
     jwt.verify(token, secretKey, (err, decoded) => {
         if (err) {
             console.error(err)
-            conn.end()
+            // conn.release()
             return res.status(200).send({valid: false,message: 'Invalid token'})
         } else {
             res_json = {}
             try {
-                let dbOperation = (conn) => {
+                let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
                     const sqlStr = 'select distinct zone_group from venue_static where zone_group is not null'
                     conn.query(sqlStr, [], (err, result) => {
                         if(err) {
                             console.error(err)
-                            conn.end()
+                            conn.release()
                             return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
                         }
                     }).then(([rows]) => {
@@ -392,10 +413,11 @@ let getTripInfoQuestionnaireMW = (req, res, next) => {
                         next()
                     })
                 }
-                createSSHTunnel(dbOperation)
+                // createSSHTunnel(dbOperation)
+                dbOperation(createSSHTunnel)
             }catch(err) {
                 console.error(err)
-                conn.end()
+                conn.release()
                 return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
             }
         }
@@ -406,12 +428,13 @@ let getTripInfoQuestionnaireMW = (req, res, next) => {
 // Controller: get cusine_type
 let getTripInfoQuestionnaireMW2 = (req, res, next) => {
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = "SELECT DISTINCT type_mod FROM venue_static WHERE type_mod IS NOT NULL AND type_mod LIKE '%Restaurant'";
             conn.query(sqlStr, [], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
                 }
             }).then(([rows]) => {
@@ -421,7 +444,8 @@ let getTripInfoQuestionnaireMW2 = (req, res, next) => {
                 next()
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid: false, message: 'Failed to get trip info questionnaire'})
@@ -432,23 +456,25 @@ let getTripInfoQuestionnaireMW2 = (req, res, next) => {
 // Controller: get attraction_type
 let getTripInfoQuestionnaire = (req, res) => {
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = "SELECT DISTINCT type_mod FROM venue_static WHERE type_mod IS NOT NULL AND type_mod NOT LIKE '%Restaurant'";
             conn.query(sqlStr, [], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
                 }
             }).then(([rows]) => {
                 res_json = req.res_json
                 const typeArray = rows.map(item => item.type_mod);
                 res_json.attraction_type = typeArray
-                conn.end()
+                conn.release()
                 return res.status(200).send(res_json)
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err){
         console.error(err)
         return res.status(200).send({valid:false,message:'Failed to get trip info questionnaire'})
@@ -458,12 +484,13 @@ let getTripInfoQuestionnaire = (req, res) => {
 // Return five popular places: Central Park, Times Square, Empire State Building, The Metropolitan Museum of Art, Chelsea Market
 let popularPlaces = (req, res, next) => {
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             sqlStr = 'select original_ven_id,name,image,rating,description from venue_static where name="Central Park" or name="Times Square" or name="Empire State Building" or name="The Metropolitan Museum of Art"or name = "Chelsea Market"'
             conn.query(sqlStr, [], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false, message:'Failed to get 5 popular places'})
                 }
             }).then(([rows]) => {
@@ -473,7 +500,7 @@ let popularPlaces = (req, res, next) => {
                 const currentHour = currentTime.getHours()
 
                 // the url should be the ip address of server
-                const apiUrl = 'https://csstudent09.ucd.ie/api/busyness';
+                const apiUrl = 'http://127.0.0.1:5000/' + 'api/busyness';
                 const promises = [];
 
                 for (let i = 0; i < places.length; i++) {
@@ -483,6 +510,7 @@ let popularPlaces = (req, res, next) => {
                     hour: currentHour
                 })
                     .then(response => {
+                        // console.log(response, "Popular Places")
                     places[i].busyness = response.data;
                     })
                     .catch(error => {
@@ -495,18 +523,19 @@ let popularPlaces = (req, res, next) => {
                 Promise.all(promises)
                 .then(() => {
                     req.body.places = places
-                    conn.end();
+                    conn.release();
                     next()
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    conn.end();
+                    conn.release();
                     return res.status(500).send('Internal Server Error');
                 });
 
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid:false, message:'Failed to get five popular places'})
@@ -520,12 +549,13 @@ let businessHour = (req, res) => {
         for (let i=0;i<req.body.places.length;i++) {
             ids.push(req.body.places[i]['original_ven_id'])
         }
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             sqlStr = 'select distinct venue_id,opening_time,closing_time from venue_timings where venue_id in (?) and day=?'
             conn.query(sqlStr, [ids, new Date().getDay()], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false, message:'Failed to get 5 popular places'})
                 }
             }).then((rows)=>{
@@ -538,11 +568,12 @@ let businessHour = (req, res) => {
                         }
                     });
                 }
-                conn.end()
+                conn.release()
                 return res.status(200).send(result)
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid:false, message:'Failed to get 5 popular places'})

@@ -490,7 +490,12 @@ export const Questionnaire: React.FC<IProps> = ({
               zoom={13}
               center={[40.7831, -73.9712]}
             >
-              <TileLayer url="https://stamen-tiles-{s}.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}{r}.png" />
+              <TileLayer url="https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png" />
+              
+              {/* <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  /> */}
               {/* <MarkerClusterGroup> */}
               {zoneGroupItems
                 .filter((x: any) => {

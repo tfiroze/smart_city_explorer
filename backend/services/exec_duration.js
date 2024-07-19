@@ -4,6 +4,9 @@ const { spawn } = require('child_process');
 const path = require('path')
 const createSSHTunnel = require('../db');
 const fs = require('fs').promises;
+const os = require('os')
+const util = require('util')
+const { execSync } = require('child_process');
 
 // const reqBodyVenueId = ['ven_344c563654744266547349526b6f7733506f68442d65734a496843', 'ven_30365f61684a68514c7730526b6f775a6c6b7a707255624a496843', 'ven_3075502d337278736a3952526b6f775a4a72674a66616c4a496843', 'ven_307063396f374b4b4e6b71526b6f7759564a316c35656e4a496843', 'ven_3039793356676f745a3570526b6f775974496c6d7378524a496843','ven_344c49766b705544393465526b6f77327244307a4159434a496843']
 // const reqBodyDate = '2023-08-15'
@@ -42,7 +45,8 @@ function clearVariables() {
 
 function start(req, res) {
   try {
-    let dbOperation = (conn) => {
+    let dbOperation = async (connection) => {
+      let conn = await connection.getConnection()
         let sqlStr = 'SELECT original_ven_id, zone_id, latitude, longitude FROM venue_static WHERE original_ven_id IN (?)'
         conn.query(sqlStr, [req.body.venue_id], (err, result) => {
             if(err) {
@@ -69,7 +73,8 @@ function start(req, res) {
           prepareJSON(res)
         })
     }
-    createSSHTunnel(dbOperation)
+    // createSSHTunnel(dbOperation)
+    dbOperation(createSSHTunnel)
   } catch (err) {
     console.error(err)
   }
@@ -174,7 +179,7 @@ async function prepareJSON(res) {
       pickup_weekday_num: pickup_weekday_num,
       weather_description: weather_description
     };
-    const dataToSendString = JSON.stringify(dataToSend);
+    const dataToSendString = JSON.stringify(dataToSend).replace(/"/g, '\\"');
 
     try {
       const result = await exec_py(dataToSendString);
@@ -191,25 +196,83 @@ async function prepareJSON(res) {
 }
 
 // execute .py file
+// function exec_py(dataToSendString) {
+//   return new Promise((resolve, reject) => {
+//     const pythonProcess = spawn('/usr/bin/python3', [path.join(__dirname, '../../data_models', 'trip_duration_prediction.py'), dataToSendString]);
+//     let result = '';
+
+//     pythonProcess.stdout.on('data', (data) => {
+//       result += data.toString();
+//     });
+
+//     pythonProcess.stderr.on('data', (data) => {
+//       reject(data.toString());
+//     });
+
+//     pythonProcess.on('close', (code) => {
+//       if (code === 0) {
+//         resolve(result);
+//       } else {
+//         reject(`Python script exited with code ${code}`);
+//       }
+//     });
+//   });
+// }
+
 function exec_py(dataToSendString) {
   return new Promise((resolve, reject) => {
-    const pythonProcess = spawn('/usr/bin/python3', [path.join(__dirname, '../../data_models', 'trip_duration_prediction.py'), dataToSendString]);
+    const baseDir = path.resolve(__dirname, '..');
+    let scriptPath = path.join(baseDir, 'data_models', 'trip_duration_prediction.py');
+    
+    const pythonCommand = os.platform() === 'win32' ? 'python' : 'python3';
+
+    // Check if the file is a notebook and convert if necessary
+    if (path.extname(scriptPath) === '.ipynb') {
+      console.log('Converting notebook to Python script');
+      try {
+        execSync(`jupyter nbconvert --to script "${scriptPath}"`, { stdio: 'inherit' });
+        scriptPath = scriptPath.replace('.ipynb', '.py');
+        console.log('Conversion successful');
+      } catch (error) {
+        console.error('Error during conversion:', error.message);
+        return reject(new Error(`Notebook conversion failed: ${error.message}`));
+      }
+    }
+
+    console.log(`Executing Python script: ${scriptPath}`);
+    console.log(`Data being sent: ${dataToSendString}`);
+
+    const pythonProcess = spawn(pythonCommand, [scriptPath, dataToSendString], {
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell: true
+    });
+
     let result = '';
+    let errorOutput = '';
 
     pythonProcess.stdout.on('data', (data) => {
       result += data.toString();
     });
 
     pythonProcess.stderr.on('data', (data) => {
-      reject(data.toString());
+      errorOutput += data.toString();
     });
 
     pythonProcess.on('close', (code) => {
       if (code === 0) {
-        resolve(result);
+        console.log('Python script executed successfully');
+        console.log('Python output:', result.trim());
+        resolve(result.trim());
       } else {
-        reject(`Python script exited with code ${code}`);
+        console.error(`Python script exited with code ${code}`);
+        console.error(`Error output: ${errorOutput}`);
+        reject(new Error(`Python script exited with code ${code}. Error: ${errorOutput}`));
       }
+    });
+
+    pythonProcess.on('error', (err) => {
+      console.error('Failed to start Python process:', err);
+      reject(new Error(`Failed to start Python process: ${err.message}`));
     });
   });
 }

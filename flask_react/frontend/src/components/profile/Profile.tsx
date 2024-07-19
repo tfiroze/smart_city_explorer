@@ -474,7 +474,7 @@ const Profile = () => {
     const handleProfileClicks = (text: string) => {
         setActiveOption(text)
         if (text == 'Dashboard') {
-            navigate('/dashboard')
+            navigate('/')
         } else if (text == 'Past Trips' || text == 'Upcoming Trips') {
             handlegetTripDetails();
         } else if (text == 'Requests') {

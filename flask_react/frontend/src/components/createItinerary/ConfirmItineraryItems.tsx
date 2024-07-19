@@ -102,6 +102,8 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
 
   const [emailSentPop, setEmailSentPop] = useState<boolean>(false)
 
+  const [alreadySent, setAlreadySent] = useState<boolean>(false)
+
   const [friendsCount, setFriendsCount] = useState<number>(0)
 
 
@@ -206,6 +208,17 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
     setEmailSentPop(false)
   };
 
+  const handleAlreadyClose = (
+    event: React.SyntheticEvent<Event, any> | Event,
+    reason: SnackbarCloseReason
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+    setAlreadySent(false)
+  };
+
   const setErrorMessage = (message: string) => {
     setOneButtonMessage(message)
   }
@@ -223,6 +236,7 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
     setFriendReqLoading(true)
     smartApi.checkEmail(email)
       .then((results) => {
+        console.log(results, "Friends added res")
         if (results?.valid && results?.user_id) {
           sendFriendRequest(results.user_id)
           setEmailError(false)
@@ -254,6 +268,9 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
           handleFriendsModal()
           setEmailSentPop(true)
           setFriendsCount(friendsCount + 1)
+        } else if(!results?.valid && results?.errorType == '1'){
+          setFriendReqLoading(false)
+          setAlreadySent(true)
         } else {
           // ... handle the case when results?.valid is falsy ...
           setError(results.errorType)
@@ -332,7 +349,9 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
               <StyledButton
                 variant="contained"
                 endIcon={<DashboardIcon />}
+                // onClick={() => { navigate("/dashboard") }}
                 onClick={() => { navigate("/dashboard") }}
+
                 style={{ margin: '0px 10px' }}
                 disabled={tripid ? false : true}
               >
@@ -366,6 +385,11 @@ export const ConfirmItineraryItems: React.FC<IProps> = ({
           <Snackbar open={emailSentPop} autoHideDuration={6000} onClose={handleClose}>
             <Alert severity="success" sx={{ width: '100%' }}>
               Email Sent!
+            </Alert>
+          </Snackbar>
+          <Snackbar open={alreadySent} autoHideDuration={6000} onClose={handleAlreadyClose}>
+            <Alert severity="success" sx={{ width: '100%' }}>
+              Request Already Sent!
             </Alert>
           </Snackbar>
         </Grid>}

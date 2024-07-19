@@ -15,12 +15,13 @@ let connTest = (req, res) => {
 // verify email unique (Required: email)
 let verifyEmailUnique = (req, res, next) => {
     try{
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             let sqlStr = 'SELECT COUNT(*) as count FROM user_info WHERE email =?'
             conn.query(sqlStr, [req.body.email], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false,
                         message: 'Failed to register',
@@ -31,12 +32,13 @@ let verifyEmailUnique = (req, res, next) => {
                 if(rows[0].count === 0){
                     next()
                 }else {
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Email has been registered'})
                 }
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err){
         console.error(err)
         return res.status(200).send({valid:false,message:'Failed to verify email'})
@@ -55,12 +57,13 @@ let register = (req, res) => {
         return res.status(200).send({valid: false, message: 'Invalid captcha'})
     }
     try{
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             let sqlStr = 'insert into user_info (firstname, surname, email, password) values (?, ?, ?, ?)'
             conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, md5(req.body.password)], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to register',
@@ -72,19 +75,20 @@ let register = (req, res) => {
                     req.session.destroy((err) => {
                         if (err) {
                           console.error('Error destroying session:', err)
-                          conn.end()
+                          conn.release()
                           return res.status(500).send({ message: 'Error destroying session' })
                         }
                     })
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: true, message: 'Succeed to register'})
                 }else {
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Failed to register'})
                 }
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err){
         console.error(err)
         return res.status(200).send({valid:false,message:'Failed to register'})
@@ -92,14 +96,15 @@ let register = (req, res) => {
 }
 
 // Login (Required: email, password)
-let login = (req, res) => {
+let login =  (req, res) => {
     try{
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection();
             sqlStr = 'select user_id, firstname, surname, email from user_info where email=? and password=?'
             conn.query(sqlStr, [req.body.email, md5(req.body.password)], (err, result) => {
                 if(err) {
                     console.error(err);
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to login',
@@ -108,7 +113,7 @@ let login = (req, res) => {
                 }
             }).then(([rows]) => {
                 if(rows[0] == undefined) {
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid:false,message: 'wrong email or password'})
                 }
                 let user_idStr = rows[0].user_id
@@ -117,7 +122,7 @@ let login = (req, res) => {
                 const decoded = jwt.decode(tokenStr);
     
                 const expirationTime = new Date(decoded.exp * 1000); 
-                conn.end()
+                conn.release()
                 return res.status(200).send({
                     valid: true,
                     message: 'Succeed to login',
@@ -126,7 +131,8 @@ let login = (req, res) => {
                 })
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid:false,message:'Failed to login'})
@@ -138,12 +144,13 @@ let userInfo = (req, res) => {
     let token = req.headers['token']
     try {
         let decode = jwt.verify(token, secretKey).user_idStr;
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             let sqlStr = 'select user_id, firstname, surname, email from user_info where user_id=?'
             conn.query(sqlStr, [decode], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to get user information',
@@ -151,11 +158,12 @@ let userInfo = (req, res) => {
                     })
                 }
             }).then(([rows]) => {
-                conn.end()
+                conn.release()
                 return res.status(200).json(rows[0])
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     } catch (err) {
         console.error(err)
         res.status(200).send({valid: false,message: 'Invalid token'})
@@ -165,12 +173,13 @@ let userInfo = (req, res) => {
 // Update user information (Required: firstname, surname, email, user_id)
 let updateUser = (req, res) => {
     try {
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = `update user_info set firstname=?, surname=? ,email=? WHERE user_id=?`
             conn.query(sqlStr, [req.body.firstname, req.body.surname, req.body.email, req.body.user_id], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to update user information',
@@ -179,15 +188,16 @@ let updateUser = (req, res) => {
                 }
                 }).then(([rows]) => {
                     if(rows.affectedRows === 1){
-                        conn.end()
+                        conn.release()
                         return res.status(200).send({valid: true,message: 'Succeed to update user information'})
                     }else {
-                        conn.end()
+                        conn.release()
                         return res.status(200).send({valid: false, message: 'Failed to update user information'})
                     }
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid:false, message:'Failed to update user info'})
@@ -196,13 +206,14 @@ let updateUser = (req, res) => {
 
 // check user email address, find the user_id (Required: email)
 let checkRegisteredEmail = (req, res, next) => {
-    let dbOperation = (conn) => {
+    let dbOperation = async (connection) => {
+        let conn = await connection.getConnection()
         try {
             let sqlStr = 'SELECT user_id FROM user_info WHERE email =?'
             conn.query(sqlStr, [req.body.email], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false,
                         message: 'Failed to register',
@@ -214,7 +225,7 @@ let checkRegisteredEmail = (req, res, next) => {
                     req.body.user_id = rows[0].user_id
                     next()
                 }else {
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Email has not found'}) 
                 }
             })
@@ -223,7 +234,8 @@ let checkRegisteredEmail = (req, res, next) => {
             return res.status(200).send({valid: false, message: 'Email has not found'})   
         }  
     }
-    createSSHTunnel(dbOperation)
+    // createSSHTunnel(dbOperation)
+    dbOperation(createSSHTunnel)
 }
 
 // reset user password when forget (Required: password, captcha)
@@ -233,12 +245,13 @@ let forgetPWD = (req, res) => {
         if (!captchaCheckResult.isValid) {
             return res.status(200).send({valid: false, message: 'captcha is not valid'})
         }
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = 'update user_info set password=? WHERE user_id=?'
             conn.query(sqlStr, [md5(req.body.password), req.body.user_id], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to update user password',
@@ -246,15 +259,16 @@ let forgetPWD = (req, res) => {
                 }
             }).then(([rows]) => {
                 if(rows.affectedRows === 1){
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: true,message: 'Succeed to update password'})
                 }else {
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Failed to update password'})
                 }
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid: false, message: 'Failed to update password'})
@@ -266,12 +280,13 @@ let checkPWD = (req, res, next) => {
     let token = req.headers['token']
     try{
         let decode = jwt.verify(token, secretKey).user_idStr;
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = 'select password from user_info WHERE user_id=?'
             conn.query(sqlStr, [decode], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to update user password',
@@ -281,12 +296,13 @@ let checkPWD = (req, res, next) => {
                 if(rows[0].password == md5(req.body.old_password)){
                     next()
                 }else {
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Wrong old password'})
                 }
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err) {
         console.error(err)
         return res.status(200).send({valid: false, message: 'Failed to update password'})
@@ -298,12 +314,13 @@ let updatePWD = (req, res) => {
     let token = req.headers['token']
     try {
         let decode = jwt.verify(token, secretKey).user_idStr;
-        let dbOperation = (conn) => {
+        let dbOperation = async (connection) => {
+            let conn = await connection.getConnection()
             const sqlStr = 'update user_info set password=? WHERE user_id=?'
             conn.query(sqlStr, [md5(req.body.password), decode], (err, result) => {
                 if(err) {
                     console.error(err)
-                    conn.end()
+                    conn.release()
                     return res.status(500).send({
                         valid: false, 
                         message: 'Failed to update user password',
@@ -312,15 +329,16 @@ let updatePWD = (req, res) => {
                 }
             }).then(([rows]) => {
                 if(rows.affectedRows === 1){
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: true,message: 'Succeed to update password'})
                 }else {
-                    conn.end()
+                    conn.release()
                     return res.status(200).send({valid: false, message: 'Failed to update password'})
                 }
             })
         }
-        createSSHTunnel(dbOperation)
+        // createSSHTunnel(dbOperation)
+        dbOperation(createSSHTunnel)
     }catch(err){
         console.error(err)
         return res.status(200).send({valid:false, message:'Failed to update password'})

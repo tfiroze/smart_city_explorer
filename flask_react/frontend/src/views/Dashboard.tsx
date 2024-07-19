@@ -91,7 +91,7 @@ interface GeoJSONData {
   features: Feature[];
 }
 
-
+console.log('called Dashboard')
 
 export const Dashboard = () => {
   const { userInfo } = useContext(AuthContext);
@@ -173,7 +173,6 @@ export const Dashboard = () => {
   }
 
   const getPopularPlaces = () => {
-
     smartApi.popularPlaces()
       .then((results) => {
         setLoader(false)

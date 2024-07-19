@@ -93,6 +93,7 @@ export const CreateItinerary: React.FC<IProps> = ({
       })
       .catch((error) => {
         setError('2')
+        setLoader(false)
       });
   }
 
@@ -107,14 +108,14 @@ export const CreateItinerary: React.FC<IProps> = ({
 
     smartApi.getFare(req)
       .then((results) => {
-
+        setLoader(false)
         if (results?.valid && results?.data) {
           setFareArr(results.data)
           handleGetDistance(request)
           // setCurrentStep(currentStep + 1);
         } else {
           // ... handle the case when results?.valid is falsy ...
-          setLoader(false)
+          
           setError(results.errorType)
 
         }
@@ -144,6 +145,7 @@ export const CreateItinerary: React.FC<IProps> = ({
       })
       .catch((error) => {
         setError('2')
+        setLoader(false)
         // setLoading(false)
       });
   }

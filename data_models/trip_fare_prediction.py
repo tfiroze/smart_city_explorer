@@ -17,7 +17,12 @@ model = joblib.load(joblib_file_path)
 
 data_received = sys.argv[1]
 
-parameters = json.loads(data_received)
+try:
+    parameters = json.loads(data_received)
+except json.JSONDecodeError as e:
+    print(f"Error decoding JSON: {e}")
+    print(f"Received data: {data_received}")
+    sys.exit(1)
 
 trip_distance = parameters['trip_distance']
 pickup_zone = parameters['pickup_zone']
