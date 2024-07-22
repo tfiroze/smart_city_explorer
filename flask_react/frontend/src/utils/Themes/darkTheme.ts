@@ -15,7 +15,7 @@ export default createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: '#535C7C', // Update the background color of Paper component
+          // backgroundColor: '#535C7C', // Update the background color of Paper component
           // padding: '10px', // Increase the padding
         },
       },

@@ -33,7 +33,6 @@ import thingsTodoDummyData from "../temp/dummy_data/thingsTodo.json";
 import manhattanDarkImage from '../resources/images/manhattan_dark.jpg';
 import grass from '../resources/images/grass.jpg'
 import { toTitleCase } from "../utils/utility_func";
-// import Profile from "../components/profile/Profile"
 import { ProfileDrawer } from "../components/navigation/ProfileDrawer";
 import { smartApi } from "../utils/apiCalls";
 import { AuthContext } from "../utils/AuthContext";
@@ -49,6 +48,7 @@ import L, { divIcon } from "leaflet";
 
 import { GeoJSON as LeafletGeoJSON } from "leaflet";
 import dayjs from "dayjs";
+import fontSize from "../utils/Themes/style";
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     "& .MuiPaper-root": {
@@ -91,7 +91,6 @@ interface GeoJSONData {
   features: Feature[];
 }
 
-console.log('called Dashboard')
 
 export const Dashboard = () => {
   const { userInfo } = useContext(AuthContext);
@@ -114,17 +113,14 @@ export const Dashboard = () => {
 
   const [loader, setLoader] = useState<boolean>(false)
   const [error, setError] = useState<string>("0")
-
- 
-
   const currentTheme = useTheme();
-
-
 
   useEffect(() => {
     firstTimeUser()
     setThingsTodo([...thingsTodoDummyData]);
   }, [])
+
+
   const firstTimeUser = () => {
     setFirstTime(true)
   }
@@ -388,7 +384,7 @@ export const Dashboard = () => {
                           </>
                           : <>
                             <Grid item xs={12} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: '10px 0px' }}>
-                              {upcomingTrips?.length > 0 && <div style={{
+                              {upcomingTrips?.length > 0 && <div  style={{
                                 width: '20%',
                                 padding: '8px',
                                 cursor: 'pointer',

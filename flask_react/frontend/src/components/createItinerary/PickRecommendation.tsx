@@ -62,9 +62,10 @@ interface IProps {
     restaurantValue: any[];
     restaurantName: string[];
     getFare: (args: string[], args2: any) => void
+    getBack:()=>void
 }
 
-export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attractionName, restaurantName, restaurantValue, getFare }) => {
+export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attractionName, restaurantName, restaurantValue, getFare, getBack }) => {
     const [attractionNameArr, setAttractionNameArr] = useState<string[]>([]);
     const [attractionValueArr, setAttractionValueArr] = useState<any[]>([]);
 
@@ -245,12 +246,26 @@ export const PickRecommendation: React.FC<IProps> = ({ attractionValue, attracti
             ))
             }
 
-            <Grid xs={12} style={{ justifyContent: 'center', display: 'flex' }}>
+            <Grid xs={3} style={{margin:'0 auto' ,justifyContent: 'space-around', display: 'flex'}}>
+                
+                <CButton
+                    title="Back"
+                    onClick={() => { getBack() }}
+                    style={{
+                        width: '40%',
+                        background: '#757de8',
+                        color: '#ffffff',
+                        borderRadius: '20px',
+                        padding: '10px 30px',
+                        fontWeight: 'bold',
+                        margin: '20px 0px'
+                    }}
+                />
                 <CButton
                     title="Next"
                     onClick={() => { handleSubmitSelection() }}
                     style={{
-                        width: '30%',
+                        width: '40%',
                         background: '#757de8',
                         color: '#ffffff',
                         borderRadius: '20px',

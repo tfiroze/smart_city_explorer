@@ -10,10 +10,13 @@ import { AuthStack } from "./utils/AuthStack";
 import { ErrorPage } from './views/ErrorPage';
 import { useEffect, useState } from "react";
 import MapTest from "./views/MapTest";
+import style from "./utils/Themes/style";
+import { useDynamicFontSize } from "./utils/customHook/useDynamicFont";
 
 function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [loaded, setLoaded] = useState(false)
+  const fontSize = useDynamicFontSize()
   const onThemeChange = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
@@ -24,7 +27,7 @@ function App() {
 
   return (
     <ThemeContext.Provider value={{ onChange: onThemeChange, theme: theme }}>
-      <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+      <ThemeProvider theme={style(theme, fontSize)}>
         <BrowserRouter>
           <AuthStack />
         </BrowserRouter>

@@ -95,7 +95,7 @@ export const Header: React.FC<Partial<IProps>> = ({
           <img src={Logo} alt='logo' style={{ aspectRatio: 16 / 9, height: '8vh', transition: 'height 0.5s' }} />
         </Grid>
         {steps?.length && <Grid item xs={6}>
-          <Stepper activeStep={activeStep} sx={{ mx: "auto", backgroundColor:currentTheme.palette.secondary.main }}>
+          <Stepper activeStep={activeStep} sx={{ mx: "auto", backgroundColor:'transparent' }}>
             {steps?.map((label, index) => (
               <Step key={label}>
                 <StepLabel>{label}</StepLabel>

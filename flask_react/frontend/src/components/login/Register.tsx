@@ -2,6 +2,7 @@ import {
 	Alert,
 	Box,
 	Button,
+	CircularProgress,
 	Dialog,
 	DialogActions,
 	DialogContent,
@@ -9,6 +10,7 @@ import {
 	Divider,
 	Fade,
 	Grid,
+	Portal,
 	Snackbar,
 	TextField,
 	Typography,
@@ -59,6 +61,8 @@ export const Register: React.FC<IProps> = ({
 	const [disableSubmit, setDisableSubmit] = useState<boolean>(true);
 
 	const [disableVerify, setDisableVerify] = useState<boolean>(false);
+	const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
+
 
 	const [disableEmailInput, setEmailDisableInput] = useState<boolean>(false);
 
@@ -66,7 +70,8 @@ export const Register: React.FC<IProps> = ({
 
 	const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
-	const [verifyLoading, setVerifyLoading] = useState<boolean>(false);
+
+	const [disableBeforeVerify, setDisableBeforeVerify] = useState<boolean>(true);
 
 	const handleInputOnChange = (event: ChangeEvent<HTMLInputElement>) =>
 		setRegisterRequest({
@@ -83,6 +88,9 @@ export const Register: React.FC<IProps> = ({
 			if (results?.valid) {
 				setDisableSubmit(true)
 				setSubmitLoading(false)
+				setDisableBeforeVerify(true)
+				setDisableVerify(false)
+				setEmailDisableInput(false)
 				setRegisterRequest({
 					firstname: "",
 					surname: "",
@@ -106,6 +114,7 @@ export const Register: React.FC<IProps> = ({
 				setDisableVerify(false)
 				setDisableSubmit(false)
 				setSubmitLoading(false)
+				setEmailDisableInput(false)
 			}
 		})
 			.catch((error) => {
@@ -114,6 +123,7 @@ export const Register: React.FC<IProps> = ({
 				setDisableVerify(false)
 				setDisableSubmit(false)
 				setSubmitLoading(false)
+				setEmailDisableInput(false)
 			});
 	};
 
@@ -126,6 +136,11 @@ export const Register: React.FC<IProps> = ({
 				setEmailDisableInput(true)
 				setVerifyLoading(false)
 				handleSnackClick()
+				setDisableBeforeVerify(false)
+				setSnackState({
+					...snackState,
+					open: true
+				});
 			} else {
 				// ... handle the case when results?.valid is falsy ...
 				setError(results.errorType)
@@ -284,6 +299,7 @@ export const Register: React.FC<IProps> = ({
 	};
 
 	const handleSnackClose = () => {
+		console.log("Called")
 		setSnackState({
 			...snackState,
 			open: false
@@ -291,6 +307,12 @@ export const Register: React.FC<IProps> = ({
 	};
 
 	return (
+		<>
+		<Snackbar open={snackState.open} autoHideDuration={3000} onClose={handleSnackClose}>
+            <Alert severity="success" sx={{ width: '100%' }}>
+              Verification Email Sent!
+            </Alert>
+          </Snackbar>
 		<Dialog
 			open={open}
 			onClose={handleRegisterDialogOpen}
@@ -299,14 +321,8 @@ export const Register: React.FC<IProps> = ({
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
-			<Snackbar
-				style={{ width: "50%" }}
-				open={snackState.open}
-				onClose={handleSnackClose}
-				TransitionComponent={snackState.Transition}
-				message="Email Sent"
-				key={snackState.Transition.name}
-			/>
+			
+			
 			<DialogTitle id="alert-dialog-title">{"Let's Create Your Free Account"}</DialogTitle>
 			<Divider />
 			<DialogContent>
@@ -380,12 +396,13 @@ export const Register: React.FC<IProps> = ({
 					</Grid>
 					<Grid item md={4} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 						<LoadingButton
-							loading={false}
+							loading={verifyLoading}
 							variant="outlined"
 							onClick={emailFormValidator}
 							disabled={disableVerify}
-							loadingIndicator={verifyLoading}
+							loadingIndicator={<CircularProgress color="inherit" size={16} />}
 						>
+								
 							<span>Verify</span>
 						</LoadingButton>
 					</Grid>
@@ -409,6 +426,7 @@ export const Register: React.FC<IProps> = ({
 								? "Oops! It seems our Verification Code is feeling a bit shy today! 🙈 Please enter a valid code to proceed."
 								: ""
 						}
+						disabled={disableBeforeVerify}
 					/>
 				</Box>
 				<Box my={2}>
@@ -428,6 +446,7 @@ export const Register: React.FC<IProps> = ({
 								? "Oops! Your password needs a vacation from errors 🏖️. Please enter a valid one."
 								: ""
 						}
+						disabled={disableBeforeVerify}
 					/>
 				</Box>
 				<Box my={2}>
@@ -448,6 +467,7 @@ export const Register: React.FC<IProps> = ({
 								? "Uh-oh! Your password wants a travel companion for confirmation. Let's make sure they're on the same journey! 🛂"
 								: ""
 						}
+						disabled={disableBeforeVerify}
 					/>
 				</Box>
 				{error !== '0' && <Typography variant="subtitle1" color={'red'}>
@@ -469,9 +489,10 @@ export const Register: React.FC<IProps> = ({
 					style={{
 						background: '#757de8', color: 'white'
 					}}
-					disabled={disableSubmit}
+					disabled={disableSubmit && disableBeforeVerify}
 				/>
 			</DialogActions>
 		</Dialog>
+		</>
 	);
 };
